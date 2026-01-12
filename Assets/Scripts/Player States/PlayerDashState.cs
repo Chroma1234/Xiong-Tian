@@ -22,8 +22,8 @@ public class PlayerDashState : PlayerState
         player.DisablePlayerCollider();
 
         float moveX = Input.GetAxisRaw("Horizontal");
-        float moveY = Input.GetAxisRaw("Vertical");
-        moveDirection = new Vector2(moveX, moveY).normalized;
+        //float moveY = Input.GetAxisRaw("Vertical");
+        moveDirection = new Vector2(moveX, 0).normalized;
 
         player.StartCoroutine(Dash());
     }
@@ -83,7 +83,14 @@ public class PlayerDashState : PlayerState
 
         player.rb.linearVelocity = Vector2.zero;
         player.EnablePlayerCollider();
-        player.StateMachine.ChangeState(player.IdleState);
+        if (player.IsGrounded())
+        {
+            player.StateMachine.ChangeState(player.IdleState);
+        }
+        else
+        {
+            player.StateMachine.ChangeState(player.FallState);
+        }
     }
 
 }

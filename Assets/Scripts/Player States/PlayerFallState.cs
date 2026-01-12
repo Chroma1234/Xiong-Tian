@@ -29,6 +29,11 @@ public class PlayerFallState : PlayerState
         {
             player.StateMachine.ChangeState(player.IdleState);
         }
+
+        if  (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            player.StateMachine.ChangeState(player.DashState);
+        }
     }
 
     public override void PhysicsUpdate()

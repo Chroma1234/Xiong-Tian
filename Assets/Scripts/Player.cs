@@ -52,6 +52,14 @@ public class Player : MonoBehaviour, IDamageable
     private BoxCollider2D playerCollider;
     private BoxCollider2D attackCollider;
     private BoxCollider2D blockCollider;
+    private GameManager gameManager;
+    private CameraController cam;
+    #endregion
+
+    #region Stamina Settings
+    [Header("Stamina Settings")]
+    [SerializeField] public int dashCount;
+    [SerializeField] public int dashRecoveryTime;
     #endregion
 
     #region Layer Masks
@@ -83,6 +91,9 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Awake()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        cam = GameObject.Find("Main Camera").GetComponent<CameraController>();
+
         rb = GetComponent<Rigidbody2D>();
         playerCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
@@ -120,7 +131,7 @@ public class Player : MonoBehaviour, IDamageable
         {
             if (Input.GetKeyUp(KeyCode.Space) && rb.linearVelocity.y > 0)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y / 4);
+                rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.25f);
             }
 
             if (Input.GetMouseButtonDown(0))
@@ -214,11 +225,6 @@ public class Player : MonoBehaviour, IDamageable
         }
     }
 
-    private void AfterAttack()
-    {
-        StateMachine.ChangeState(IdleState);
-    }
-
     private void Attack()
     {
         StateMachine.ChangeState(AttackState);
@@ -236,6 +242,8 @@ public class Player : MonoBehaviour, IDamageable
         Vector2 launchDir = new Vector2(hitDirection.x, 1f).normalized;
 
         rb.AddForce(launchDir * knockbackForce, ForceMode2D.Impulse);
+
+        cam.DoShake();
 
         // Enter hit state (unless dead)
         if (Health > 0)
@@ -263,6 +271,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Die()
     {
         IsAlive = false;
+        StopAllCoroutines();
 
         rb.linearVelocity = Vector2.zero;
 
@@ -305,7 +314,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public bool IsGrounded()
     {
-        //raycast to check if player is in contact with game objects with "Ground" layer
+        //raycast to check if player is on the ground
         RaycastHit2D raycastHit = Physics2D.BoxCast(playerCollider.bounds.center, playerCollider.bounds.size, 0, Vector2.down, 0.1f, groundLayer);
         return raycastHit.collider != null;
     }

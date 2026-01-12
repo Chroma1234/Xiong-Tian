@@ -3,9 +3,6 @@ using UnityEngine;
 
 public class PlayerAttackState : PlayerState
 {
-    private float attackBufferTime = 0.15f;
-    private float attackBufferCounter;
-
     public PlayerAttackState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }

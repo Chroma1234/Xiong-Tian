@@ -13,8 +13,6 @@ public class Attack : MonoBehaviour
                 (collision.transform.position - transform.position).normalized;
 
             hit.TakeHit(attackDamage, hitDirection, knockbackForce);
-
-            Debug.Log($"{collision.name} hit for {attackDamage}");
         }
     }
 }

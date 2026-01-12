@@ -38,6 +38,11 @@ public class PlayerJumpState : PlayerState
             player.StateMachine.ChangeState(player.FallState);
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            player.StateMachine.ChangeState(player.DashState);
+        }
+
         float horizontalInput = Input.GetAxisRaw("Horizontal");
 
         player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
