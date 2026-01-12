@@ -19,10 +19,11 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
 
+        player.StopAllCoroutines();
+        player.StartCoroutine(dashRecovery(player.dashRecoveryDelay));
         player.DisablePlayerCollider();
 
         float moveX = Input.GetAxisRaw("Horizontal");
-        //float moveY = Input.GetAxisRaw("Vertical");
         moveDirection = new Vector2(moveX, 0).normalized;
 
         player.StartCoroutine(Dash());
@@ -91,6 +92,13 @@ public class PlayerDashState : PlayerState
         {
             player.StateMachine.ChangeState(player.FallState);
         }
+    }
+
+    IEnumerator dashRecovery(float dashRecoveryDelay)
+    {
+        player.canRecover = false;
+        yield return new WaitForSeconds(dashRecoveryDelay);
+        player.canRecover = true;
     }
 
 }

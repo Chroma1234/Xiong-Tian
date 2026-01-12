@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerFallState : PlayerState
 {
+    private float dashRecoveryTimer;
     public PlayerFallState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -25,14 +26,27 @@ public class PlayerFallState : PlayerState
     {
         base.FrameUpdate();
 
+        if (player.dashCount < 3 && player.canRecover)
+        {
+            dashRecoveryTimer += Time.deltaTime;
+
+            if (dashRecoveryTimer >= player.dashRecoveryTime)
+            {
+                player.dashCount++;
+                dashRecoveryTimer = 0f;
+            }
+        }
+
         if (player.IsGrounded())
         {
             player.StateMachine.ChangeState(player.IdleState);
         }
 
-        if  (Input.GetKeyDown(KeyCode.LeftShift))
+        if  (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
         {
+            player.canRecover = false;
             player.StateMachine.ChangeState(player.DashState);
+            player.dashCount--;
         }
     }
 

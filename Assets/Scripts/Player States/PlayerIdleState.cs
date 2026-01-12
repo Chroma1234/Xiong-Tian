@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Threading;
 using UnityEngine;
 
@@ -17,7 +18,6 @@ public class PlayerIdleState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
-        float timer = 0f;
     }
 
     public override void ExitState()
@@ -29,7 +29,7 @@ public class PlayerIdleState : PlayerState
     {
         base.FrameUpdate();
 
-        if (player.dashCount < 3)
+        if (player.dashCount < 3 && player.canRecover)
         {
             dashRecoveryTimer += Time.deltaTime;
 
@@ -46,6 +46,7 @@ public class PlayerIdleState : PlayerState
         }
         else if(Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
         {
+            player.canRecover = false;
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }

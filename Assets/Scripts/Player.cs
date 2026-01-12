@@ -59,7 +59,9 @@ public class Player : MonoBehaviour, IDamageable
     #region Stamina Settings
     [Header("Stamina Settings")]
     [SerializeField] public int dashCount;
-    [SerializeField] public int dashRecoveryTime;
+    [SerializeField] public float dashRecoveryTime;
+    [SerializeField] public float dashRecoveryDelay;
+    [HideInInspector] public bool canRecover = true;
     #endregion
 
     #region Layer Masks

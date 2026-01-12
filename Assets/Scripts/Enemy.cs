@@ -65,7 +65,7 @@ public class Enemy : MonoBehaviour, IDamageable
             int dmgTaken = obj.GetComponent<Weapon>().weaponDamage;
             TakeHit(dmgTaken, Vector2.zero, knockbackForce);
 
-            Debug.Log("hit!");
+            Debug.Log(dmgTaken);
         }
     }
 
