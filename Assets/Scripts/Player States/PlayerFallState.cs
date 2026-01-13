@@ -26,17 +26,6 @@ public class PlayerFallState : PlayerState
     {
         base.FrameUpdate();
 
-        if (player.dashCount < 3 && player.canRecover)
-        {
-            dashRecoveryTimer += Time.deltaTime;
-
-            if (dashRecoveryTimer >= player.dashRecoveryTime)
-            {
-                player.dashCount++;
-                dashRecoveryTimer = 0f;
-            }
-        }
-
         if (player.IsGrounded())
         {
             player.StateMachine.ChangeState(player.IdleState);
@@ -44,7 +33,6 @@ public class PlayerFallState : PlayerState
 
         if  (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
         {
-            player.canRecover = false;
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }

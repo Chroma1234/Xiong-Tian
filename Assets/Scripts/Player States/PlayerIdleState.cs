@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerIdleState : PlayerState
 {
-    private float dashRecoveryTimer;
-
     public PlayerIdleState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -29,24 +27,12 @@ public class PlayerIdleState : PlayerState
     {
         base.FrameUpdate();
 
-        if (player.dashCount < 3 && player.canRecover)
-        {
-            dashRecoveryTimer += Time.deltaTime;
-
-            if (dashRecoveryTimer >= player.dashRecoveryTime)
-            {
-                player.dashCount++;
-                dashRecoveryTimer = 0f;
-            }
-        }
-
         if (Input.GetKeyDown(KeyCode.Space))
         {
             player.StateMachine.ChangeState(player.JumpState);
         }
         else if(Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
         {
-            player.canRecover = false;
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }

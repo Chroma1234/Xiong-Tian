@@ -51,9 +51,16 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
-    private void Start()
+    private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        manager = GameObject.Find("GameManager").GetComponent<GameManager>();
+        cam = GameObject.Find("Main Camera").GetComponent<CameraController>();
+    }
+
+    private void Start()
+    {
         health = maxHealth;
     }
 
@@ -64,8 +71,6 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             int dmgTaken = obj.GetComponent<Weapon>().weaponDamage;
             TakeHit(dmgTaken, Vector2.zero, knockbackForce);
-
-            Debug.Log(dmgTaken);
         }
     }
 

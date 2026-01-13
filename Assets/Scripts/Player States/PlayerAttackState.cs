@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class PlayerAttackState : PlayerState
 {
+    Coroutine attackDelay;
     public PlayerAttackState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -21,7 +22,7 @@ public class PlayerAttackState : PlayerState
             player.rb.linearVelocity = Vector2.zero;
         }
 
-        player.StartCoroutine(WaitForAttackToFinish());
+        attackDelay = player.StartCoroutine(WaitForAttackToFinish());
     }
 
     public override void ExitState()
@@ -32,6 +33,13 @@ public class PlayerAttackState : PlayerState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+
+        if(Input.GetMouseButtonDown(0) && player.IsGrounded())
+        {
+            player.StopCoroutine(attackDelay);
+            player.animator.SetTrigger("attack");
+            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+        }
     }
 
     public override void PhysicsUpdate()

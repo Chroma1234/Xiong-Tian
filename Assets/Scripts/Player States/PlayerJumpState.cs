@@ -26,17 +26,6 @@ public class PlayerJumpState : PlayerState
     {
         base.FrameUpdate();
 
-        if (player.dashCount < 3 && player.canRecover)
-        {
-            dashRecoveryTimer += Time.deltaTime;
-
-            if (dashRecoveryTimer >= player.dashRecoveryTime)
-            {
-                player.dashCount++;
-                dashRecoveryTimer = 0f;
-            }
-        }
-
         if (player.coyoteTimeCounter > 0f)
         {
             player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
@@ -51,8 +40,7 @@ public class PlayerJumpState : PlayerState
         }
 
         if (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
-        {
-            player.canRecover = false;
+        { 
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }

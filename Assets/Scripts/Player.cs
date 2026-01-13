@@ -58,10 +58,12 @@ public class Player : MonoBehaviour, IDamageable
 
     #region Stamina Settings
     [Header("Stamina Settings")]
-    [SerializeField] public int dashCount;
+    public int dashCount;
+    [SerializeField] public int maxDashCount;
     [SerializeField] public float dashRecoveryTime;
+    private float dashRecoveryTimer;
     [SerializeField] public float dashRecoveryDelay;
-    [HideInInspector] public bool canRecover = true;
+    [SerializeField] public bool canRecover = true;
     #endregion
 
     #region Layer Masks
@@ -90,6 +92,12 @@ public class Player : MonoBehaviour, IDamageable
 
     public PlayerDeadState DeadState { get; set; }
     #endregion
+
+    public bool parry = false;
+    [SerializeField] private float parryDuration;
+    Coroutine parryCoroutine;
+
+    private int collisionDisableCount = 0;
 
     private void Awake()
     {
@@ -138,6 +146,7 @@ public class Player : MonoBehaviour, IDamageable
 
             if (Input.GetMouseButtonDown(0))
             {
+                //Attack();
                 attackBufferCounter = attackBufferTime;
             }
 
@@ -166,6 +175,27 @@ public class Player : MonoBehaviour, IDamageable
             if (StateMachine.CurrentPlayerState == DashState)
             {
                 SpawnAfterimages();
+            }
+
+            if (!canRecover)
+            {
+                dashRecoveryTimer -= Time.deltaTime;
+
+                if (dashRecoveryTimer <= 0f)
+                {
+                    canRecover = true;
+                }
+            }
+
+            if (dashCount < maxDashCount && canRecover)
+            {
+                dashRecoveryTimer += Time.deltaTime;
+
+                if (dashRecoveryTimer >= dashRecoveryTime)
+                {
+                    dashCount++;
+                    dashRecoveryTimer = 0f;
+                }
             }
 
             GetLastFacingDirection();
@@ -234,7 +264,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce)
     {
-        if (!IsAlive || StateMachine.CurrentPlayerState == DeadState)
+        if (!IsAlive || StateMachine.CurrentPlayerState == DeadState || StateMachine.CurrentPlayerState == HitState)
             return;
 
         Health -= damage;
@@ -256,7 +286,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public IEnumerator Invincibility()
     {
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        DisablePlayerCollider();
         float timer = 0f;
 
         while (timer < iFrameDuration)
@@ -267,7 +297,19 @@ public class Player : MonoBehaviour, IDamageable
         }
 
         spriteRenderer.enabled = true;
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        EnablePlayerCollider();
+    }
+
+    public IEnumerator ParryWindow()
+    {
+        parry = true;
+        yield return new WaitForSeconds(parryDuration);
+        parry = false;
+    }
+
+    public void Parry()
+    {
+        cam.DoShake();
     }
 
     private void Die()
@@ -286,21 +328,23 @@ public class Player : MonoBehaviour, IDamageable
 
     public void EnablePlayerCollider()
     {
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
-    }
-
-    public void EnableAttackCollider()
-    {
-        attackCollider.enabled = true;
+        collisionDisableCount--;
+        if (collisionDisableCount <= 0)
+        {
+            collisionDisableCount = 0;
+            Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, false);
+        }
     }
 
     public void EnableBlockCollider()
     {
         blockCollider.enabled = true;
+        parryCoroutine = StartCoroutine(ParryWindow());
     }
 
     public void DisablePlayerCollider()
     {
+        collisionDisableCount++;
         Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
     }
 
@@ -312,8 +356,18 @@ public class Player : MonoBehaviour, IDamageable
     public void DisableBlockCollider()
     {
         blockCollider.enabled = false;
+        if(parryCoroutine != null)
+        {
+            StopCoroutine(parryCoroutine);
+        }
+        parry = false;
     }
 
+    public void StartDashRecovery()
+    {
+        dashRecoveryTimer = dashRecoveryTime;
+        canRecover = false;
+    }
     public bool IsGrounded()
     {
         //raycast to check if player is on the ground

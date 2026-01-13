@@ -17,8 +17,8 @@ public class PlayerHitState : PlayerState
 
     private IEnumerator Recover()
     {
-        yield return new WaitForSeconds(hitDuration);
         player.StartCoroutine(player.Invincibility());
+        yield return new WaitForSeconds(hitDuration);
         player.StateMachine.ChangeState(player.IdleState);
     }
 
