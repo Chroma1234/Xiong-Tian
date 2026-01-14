@@ -1,9 +1,13 @@
+using System;
 using System.Collections;
 using System.Xml;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour, IDamageable
 {
+    public static event Action<Enemy> OnEnemyHit;
+    public static event Action<Enemy> OnEnemyKilled;
+
     [SerializeField] GameManager manager;
     [SerializeField] CameraController cam;
     SpriteRenderer spriteRenderer;
@@ -25,10 +29,13 @@ public class Enemy : MonoBehaviour, IDamageable
             if (health <= 0 && IsAlive)
             {
                 //death logic
+                manager.DoHitStop();
+                cam.DoShake();
+
                 IsAlive = false;
 
+                OnEnemyKilled?.Invoke(this);
                 Destroy(gameObject);
-                Debug.Log("dead");
             }
         }
     }
@@ -42,11 +49,14 @@ public class Enemy : MonoBehaviour, IDamageable
 
         Health -= damage;
 
+        OnEnemyHit?.Invoke(this);
+
         // Enter hit state (unless dead)
         if (Health > 0)
         {
             manager.DoHitStop();
             cam.DoShake();
+
             StartCoroutine(FlashSprite());
         }
     }

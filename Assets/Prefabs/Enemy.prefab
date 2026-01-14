@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   manager: {fileID: 0}
   cam: {fileID: 0}
-  maxHealth: 10
+  maxHealth: 20
   health: 0
   knockbackForce: 5
   hitFlashDuration: 0.05

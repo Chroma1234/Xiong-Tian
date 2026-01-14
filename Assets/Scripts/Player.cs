@@ -3,6 +3,17 @@ using UnityEngine;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    #region Component References
+    [HideInInspector] public Rigidbody2D rb;
+    [HideInInspector] public Animator animator;
+    private SpriteRenderer spriteRenderer;
+    private BoxCollider2D playerCollider;
+    private BoxCollider2D attackCollider;
+    private BoxCollider2D blockCollider;
+    private GameManager gameManager;
+    private CameraController cam;
+    #endregion
+
     #region Movement Mechanics
     [Header("Movement Settings")]
     [SerializeField] public float moveSpeed = 10f;
@@ -24,9 +35,10 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float iFrameDuration = 1f;
     #endregion
 
-    #region Health
+    #region Health Mechanics
+    [Header("Health Settings")]
     [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int health;
+    private int health;
 
     public int Health
     {
@@ -45,15 +57,23 @@ public class Player : MonoBehaviour, IDamageable
     public bool IsAlive { get; set; } = true;
     #endregion
 
-    #region Component References
-    [HideInInspector] public Rigidbody2D rb;
-    [HideInInspector] public Animator animator;
-    private SpriteRenderer spriteRenderer;
-    private BoxCollider2D playerCollider;
-    private BoxCollider2D attackCollider;
-    private BoxCollider2D blockCollider;
-    private GameManager gameManager;
-    private CameraController cam;
+    #region Mana Mechanics
+    [SerializeField] private int maxMana;
+    [SerializeField] private int mana;
+    [SerializeField] public int healingManaCost;
+    [SerializeField] public int healingAmt;
+
+    public int Mana
+    {
+        get => mana;
+        set
+        {
+            mana = Mathf.Clamp(value, 0, maxMana);
+        }
+    }
+
+    [SerializeField] private int manaOnHit;
+    [SerializeField] private int manaOnKill;
     #endregion
 
     #region Stamina Settings
@@ -61,9 +81,16 @@ public class Player : MonoBehaviour, IDamageable
     public int dashCount;
     [SerializeField] public int maxDashCount;
     [SerializeField] public float dashRecoveryTime;
-    private float dashRecoveryTimer;
     [SerializeField] public float dashRecoveryDelay;
-    [SerializeField] public bool canRecover = true;
+    private float dashRecoveryTimer;
+    [HideInInspector] public bool canRecover = true;
+    #endregion
+
+    #region Parry Settings
+    [Header("Parry Settings")]
+    [HideInInspector] public bool parry = false;
+    private Coroutine parryCoroutine;
+    [SerializeField] private float parryWindow;
     #endregion
 
     #region Layer Masks
@@ -89,13 +116,9 @@ public class Player : MonoBehaviour, IDamageable
     public PlayerAttackState AttackState { get; set; }
     public PlayerBlockState BlockState { get; set; }
     public PlayerHitState HitState { get; set; }
-
+    public PlayerHealState HealState { get; set; }
     public PlayerDeadState DeadState { get; set; }
     #endregion
-
-    public bool parry = false;
-    [SerializeField] private float parryDuration;
-    Coroutine parryCoroutine;
 
     private int collisionDisableCount = 0;
 
@@ -118,6 +141,7 @@ public class Player : MonoBehaviour, IDamageable
         AttackState = new PlayerAttackState(this, StateMachine);
         BlockState = new PlayerBlockState(this, StateMachine);
         HitState = new PlayerHitState(this, StateMachine);
+        HealState = new PlayerHealState(this, StateMachine);
         DeadState = new PlayerDeadState(this, StateMachine);
 
         playerLayer = gameObject.layer;
@@ -131,7 +155,11 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         health = maxHealth;
+        mana = maxMana;
         StateMachine.Initialize(IdleState);
+
+        Enemy.OnEnemyHit += RecoverManaOnHit;
+        Enemy.OnEnemyKilled += RecoverManaOnKill;
     }
 
     private void Update()
@@ -153,6 +181,21 @@ public class Player : MonoBehaviour, IDamageable
             if (IsGrounded())
             {
                 coyoteTimeCounter = coyoteTime;
+
+                if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
+                {
+                    if (mana >= healingManaCost)
+                    {
+                        if (Health < maxHealth)
+                        {
+                            StateMachine.ChangeState(HealState);
+                        }
+                    }
+                    else
+                    {
+                        //insufficient mana / full health!
+                    }
+                }
             }
             else
             {
@@ -166,7 +209,7 @@ public class Player : MonoBehaviour, IDamageable
                 Attack();
                 attackBufferCounter = 0f;
             }
-            if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState)
+            if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState)
             {
                 HandleMovement();
                 FlipPlayerSprite();
@@ -207,6 +250,28 @@ public class Player : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
+    }
+
+    private void OnDestroy()
+    {
+        Enemy.OnEnemyHit -= RecoverManaOnHit;
+        Enemy.OnEnemyKilled -= RecoverManaOnKill;
+    }
+
+    private void RecoverManaOnHit(Enemy enemy)
+    {
+        if (Mana <= maxMana - manaOnHit)
+        {
+            Mana += manaOnHit;
+        }
+    }
+
+    private void RecoverManaOnKill(Enemy enemy)
+    {
+        if (Mana <= maxMana - manaOnKill)
+        {
+            Mana += manaOnKill;
+        }
     }
 
     public void HandleMovement()
@@ -303,7 +368,7 @@ public class Player : MonoBehaviour, IDamageable
     public IEnumerator ParryWindow()
     {
         parry = true;
-        yield return new WaitForSeconds(parryDuration);
+        yield return new WaitForSeconds(parryWindow);
         parry = false;
     }
 

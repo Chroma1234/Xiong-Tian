@@ -12,6 +12,7 @@ public class UIManager : MonoBehaviour
     #region Text UI
     [Header("Text UI")]
     [SerializeField] TextMeshProUGUI healthText;
+    [SerializeField] TextMeshProUGUI manaText;
     [SerializeField] TextMeshProUGUI staminaText;
     #endregion
 
@@ -24,6 +25,7 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         healthText.text = "Health: " + damageable.Health.ToString();
+        manaText.text = "Mana: " + player.Mana.ToString();
         staminaText.text = "Dashes: " + player.dashCount.ToString();
     }
 
