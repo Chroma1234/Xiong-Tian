@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class PlayerFallState : PlayerState
 {
-    private float dashRecoveryTimer;
     public PlayerFallState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -36,10 +35,36 @@ public class PlayerFallState : PlayerState
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TryDoubleJump();
+        }
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
     }
+    private void Jump()
+    {
+        player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
+        player.animator.SetTrigger("jump");
+    }
+
+    private void TryDoubleJump()
+    {
+        if (player.IsGrounded())
+            return;
+
+        if (!player.doubleJump)
+            return;
+
+        if (player.hasDoubleJumped)
+            return;
+
+        player.hasDoubleJumped = true;
+        Jump();
+    }
+
 }

@@ -2,7 +2,6 @@ using UnityEngine;
 
 public class PlayerJumpState : PlayerState
 {
-    private float dashRecoveryTimer;
     public PlayerJumpState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -26,11 +25,25 @@ public class PlayerJumpState : PlayerState
     {
         base.FrameUpdate();
 
+        if (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
+        { 
+            player.StateMachine.ChangeState(player.DashState);
+            player.dashCount--;
+        }
+
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            TryDoubleJump();
+        }
+    }
+
+    public override void PhysicsUpdate()
+    {
+        base.PhysicsUpdate();
+
         if (player.coyoteTimeCounter > 0f)
         {
-            player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
-            player.animator.SetTrigger("jump");
-
+            Jump();
             player.coyoteTimeCounter = 0f;
         }
 
@@ -39,19 +52,28 @@ public class PlayerJumpState : PlayerState
             player.StateMachine.ChangeState(player.FallState);
         }
 
-        if (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
-        { 
-            player.StateMachine.ChangeState(player.DashState);
-            player.dashCount--;
-        }
-
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-
         player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
     }
 
-    public override void PhysicsUpdate()
+    private void Jump()
     {
-        base.PhysicsUpdate();
+        player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x, player.jumpForce);
+        player.animator.SetTrigger("jump");
+    }
+
+    private void TryDoubleJump()
+    {
+        if (player.IsGrounded())
+            return;
+
+        if (!player.doubleJump)
+            return;
+
+        if (player.hasDoubleJumped)
+            return;
+
+        player.hasDoubleJumped = true;
+        Jump();
     }
 }

@@ -5,6 +5,7 @@ public class CameraController : MonoBehaviour
 {
     [SerializeField] private Transform player;
     [SerializeField] private float forwardOffset;
+    [SerializeField] private float heightOffset;
     [SerializeField] private float xFollowSpeed;
     [SerializeField] private float yFollowSpeed;
 
@@ -17,7 +18,7 @@ public class CameraController : MonoBehaviour
     private void FixedUpdate()
     {
         targetX = Mathf.Lerp(targetX, (forwardOffset * player.localScale.x), Time.deltaTime * xFollowSpeed);
-        targetY = Mathf.Lerp(transform.position.y, player.position.y, Time.deltaTime * yFollowSpeed);
+        targetY = Mathf.Lerp(transform.position.y, player.position.y + heightOffset, Time.deltaTime * yFollowSpeed);
         transform.position = new Vector3(player.position.x + targetX, targetY, transform.position.z);
     }
 

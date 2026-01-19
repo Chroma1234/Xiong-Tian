@@ -6,6 +6,7 @@ public class Player : MonoBehaviour, IDamageable
     #region Component References
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Animator animator;
+    [HideInInspector] public PlayerSoulController soulController;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D playerCollider;
     private BoxCollider2D attackCollider;
@@ -26,6 +27,9 @@ public class Player : MonoBehaviour, IDamageable
 
     [SerializeField] public float coyoteTime = 0.1f;
     [HideInInspector] public float coyoteTimeCounter;
+
+    [SerializeField] public bool doubleJump;
+    [HideInInspector] public bool hasDoubleJumped;
     #endregion
 
     #region Attack Mechanics
@@ -114,6 +118,7 @@ public class Player : MonoBehaviour, IDamageable
     public PlayerDashState DashState { get; set; }
     public PlayerJumpState JumpState { get; set; }
     public PlayerAttackState AttackState { get; set; }
+    public PlayerCastingState CastingState { get; set; }
     public PlayerBlockState BlockState { get; set; }
     public PlayerHitState HitState { get; set; }
     public PlayerHealState HealState { get; set; }
@@ -121,6 +126,7 @@ public class Player : MonoBehaviour, IDamageable
     #endregion
 
     private int collisionDisableCount = 0;
+    [SerializeField] private GameObject soulOrbPrefab;
 
     private void Awake()
     {
@@ -131,6 +137,7 @@ public class Player : MonoBehaviour, IDamageable
         playerCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        soulController = GetComponent<PlayerSoulController>();
 
         StateMachine = new PlayerStateMachine();
 
@@ -139,6 +146,7 @@ public class Player : MonoBehaviour, IDamageable
         DashState = new PlayerDashState(this, StateMachine);
         JumpState = new PlayerJumpState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
+        CastingState = new PlayerCastingState(this, StateMachine);
         BlockState = new PlayerBlockState(this, StateMachine);
         HitState = new PlayerHitState(this, StateMachine);
         HealState = new PlayerHealState(this, StateMachine);
@@ -159,7 +167,10 @@ public class Player : MonoBehaviour, IDamageable
         StateMachine.Initialize(IdleState);
 
         Enemy.OnEnemyHit += RecoverManaOnHit;
+        Enemy.OnEnemyHit += EnemyHitEffects;
         Enemy.OnEnemyKilled += RecoverManaOnKill;
+        Enemy.OnEnemyKilled += EnemyHitEffects;
+        Enemy.OnEnemyKilled += SpawnSoulOrb;
     }
 
     private void Update()
@@ -174,13 +185,13 @@ public class Player : MonoBehaviour, IDamageable
 
             if (Input.GetMouseButtonDown(0))
             {
-                //Attack();
                 attackBufferCounter = attackBufferTime;
             }
 
             if (IsGrounded())
             {
                 coyoteTimeCounter = coyoteTime;
+                hasDoubleJumped = false;    
 
                 if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
                 {
@@ -196,6 +207,11 @@ public class Player : MonoBehaviour, IDamageable
                         //insufficient mana / full health!
                     }
                 }
+
+                if(Input.GetKeyDown(KeyCode.Q) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != CastingState)
+                {
+                    StateMachine.ChangeState(CastingState);
+                }
             }
             else
             {
@@ -208,11 +224,6 @@ public class Player : MonoBehaviour, IDamageable
             {
                 Attack();
                 attackBufferCounter = 0f;
-            }
-            if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState)
-            {
-                HandleMovement();
-                FlipPlayerSprite();
             }
 
             if (StateMachine.CurrentPlayerState == DashState)
@@ -241,7 +252,11 @@ public class Player : MonoBehaviour, IDamageable
                 }
             }
 
-            GetLastFacingDirection();
+
+            if (StateMachine.CurrentPlayerState != CastingState)
+            {
+                GetLastFacingDirection();
+            }
         }
 
         HandleAnimators();
@@ -250,12 +265,21 @@ public class Player : MonoBehaviour, IDamageable
     private void FixedUpdate()
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
+
+        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != CastingState && StateMachine.CurrentPlayerState != DeadState)
+        {
+            HandleMovement();
+            FlipPlayerSprite();
+        }
     }
 
     private void OnDestroy()
     {
         Enemy.OnEnemyHit -= RecoverManaOnHit;
+        Enemy.OnEnemyHit -= EnemyHitEffects;
         Enemy.OnEnemyKilled -= RecoverManaOnKill;
+        Enemy.OnEnemyKilled -= EnemyHitEffects;
+        Enemy.OnEnemyKilled -= SpawnSoulOrb;
     }
 
     private void RecoverManaOnHit(Enemy enemy)
@@ -272,6 +296,12 @@ public class Player : MonoBehaviour, IDamageable
         {
             Mana += manaOnKill;
         }
+    }
+
+    private void SpawnSoulOrb(Enemy enemy)
+    {
+        GameObject orb = Instantiate(soulOrbPrefab, enemy.gameObject.transform.position, Quaternion.identity);
+        orb.GetComponent<SoulOrb>().target = transform;
     }
 
     public void HandleMovement()
@@ -375,6 +405,12 @@ public class Player : MonoBehaviour, IDamageable
     public void Parry()
     {
         cam.DoShake();
+    }
+
+    public void EnemyHitEffects(Enemy enemy)
+    {
+        cam.DoShake();
+        gameManager.DoHitStop();
     }
 
     private void Die()

@@ -8,12 +8,10 @@ public class Enemy : MonoBehaviour, IDamageable
     public static event Action<Enemy> OnEnemyHit;
     public static event Action<Enemy> OnEnemyKilled;
 
-    [SerializeField] GameManager manager;
-    [SerializeField] CameraController cam;
     SpriteRenderer spriteRenderer;
 
     [SerializeField] private int maxHealth = 100;
-    [SerializeField] private int health;
+    [HideInInspector] private int health;
 
     [SerializeField] private float knockbackForce = 8f;
 
@@ -29,11 +27,8 @@ public class Enemy : MonoBehaviour, IDamageable
             if (health <= 0 && IsAlive)
             {
                 //death logic
-                manager.DoHitStop();
-                cam.DoShake();
 
                 IsAlive = false;
-
                 OnEnemyKilled?.Invoke(this);
                 Destroy(gameObject);
             }
@@ -54,9 +49,6 @@ public class Enemy : MonoBehaviour, IDamageable
         // Enter hit state (unless dead)
         if (Health > 0)
         {
-            manager.DoHitStop();
-            cam.DoShake();
-
             StartCoroutine(FlashSprite());
         }
     }
@@ -64,9 +56,6 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
-
-        manager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        cam = GameObject.Find("Main Camera").GetComponent<CameraController>();
     }
 
     private void Start()
@@ -79,8 +68,14 @@ public class Enemy : MonoBehaviour, IDamageable
         GameObject obj = collision.gameObject;
         if (obj.layer == LayerMask.NameToLayer("Attack"))
         {
-            int dmgTaken = obj.GetComponent<Weapon>().weaponDamage;
+            Weapon weapon = obj.GetComponent<Weapon>();
+            int dmgTaken = weapon.weaponDamage;
             TakeHit(dmgTaken, Vector2.zero, knockbackForce);
+
+            if(weapon.projectile)
+            {
+                Destroy(obj);
+            }
         }
     }
 
@@ -90,6 +85,6 @@ public class Enemy : MonoBehaviour, IDamageable
         spriteRenderer.color = Color.white;
         yield return new WaitForSeconds(hitFlashDuration);
         spriteRenderer.color = originalColor;
-    }
+    } 
 }
 

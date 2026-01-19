@@ -36,9 +36,4 @@ public class Attack : MonoBehaviour
             }
         }
     }
-
-    private void Update()
-    {
-        transform.Translate(Vector3.left * 5f * Time.deltaTime);
-    }
 }
