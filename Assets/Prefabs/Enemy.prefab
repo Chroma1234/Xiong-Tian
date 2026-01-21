@@ -165,12 +165,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86556894ce269eb48a11f846e2181f83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  manager: {fileID: 0}
-  cam: {fileID: 0}
   maxHealth: 20
-  health: 0
   knockbackForce: 5
   hitFlashDuration: 0.05
+  moveTest: 1
 --- !u!50 &3311164986886838101
 Rigidbody2D:
   serializedVersion: 5

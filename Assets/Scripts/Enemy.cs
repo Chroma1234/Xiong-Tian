@@ -17,6 +17,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [SerializeField] private float hitFlashDuration;
 
+    [SerializeField] private bool moveTest;
+
     public int Health
     {
         get => health;
@@ -63,6 +65,14 @@ public class Enemy : MonoBehaviour, IDamageable
         health = maxHealth;
     }
 
+    private void Update()
+    {
+        if (moveTest)
+        {
+            transform.Translate(Vector3.left * 5f * Time.deltaTime);
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject obj = collision.gameObject;
@@ -82,7 +92,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private IEnumerator FlashSprite()
     {
         Color originalColor = spriteRenderer.color;
-        spriteRenderer.color = Color.white;
+        spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(hitFlashDuration);
         spriteRenderer.color = originalColor;
     } 
