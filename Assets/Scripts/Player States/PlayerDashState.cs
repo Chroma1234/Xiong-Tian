@@ -6,6 +6,8 @@ public class PlayerDashState : PlayerState
     private Vector2 moveDirection;
     private float rollAccelTime = 0.08f;
     private float rollDecelTime = 0.08f;
+
+    Coroutine dashing;
     public PlayerDashState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -19,7 +21,7 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
 
-        player.DisablePlayerCollider();
+        //player.DisablePlayerCollider();
 
         float moveX = Input.GetAxisRaw("Horizontal");
         moveDirection = new Vector2(moveX, 0).normalized;
@@ -27,12 +29,14 @@ public class PlayerDashState : PlayerState
         player.canRecover = false;
         player.StartDashRecovery();
 
-        player.StartCoroutine(Dash());
+        dashing = player.StartCoroutine(Dash());
     }
 
     public override void ExitState()
     {
         base.ExitState();
+
+        player.StopCoroutine(dashing);
     }
 
     public override void FrameUpdate()
@@ -84,7 +88,7 @@ public class PlayerDashState : PlayerState
         }
 
         player.rb.linearVelocity = Vector2.zero;
-        player.EnablePlayerCollider();
+        //player.EnablePlayerCollider();
         if (player.IsGrounded())
         {
             player.StateMachine.ChangeState(player.IdleState);

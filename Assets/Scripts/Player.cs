@@ -34,6 +34,7 @@ public class Player : MonoBehaviour, IDamageable
 
     #region Attack Mechanics
     [Header("Attack Settings")]
+    public float attackMomentum;
     [SerializeField] public float attackBufferTime = 0.15f;
     [HideInInspector] public float attackBufferCounter;
     [SerializeField] private float iFrameDuration = 1f;
@@ -95,6 +96,8 @@ public class Player : MonoBehaviour, IDamageable
     [HideInInspector] public bool parry = false;
     private Coroutine parryCoroutine;
     [SerializeField] private float parryWindow;
+    public bool hasParryCharge;
+    [SerializeField] private float parryChargeDuration;
     #endregion
 
     #region Layer Masks
@@ -208,10 +211,10 @@ public class Player : MonoBehaviour, IDamageable
                     }
                 }
 
-                if(Input.GetKeyDown(KeyCode.Q) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != CastingState)
-                {
-                    StateMachine.ChangeState(CastingState);
-                }
+                //if(Input.GetKeyDown(KeyCode.Q) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != CastingState)
+                //{
+                //    StateMachine.ChangeState(CastingState);
+                //}
             }
             else
             {
@@ -402,9 +405,12 @@ public class Player : MonoBehaviour, IDamageable
         parry = false;
     }
 
-    public void Parry()
+    public IEnumerator Parry()
     {
         cam.DoShake();
+        hasParryCharge = true;
+        yield return new WaitForSeconds(parryChargeDuration);
+        hasParryCharge = false;
     }
 
     public void EnemyHitEffects(Enemy enemy)

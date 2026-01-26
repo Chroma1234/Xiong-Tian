@@ -13,15 +13,14 @@ public class Attack : MonoBehaviour
         GameObject gameObj = collision.gameObject;
         if (collision.TryGetComponent(out IDamageable hit))
         {
-            Vector2 hitDirection =
-                (collision.transform.position - transform.position).normalized;
+            Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
 
             if (gameObj.GetComponent<Player>() != null)
             {
                 Player player = gameObj.GetComponent<Player>();
                 if (gameObj.GetComponent<Player>().parry && parryable)
                 {
-                    player.Parry();
+                    player.StartCoroutine(player.Parry());
                     Destroy(transform.gameObject); // temp
                     Debug.Log("parried!");
                 }

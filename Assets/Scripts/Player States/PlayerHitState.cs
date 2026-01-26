@@ -19,7 +19,15 @@ public class PlayerHitState : PlayerState
     {
         player.StartCoroutine(player.Invincibility());
         yield return new WaitForSeconds(hitDuration);
-        player.StateMachine.ChangeState(player.IdleState);
+        if (player.IsGrounded())
+        {
+            player.StateMachine.ChangeState(player.IdleState);
+        }
+        else
+        {
+            player.StateMachine.ChangeState(player.FallState);
+        }
+
     }
 
     public override void FrameUpdate() { }

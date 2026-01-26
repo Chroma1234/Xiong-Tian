@@ -14,6 +14,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI healthText;
     [SerializeField] TextMeshProUGUI manaText;
     [SerializeField] TextMeshProUGUI staminaText;
+    [SerializeField] TextMeshProUGUI parryChargeText;
     #endregion
 
     private void Awake()
@@ -27,6 +28,7 @@ public class UIManager : MonoBehaviour
         healthText.text = "Health: " + damageable.Health.ToString();
         manaText.text = "Mana: " + player.Mana.ToString();
         staminaText.text = "Dashes: " + player.dashCount.ToString();
+        parryChargeText.text = "Parry Charge: " + player.hasParryCharge.ToString();
     }
 
 }

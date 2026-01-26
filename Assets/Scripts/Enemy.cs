@@ -29,7 +29,7 @@ public class Enemy : MonoBehaviour, IDamageable
             if (health <= 0 && IsAlive)
             {
                 //death logic
-
+                StopAllCoroutines();
                 IsAlive = false;
                 OnEnemyKilled?.Invoke(this);
                 Destroy(gameObject);
@@ -45,6 +45,9 @@ public class Enemy : MonoBehaviour, IDamageable
             return;
 
         Health -= damage;
+
+        Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
+        StartCoroutine(Knockback(launchDir));
 
         OnEnemyHit?.Invoke(this);
 
@@ -80,7 +83,8 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             Weapon weapon = obj.GetComponent<Weapon>();
             int dmgTaken = weapon.weaponDamage;
-            TakeHit(dmgTaken, Vector2.zero, knockbackForce);
+            Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
+            TakeHit(dmgTaken, hitDirection, knockbackForce);
 
             if(weapon.projectile)
             {
@@ -96,5 +100,21 @@ public class Enemy : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(hitFlashDuration);
         spriteRenderer.color = originalColor;
     } 
+
+    private IEnumerator Knockback(Vector2 direction)
+    {
+        float timer = 0f;
+
+        while (timer < 0.1f)
+        {
+            timer += Time.deltaTime;
+            if (direction != null)
+            {
+                transform.position = Vector2.MoveTowards(transform.position, (Vector2)transform.position + direction, knockbackForce * Time.deltaTime);
+                yield return null;
+            }
+}
+
+    }
 }
 
