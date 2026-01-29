@@ -3119,6 +3119,10 @@ PrefabInstance:
       propertyPath: m_Simulated
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3942512425957517784, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
+      propertyPath: attackDamage
+      value: 100
+      objectReference: {fileID: 0}
     - target: {fileID: 4613198054393014285, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       propertyPath: cam
       value: 

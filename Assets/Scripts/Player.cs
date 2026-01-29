@@ -9,7 +9,7 @@ public class Player : MonoBehaviour, IDamageable
     [HideInInspector] public PlayerSoulController soulController;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D playerCollider;
-    private BoxCollider2D attackCollider;
+    private PolygonCollider2D attackCollider;
     private BoxCollider2D blockCollider;
     private GameManager gameManager;
     private CameraController cam;
@@ -159,7 +159,7 @@ public class Player : MonoBehaviour, IDamageable
         enemyLayer = LayerMask.NameToLayer("EnemyHitbox");
         groundLayer = LayerMask.GetMask("Ground");
 
-        attackCollider = transform.GetChild(0).GetComponent<BoxCollider2D>();
+        attackCollider = transform.GetChild(0).GetComponent<PolygonCollider2D>();
         blockCollider = transform.GetChild(1).GetComponent<BoxCollider2D>();
     }
 

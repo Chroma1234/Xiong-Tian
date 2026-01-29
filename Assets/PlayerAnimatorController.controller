@@ -354,7 +354,7 @@ AnimatorStateMachine:
   m_ChildStates:
   - serializedVersion: 1
     m_State: {fileID: 4077777308700242455}
-    m_Position: {x: 350, y: -60, z: 0}
+    m_Position: {x: 360, y: -50, z: 0}
   - serializedVersion: 1
     m_State: {fileID: 4863098863107804129}
     m_Position: {x: 360, y: 10, z: 0}
@@ -831,7 +831,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: player_block
-  m_Speed: 1
+  m_Speed: 1.5
   m_CycleOffset: 0
   m_Transitions:
   - {fileID: -5244946087626497857}
@@ -1639,7 +1639,7 @@ AnimatorState:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: player_death
-  m_Speed: 1
+  m_Speed: 0.75
   m_CycleOffset: 0
   m_Transitions: []
   m_StateMachineBehaviours: []
@@ -1681,7 +1681,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 8fb1c139e6e632441b0a9bb8200f68fb, type: 2}
+  m_Motion: {fileID: 7400000, guid: 99d9fbec07a8cd54aa7c41212c62452d, type: 2}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1905,7 +1905,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: ab0e0d4631089c84da78c7ca95e1b157, type: 2}
+  m_Motion: {fileID: 7400000, guid: 4733bd11b628531418aa98abcb0269cb, type: 2}
   m_Tag: Attack
   m_SpeedParameter: 
   m_MirrorParameter: 
@@ -1986,7 +1986,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 7400000, guid: 00b6892435b74774c9cab4d6dc464f6f, type: 2}
+  m_Motion: {fileID: 7400000, guid: 4733bd11b628531418aa98abcb0269cb, type: 2}
   m_Tag: Attack
   m_SpeedParameter: 
   m_MirrorParameter: 
