@@ -27,8 +27,9 @@ public class PlayerIdleState : PlayerState
     {
         base.FrameUpdate();
 
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && player.coyoteTimeCounter > 0f)
         {
+            player.coyoteTimeCounter = 0f;
             player.StateMachine.ChangeState(player.JumpState);
         }
         else if(Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)

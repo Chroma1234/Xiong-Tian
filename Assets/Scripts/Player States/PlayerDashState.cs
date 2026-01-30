@@ -21,10 +21,22 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
 
-        //player.DisablePlayerCollider();
-
         float moveX = Input.GetAxisRaw("Horizontal");
-        moveDirection = new Vector2(moveX, 0).normalized;
+        float moveY = Input.GetAxisRaw("Vertical");
+
+        if (moveX != 0)
+        {
+            moveDirection = new Vector2(Mathf.Sign(moveX), 0f);
+        }
+        else if (moveY != 0)
+        {
+            moveDirection = new Vector2(Mathf.Sign(player.transform.localScale.x), 0f);
+        }
+        else
+        {
+            moveDirection = new Vector2(Mathf.Sign(player.lastFacingDirection.x), 0f);
+        }
+
 
         player.canRecover = false;
         player.StartDashRecovery();
@@ -51,9 +63,10 @@ public class PlayerDashState : PlayerState
 
     private IEnumerator Dash()
     {
-        Vector2 rollDirection = moveDirection != Vector2.zero
-            ? moveDirection
-            : player.lastFacingDirection;
+        Vector2 rollDirection = moveDirection;
+
+        rollDirection.y = 0f;
+        rollDirection.Normalize();
 
         Vector2 startVelocity = player.rb.linearVelocity;
         Vector2 maxVelocity = rollDirection * player.dodgeSpeed;

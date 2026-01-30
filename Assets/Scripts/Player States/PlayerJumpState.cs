@@ -14,6 +14,7 @@ public class PlayerJumpState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
+        Jump();
     }
 
     public override void ExitState()
@@ -41,19 +42,19 @@ public class PlayerJumpState : PlayerState
     {
         base.PhysicsUpdate();
 
-        if (player.coyoteTimeCounter > 0f)
-        {
-            Jump();
-            player.coyoteTimeCounter = 0f;
-        }
+        float horizontalInput = Input.GetAxisRaw("Horizontal");
+        player.rb.linearVelocity = new Vector2(
+            horizontalInput * player.moveSpeed,
+            player.rb.linearVelocity.y
+        );
 
         if (player.rb.linearVelocity.y <= 0f)
         {
             player.StateMachine.ChangeState(player.FallState);
         }
 
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
+        //float horizontalInput = Input.GetAxisRaw("Horizontal");
+        //player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
     }
 
     private void Jump()

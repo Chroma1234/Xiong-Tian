@@ -13,7 +13,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private int maxHealth = 100;
     [HideInInspector] private int health;
 
-    [SerializeField] private float knockbackForce = 8f;
+    [SerializeField] public float knockbackForce = 8f;
 
     [SerializeField] private float hitFlashDuration;
 
@@ -91,19 +91,8 @@ public class Enemy : MonoBehaviour, IDamageable
     private void OnTriggerEnter2D(Collider2D collision)
     {
         GameObject obj = collision.gameObject;
-        if (obj.layer == LayerMask.NameToLayer("Attack"))
-        {
-            Weapon weapon = obj.GetComponent<Weapon>();
-            int dmgTaken = weapon.weaponDamage;
-            Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-            TakeHit(dmgTaken, hitDirection, knockbackForce);
-
-            if(weapon.projectile)
-            {
-                Destroy(obj);
-            }
-        }
-        if(obj.layer == LayerMask.NameToLayer("Player"))
+      
+        if(obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentPawnState != ChaseState)
         {
             StateMachine.ChangeState(ChaseState);
         }

@@ -210,11 +210,6 @@ public class Player : MonoBehaviour, IDamageable
                         //insufficient mana / full health!
                     }
                 }
-
-                //if(Input.GetKeyDown(KeyCode.Q) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != CastingState)
-                //{
-                //    StateMachine.ChangeState(CastingState);
-                //}
             }
             else
             {
