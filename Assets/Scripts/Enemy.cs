@@ -19,6 +19,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [SerializeField] private bool moveTest;
 
+    #region States
+    public PawnStateMachine StateMachine { get; set; }
+    public PawnIdleState IdleState { get; set; }
+    public PawnChaseState ChaseState { get; set; }
+    #endregion
+
     public int Health
     {
         get => health;
@@ -61,10 +67,16 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+
+        StateMachine = new PawnStateMachine();
+        IdleState = new PawnIdleState(this, StateMachine);
+        ChaseState = new PawnChaseState(this, StateMachine);
     }
 
     private void Start()
     {
+        StateMachine.Initialize(IdleState);
+
         health = maxHealth;
     }
 
@@ -90,6 +102,10 @@ public class Enemy : MonoBehaviour, IDamageable
             {
                 Destroy(obj);
             }
+        }
+        if(obj.layer == LayerMask.NameToLayer("Player"))
+        {
+            StateMachine.ChangeState(ChaseState);
         }
     }
 
