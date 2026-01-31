@@ -19,6 +19,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [SerializeField] private bool moveTest;
 
+    //raptor-x-z
+    public GameObject player;
+    public Vector3 leftLimit;
+    public Vector3 rightLimit;
+    public SpriteRenderer sprite;
+
     #region States
     public PawnStateMachine StateMachine { get; set; }
     public PawnIdleState IdleState { get; set; }
@@ -71,6 +77,14 @@ public class Enemy : MonoBehaviour, IDamageable
         StateMachine = new PawnStateMachine();
         IdleState = new PawnIdleState(this, StateMachine);
         ChaseState = new PawnChaseState(this, StateMachine);
+
+        //raptor-x-z
+        //Getting the Positions of the pathfinding Limits
+        leftLimit = transform.GetChild(2).gameObject.transform.position;
+        rightLimit = transform.GetChild(3).gameObject.transform.position;
+
+        sprite = this.GetComponent<SpriteRenderer>();
+
     }
 
     private void Start()
@@ -86,6 +100,13 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             transform.Translate(Vector3.left * 5f * Time.deltaTime);
         }
+
+        StateMachine.CurrentPawnState.FrameUpdate();
+    }
+
+    private void FixedUpdate()
+    {
+        StateMachine.CurrentPawnState.PhysicsUpdate();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -94,6 +115,7 @@ public class Enemy : MonoBehaviour, IDamageable
       
         if(obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentPawnState != ChaseState)
         {
+            player = obj;
             StateMachine.ChangeState(ChaseState);
         }
     }

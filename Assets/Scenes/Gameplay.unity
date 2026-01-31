@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &60632000
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 60632001}
+  m_Layer: 0
+  m_Name: rightLimiter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &60632001
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 60632000}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 2.5, y: 0, z: 0}
+  m_LocalScale: {x: 0.7692308, y: 0.7692308, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 376597639}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &131607614
 GameObject:
   m_ObjectHideFlags: 0
@@ -804,6 +835,9 @@ MonoBehaviour:
   knockbackForce: 0
   hitFlashDuration: 0.05
   moveTest: 0
+  player: {fileID: 0}
+  leftLimit: {x: 0, y: 0, z: 0}
+  rightLimit: {x: 0, y: 0, z: 0}
 --- !u!114 &926020082
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2517,6 +2551,37 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   equippedYinSoul: {fileID: 11400000, guid: 203e41de2d7cfb94d99c788137a90503, type: 2}
   equippedYangSoul: {fileID: 11400000, guid: d8f80408309b572429e62168ffad06a1, type: 2}
+--- !u!1 &1661674293
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1661674294}
+  m_Layer: 0
+  m_Name: leftLimiter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1661674294
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1661674293}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -2.5, y: 0, z: 0}
+  m_LocalScale: {x: 0.7692308, y: 0.7692308, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 376597639}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1814974621
 GameObject:
   m_ObjectHideFlags: 0
@@ -2821,6 +2886,9 @@ MonoBehaviour:
   knockbackForce: 0
   hitFlashDuration: 0.05
   moveTest: 0
+  player: {fileID: 0}
+  leftLimit: {x: 0, y: 0, z: 0}
+  rightLimit: {x: 0, y: 0, z: 0}
 --- !u!1 &2019990450
 GameObject:
   m_ObjectHideFlags: 0
@@ -3362,6 +3430,10 @@ PrefabInstance:
       value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6645487058869081259, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
+      propertyPath: m_FlipX
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6645487058869081259, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: fe9291952158dfa49a1d87f43b3a0f57, type: 3}
@@ -3391,7 +3463,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7469974382412722826, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 5.62
+      value: 3.68
       objectReference: {fileID: 0}
     - target: {fileID: 7469974382412722826, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -3463,6 +3535,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7469974382412722826, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       insertIndex: -1
       addedObject: {fileID: 131607615}
+    - targetCorrespondingSourceObject: {fileID: 7469974382412722826, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1661674294}
+    - targetCorrespondingSourceObject: {fileID: 7469974382412722826, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 60632001}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 2481148211469751879, guid: a5d5a7375f2ed0a4ebaf8d042a40334f, type: 3}
       insertIndex: -1
