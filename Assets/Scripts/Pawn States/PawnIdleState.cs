@@ -53,10 +53,12 @@ public class PawnIdleState : PawnState
             {
                 if (!facingRight)
                 {
+                    pawn.transform.localScale = Vector3.one;
                     pawn.transform.position += Vector3.left * pawnIdleSpeed * Time.deltaTime;
                 }
                 else
                 {
+                    pawn.transform.localScale = new Vector3(-1, 1, 1);
                     pawn.transform.position += Vector3.right * pawnIdleSpeed * Time.deltaTime;
                 }
             }
@@ -70,7 +72,7 @@ public class PawnIdleState : PawnState
                 yield return new WaitForSeconds(1f);
 
                 facingRight = true;
-                pawn.spriteRenderer.flipX = true;
+                pawn.transform.localScale = new Vector3(-1, 1, 1);
                 canMove = true;
             }
 
@@ -83,7 +85,7 @@ public class PawnIdleState : PawnState
                 yield return new WaitForSeconds(1f);
 
                 facingRight = false;
-                pawn.spriteRenderer.flipX = false;
+                pawn.transform.localScale = Vector3.one;
                 canMove = true;
             }
 

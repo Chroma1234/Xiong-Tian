@@ -38,12 +38,12 @@ public class PawnChaseState : PawnState
 
             if (pawn.player.transform.position.x < pawn.transform.position.x)
             {
-                pawn.spriteRenderer.flipX = false;
+                pawn.transform.localScale = Vector3.one;
             }
 
             if (pawn.player.transform.position.x > pawn.transform.position.x)
             {
-                pawn.spriteRenderer.flipX = true;
+                pawn.transform.localScale = new Vector3(-1, 1, 1);
             }
         }
 
@@ -53,6 +53,17 @@ public class PawnChaseState : PawnState
         if (pawn.inAttackRange)
         {
             pawn.StateMachine.ChangeState(pawn.AttackState);
+        }
+
+        //Checking if Pawn hits the range limit
+        if (pawn.transform.position.x < pawn.leftLimit.x + 0.5)
+        {
+            pawn.StateMachine.ChangeState(pawn.IdleState);
+        }
+
+        if (pawn.transform.position.x > pawn.rightLimit.x - 0.5)
+        {
+            pawn.StateMachine.ChangeState(pawn.IdleState);
         }
     }
 

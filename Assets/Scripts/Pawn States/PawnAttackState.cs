@@ -58,8 +58,15 @@ public class PawnAttackState : PawnState
     {
         while (pawn.inAttackRange)
         {
-            yield return new WaitForSeconds(1f);
-            pawn.animator.SetTrigger("attack");
+            yield return new WaitForSeconds(2f);
+            if (Random.value < 0.5f)
+            {
+                pawn.animator.SetTrigger("attack");
+            }
+            else
+            {
+                pawn.animator.SetTrigger("parryableAttack");
+            }
         }
     }
 }

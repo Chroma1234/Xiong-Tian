@@ -111,7 +111,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         StateMachine.CurrentPawnState.FrameUpdate();
 
-        Vector2 direction = spriteRenderer.flipX ? Vector2.right : Vector2.left;
+        Vector2 direction = transform.localScale.x == -1 ? Vector2.right : Vector2.left;
         RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 1f, playerLayer);
         Debug.DrawRay(transform.position, direction * 1f, Color.green);
         if (hit.collider != null)

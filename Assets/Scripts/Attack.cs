@@ -21,7 +21,6 @@ public class Attack : MonoBehaviour
                 if (gameObj.GetComponent<Player>().parry && parryable)
                 {
                     player.StartCoroutine(player.Parry());
-                    Destroy(transform.gameObject); // temp
                     Debug.Log("parried!");
                 }
                 else if(gameObj.GetComponent<Player>().StateMachine.CurrentPlayerState == player.BlockState && blockable)
