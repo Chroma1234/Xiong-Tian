@@ -5,7 +5,7 @@ using UnityEngine;
 public class PawnChaseState : PawnState
 {
     protected Vector2 targetPlayer;
-    protected float pawnSpeed = 1.0f;
+    protected float pawnSpeed = 2.0f;
     public PawnChaseState(Enemy pawn, PawnStateMachine pawnStateMachine) : base(pawn, pawnStateMachine)
     {
     }
@@ -19,12 +19,6 @@ public class PawnChaseState : PawnState
     {
         base.EnterState();
         Debug.Log("i see you");
-
-        if (pawn.player != null)
-        {
-            //Debug.Log(targetPlayer);
-        }
-
     }
 
     public override void ExitState()
@@ -44,19 +38,22 @@ public class PawnChaseState : PawnState
 
             if (pawn.player.transform.position.x < pawn.transform.position.x)
             {
-                pawn.sprite.flipX = false;
+                pawn.spriteRenderer.flipX = false;
             }
 
             if (pawn.player.transform.position.x > pawn.transform.position.x)
             {
-                pawn.sprite.flipX = true;
+                pawn.spriteRenderer.flipX = true;
             }
-
-            //Debug.Log(targetPlayer);
         }
 
         //Updates position to match with the player
         pawn.transform.position = Vector2.MoveTowards(pawn.transform.position, pawn.player.transform.position, pawnSpeed * Time.deltaTime);
+
+        if (pawn.inAttackRange)
+        {
+            pawn.StateMachine.ChangeState(pawn.AttackState);
+        }
     }
 
     public override void PhysicsUpdate()

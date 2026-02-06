@@ -5,8 +5,6 @@ public class PawnState
     protected Enemy pawn;
     protected PawnStateMachine pawnStateMachine;
 
-    
-
     public PawnState(Enemy pawn, PawnStateMachine pawnStateMachine)
     {
         this.pawn = pawn;
