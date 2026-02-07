@@ -16,4 +16,5 @@ public class PawnState
     public virtual void FrameUpdate() { }
     public virtual void PhysicsUpdate() { }
     public virtual void AnimationTriggerEvent() { }
+    public virtual void OnAttackFinished() { }
 }

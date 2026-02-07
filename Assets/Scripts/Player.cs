@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour, IDamageable
 {
@@ -38,6 +39,9 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] public float attackBufferTime = 0.15f;
     [HideInInspector] public float attackBufferCounter;
     [SerializeField] private float iFrameDuration = 1f;
+    [SerializeField] private float attackCameraShakeDuration;
+    [SerializeField] private float attackCameraShakeMagnitude;
+    [SerializeField] private float attackHitstopDuration;
     #endregion
 
     #region Health Mechanics
@@ -98,6 +102,11 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float parryWindow;
     public bool hasParryCharge;
     [SerializeField] private float parryChargeDuration;
+    [SerializeField] private float parryCameraShakeDuration;
+    [SerializeField] private float parryCameraShakeMagnitude;
+    [SerializeField] private float parrySlowdownFactor;
+    [SerializeField] private float parrySlowdownDuration;
+    [SerializeField] private GameObject parrySparksPrefab;
     #endregion
 
     #region Layer Masks
@@ -173,7 +182,7 @@ public class Player : MonoBehaviour, IDamageable
         Enemy.OnEnemyHit += EnemyHitEffects;
         Enemy.OnEnemyKilled += RecoverManaOnKill;
         Enemy.OnEnemyKilled += EnemyHitEffects;
-        Enemy.OnEnemyKilled += SpawnSoulOrb;
+        //Enemy.OnEnemyKilled += SpawnSoulOrb;
     }
 
     private void Update()
@@ -186,10 +195,10 @@ public class Player : MonoBehaviour, IDamageable
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.25f);
             }
 
-            if (Input.GetMouseButtonDown(0))
-            {
-                attackBufferCounter = attackBufferTime;
-            }
+            //if (Input.GetMouseButtonDown(0))
+            //{
+            //    attackBufferCounter = attackBufferTime;
+            //}
 
             if (IsGrounded())
             {
@@ -277,7 +286,7 @@ public class Player : MonoBehaviour, IDamageable
         Enemy.OnEnemyHit -= EnemyHitEffects;
         Enemy.OnEnemyKilled -= RecoverManaOnKill;
         Enemy.OnEnemyKilled -= EnemyHitEffects;
-        Enemy.OnEnemyKilled -= SpawnSoulOrb;
+        //Enemy.OnEnemyKilled -= SpawnSoulOrb;
     }
 
     private void RecoverManaOnHit(Enemy enemy)
@@ -294,12 +303,6 @@ public class Player : MonoBehaviour, IDamageable
         {
             Mana += manaOnKill;
         }
-    }
-
-    private void SpawnSoulOrb(Enemy enemy)
-    {
-        GameObject orb = Instantiate(soulOrbPrefab, enemy.gameObject.transform.position, Quaternion.identity);
-        orb.GetComponent<SoulOrb>().target = transform;
     }
 
     public void HandleMovement()
@@ -368,7 +371,7 @@ public class Player : MonoBehaviour, IDamageable
 
         rb.AddForce(launchDir * knockbackForce, ForceMode2D.Impulse);
 
-        cam.DoShake();
+        cam.DoShake(attackCameraShakeMagnitude, attackCameraShakeDuration);
 
         // Enter hit state (unless dead)
         if (Health > 0)
@@ -402,7 +405,15 @@ public class Player : MonoBehaviour, IDamageable
 
     public IEnumerator Parry()
     {
-        cam.DoShake();
+        cam.DoShake(parryCameraShakeMagnitude, parryCameraShakeDuration);
+        cam.ZoomIn();
+        gameManager.DoSlowDown(parrySlowdownFactor, parrySlowdownDuration);
+
+        GameObject sparks = Instantiate(parrySparksPrefab, blockCollider.transform.position, Quaternion.identity);
+        ParticleSystem ps = sparks.GetComponent<ParticleSystem>();
+        ps.Play();
+        Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
+
         hasParryCharge = true;
         yield return new WaitForSeconds(parryChargeDuration);
         hasParryCharge = false;
@@ -410,8 +421,8 @@ public class Player : MonoBehaviour, IDamageable
 
     public void EnemyHitEffects(Enemy enemy)
     {
-        cam.DoShake();
-        gameManager.DoHitStop();
+        cam.DoShake(attackCameraShakeMagnitude, attackCameraShakeDuration);
+        gameManager.DoHitStop(attackHitstopDuration);
     }
 
     private void Die()

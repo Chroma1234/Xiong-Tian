@@ -13,7 +13,6 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     private float defaultTimeScale = 1f;
     private float hitStopTimeScale = 0f;
-    private float hitStopDuration = 0.05f;
     #endregion
 
     private void Awake()
@@ -30,17 +29,32 @@ public class GameManager : MonoBehaviour
         Application.targetFrameRate = fps;
     }
 
-    public void DoHitStop()
+    public void DoHitStop(float duration)
     {
-        StartCoroutine(HitStopCoroutine());
+        StartCoroutine(HitStop(duration));
     }
 
-    IEnumerator HitStopCoroutine()
+    public void DoSlowDown(float factor, float duration)
+    {
+        StartCoroutine(SlowMotion(factor, duration));
+    }
+
+    IEnumerator HitStop(float duration)
     {
         Time.timeScale = hitStopTimeScale;
-        // Wait for the duration using real-time seconds, unaffected by timeScale
-        yield return new WaitForSecondsRealtime(hitStopDuration);
+        yield return new WaitForSecondsRealtime(duration);
         Time.timeScale = defaultTimeScale;
+    }
+
+    IEnumerator SlowMotion(float factor, float duration)
+    {
+        Time.timeScale = factor;
+        Time.fixedDeltaTime = Time.timeScale * 0.02f;
+
+        yield return new WaitForSecondsRealtime(duration);
+
+        Time.timeScale = 1f;
+        Time.fixedDeltaTime = 0.02f;
     }
 
 }

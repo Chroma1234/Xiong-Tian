@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Threading;
-using UnityEditor.TerrainTools;
 using UnityEngine;
 
 public class PawnIdleState : PawnState
@@ -9,7 +8,8 @@ public class PawnIdleState : PawnState
     protected float pawnIdleSpeed = 1f;
 
     protected bool facingRight = false;
-    protected bool canMove = true;
+
+    Coroutine wanderRoutine;
     
     public PawnIdleState(Enemy pawn, PawnStateMachine pawnStateMachine) : base(pawn, pawnStateMachine)
     {
@@ -26,12 +26,15 @@ public class PawnIdleState : PawnState
         Debug.Log("im idle");
 
         startPos = pawn.transform.position;
-        pawn.StartCoroutine(Wander());
+        wanderRoutine = pawn.StartCoroutine(Wander());
     }  
 
     public override void ExitState()
     {
-        pawn.StopAllCoroutines();
+        if (wanderRoutine != null)
+        {
+            pawn.StopCoroutine(wanderRoutine);
+        }
         base.ExitState();
     }
 
@@ -49,7 +52,7 @@ public class PawnIdleState : PawnState
     {
         while (true)
         {
-            if (canMove)
+            if (pawn.canMove)
             {
                 if (!facingRight)
                 {
@@ -66,27 +69,25 @@ public class PawnIdleState : PawnState
             // Left limit
             if (pawn.transform.position.x <= pawn.leftLimit.x)
             {
-                canMove = false;
-                Debug.Log("Left Limit reached: " + pawn.transform.position.x);
+                pawn.canMove = false;
 
                 yield return new WaitForSeconds(1f);
 
                 facingRight = true;
                 pawn.transform.localScale = new Vector3(-1, 1, 1);
-                canMove = true;
+                pawn.canMove = true;
             }
 
             // Right limit
             if (pawn.transform.position.x >= pawn.rightLimit.x)
             {
-                canMove = false;
-                Debug.Log("Right Limit reached: " + pawn.transform.position.x);
+                pawn.canMove = false;
 
                 yield return new WaitForSeconds(1f);
 
                 facingRight = false;
                 pawn.transform.localScale = Vector3.one;
-                canMove = true;
+                pawn.canMove = true;
             }
 
             yield return null;

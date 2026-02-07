@@ -47,13 +47,16 @@ public class PawnChaseState : PawnState
             }
         }
 
-        //Updates position to match with the player
-        pawn.transform.position = Vector2.MoveTowards(pawn.transform.position, pawn.player.transform.position, pawnSpeed * Time.deltaTime);
-
         if (pawn.inAttackRange)
         {
             pawn.StateMachine.ChangeState(pawn.AttackState);
         }
+
+        else if (pawn.canMove)
+        {
+            //Updates position to match with the player
+            pawn.transform.position = Vector2.MoveTowards(pawn.transform.position, new Vector3(pawn.player.transform.position.x, pawn.transform.position.y, pawn.transform.position.z), pawnSpeed * Time.deltaTime);
+        }   
 
         //Checking if Pawn hits the range limit
         if (pawn.transform.position.x < pawn.leftLimit.x + 0.5)

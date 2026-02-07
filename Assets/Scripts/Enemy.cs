@@ -17,6 +17,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
     [SerializeField] public float knockbackForce = 8f;
 
+    [SerializeField] public float stunDuration = 2f;
+    [SerializeField] private GameObject stunnedStarsPrefab;
+
     [SerializeField] private float hitFlashDuration;
 
     [HideInInspector] public bool inAttackRange = false;
@@ -30,12 +33,14 @@ public class Enemy : MonoBehaviour, IDamageable
     public GameObject player;
     public Vector3 leftLimit;
     public Vector3 rightLimit;
+    public bool canMove = true;
 
     #region States
     public PawnStateMachine StateMachine { get; set; }
     public PawnIdleState IdleState { get; set; }
     public PawnChaseState ChaseState { get; set; }
     public PawnAttackState AttackState { get; set; }
+    public PawnStunnedState StunnedState { get; set; }
     public PawnDeadState DeadState { get; set; }
     #endregion
 
@@ -67,7 +72,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
         OnEnemyHit?.Invoke(this);
 
-        // Enter hit state (unless dead)
         if (Health > 0)
         {
             StartCoroutine(FlashSprite());
@@ -82,6 +86,7 @@ public class Enemy : MonoBehaviour, IDamageable
         IdleState = new PawnIdleState(this, StateMachine);
         ChaseState = new PawnChaseState(this, StateMachine);
         AttackState = new PawnAttackState(this, StateMachine);
+        StunnedState = new PawnStunnedState(this, StateMachine, stunDuration); 
         DeadState = new PawnDeadState(this, StateMachine);
 
         //raptor-x-z
@@ -139,11 +144,16 @@ public class Enemy : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
       
-        if(obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentPawnState != ChaseState && StateMachine.CurrentPawnState != DeadState && StateMachine.CurrentPawnState != AttackState)
+        if(obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentPawnState != ChaseState && StateMachine.CurrentPawnState != DeadState && StateMachine.CurrentPawnState != AttackState && StateMachine.CurrentPawnState != StunnedState)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
         }
+    }
+
+    public void OnAttackFinished()
+    {
+        StateMachine.CurrentPawnState?.OnAttackFinished();
     }
 
     private IEnumerator FlashSprite()
@@ -153,6 +163,20 @@ public class Enemy : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(hitFlashDuration);
         spriteRenderer.color = originalColor;
     } 
+
+    public void Stunned()
+    {
+        GameObject stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+        ParticleSystem ps = stars.GetComponent<ParticleSystem>();
+        ps.Play();
+        Destroy(stars, ps.main.duration + ps.main.startLifetime.constantMax);
+    }
+
+    public void ParryKnockback(Vector2 hitDirection)
+    {
+        Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
+        StartCoroutine(Knockback(launchDir));
+    }
 
     private IEnumerator Knockback(Vector2 direction)
     {
@@ -177,14 +201,14 @@ public class Enemy : MonoBehaviour, IDamageable
         lastPosition = currentPosition;
     }
 
-    public void Attack()
-    {
-
-    }
-
     public void Die()
     {
-        Physics2D.IgnoreLayerCollision(playerLayer, enemyLayer, true);
+        Collider2D[] cols = GetComponentsInChildren<Collider2D>();
+        foreach (var col in cols)
+        {
+            if(col != boxCollider)
+            col.enabled = false;
+        }
 
         StopAllCoroutines();
         IsAlive = false;

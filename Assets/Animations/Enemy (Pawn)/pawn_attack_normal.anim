@@ -31,8 +31,17 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
         time: 0.2
-        value: 1
+        value: 0
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
@@ -41,6 +50,24 @@ AnimationClip:
         outWeight: 0
       - serializedVersion: 3
         time: 0.3
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.6
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -62,10 +89,16 @@ AnimationClip:
     - time: 0
       value: {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
     - time: 0.1
-      value: {fileID: 21300000, guid: 80ea8fd22ffb166429398feffa7a3433, type: 3}
+      value: {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
     - time: 0.2
-      value: {fileID: 21300000, guid: 5f0572a4440824240b43a429e9239989, type: 3}
+      value: {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
     - time: 0.3
+      value: {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
+    - time: 0.4
+      value: {fileID: 21300000, guid: 80ea8fd22ffb166429398feffa7a3433, type: 3}
+    - time: 0.5
+      value: {fileID: 21300000, guid: 5f0572a4440824240b43a429e9239989, type: 3}
+    - time: 0.6
       value: {fileID: 21300000, guid: 9c59c0978709e0c48aa8b4bbce25d186, type: 3}
     attribute: m_Sprite
     path: 
@@ -99,6 +132,9 @@ AnimationClip:
       isSerializeReferenceCurve: 0
     pptrCurveMapping:
     - {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
+    - {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
+    - {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
+    - {fileID: 21300000, guid: e86b69149631a1b49ac536d1b302eda1, type: 3}
     - {fileID: 21300000, guid: 80ea8fd22ffb166429398feffa7a3433, type: 3}
     - {fileID: 21300000, guid: 5f0572a4440824240b43a429e9239989, type: 3}
     - {fileID: 21300000, guid: 9c59c0978709e0c48aa8b4bbce25d186, type: 3}
@@ -107,7 +143,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 0.4
+    m_StopTime: 0.70000005
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -137,8 +173,17 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
+        time: 0.1
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
         time: 0.2
-        value: 1
+        value: 0
         inSlope: Infinity
         outSlope: Infinity
         tangentMode: 103
@@ -147,6 +192,24 @@ AnimationClip:
         outWeight: 0
       - serializedVersion: 3
         time: 0.3
+        value: 0
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.5
+        value: 1
+        inSlope: Infinity
+        outSlope: Infinity
+        tangentMode: 103
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 0.6
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -165,4 +228,11 @@ AnimationClip:
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0
   m_HasMotionFloatCurves: 0
-  m_Events: []
+  m_Events:
+  - time: 0.6
+    functionName: OnAttackFinished
+    data: 
+    objectReferenceParameter: {fileID: 0}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0

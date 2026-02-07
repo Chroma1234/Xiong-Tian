@@ -44,12 +44,12 @@ public class PlayerAttackState : PlayerState
     {
         base.FrameUpdate();
 
-        if(Input.GetMouseButtonDown(0) && player.IsGrounded())
-        {
-            player.StopCoroutine(attackDelay);
-            player.animator.SetTrigger("attack");
-            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
-        }
+        //if(Input.GetMouseButtonDown(0) && player.IsGrounded())
+        //{
+        //    player.StopCoroutine(attackDelay);
+        //    player.animator.SetTrigger("attack");
+        //    attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+        //}
     }
 
     public override void PhysicsUpdate()

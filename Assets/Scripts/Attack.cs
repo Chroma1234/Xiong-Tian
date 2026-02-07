@@ -22,6 +22,14 @@ public class Attack : MonoBehaviour
                 {
                     player.StartCoroutine(player.Parry());
                     Debug.Log("parried!");
+
+                    Enemy enemy = GetComponentInParent<Enemy>();
+                    if (enemy != null)
+                    {
+                        // 2 seconds stun
+                        enemy.ParryKnockback(hitDirection);
+                        enemy.StateMachine.ChangeState(enemy.StunnedState);
+                    }
                 }
                 else if(gameObj.GetComponent<Player>().StateMachine.CurrentPlayerState == player.BlockState && blockable)
                 {

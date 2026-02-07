@@ -4,69 +4,65 @@ using UnityEngine;
 
 public class PawnAttackState : PawnState
 {
-    public PawnAttackState(Enemy pawn, PawnStateMachine pawnStateMachine) : base(pawn, pawnStateMachine)
-    {
-    }
+    private bool attackFinished;
+    private float attackCooldown = 1.0f;    // delay between attacks
 
-    public override void AnimationTriggerEvent()
-    {
-        base.AnimationTriggerEvent();
-    }
+    public PawnAttackState(Enemy pawn, PawnStateMachine sm) : base(pawn, sm) { }
 
     public override void EnterState()
     {
-        base.EnterState();
-        pawn.StartCoroutine(Attack());
-        pawn.StartCoroutine(WaitForAttackToFinish());
+        pawn.canMove = false;
+        attackFinished = false;
+
+        TriggerAttack();
     }
 
     public override void ExitState()
     {
-        base.ExitState();
-
-        pawn.StopAllCoroutines();
+        pawn.canMove = true;
     }
 
-    public override void FrameUpdate()
+    private void TriggerAttack()
     {
-        base.FrameUpdate();
+        attackFinished = false;
+
+        pawn.animator.ResetTrigger("attack");
+        pawn.animator.ResetTrigger("parryableAttack");
+
+        //if (Random.value < 0.5f)
+            //pawn.animator.SetTrigger("attack");
+        //else
+            pawn.animator.SetTrigger("parryableAttack");
+    }
+
+    public override void OnAttackFinished()
+    {
+        attackFinished = true;
 
         if (!pawn.inAttackRange)
         {
-            pawn.StateMachine.ChangeState(pawn.ChaseState);
+            pawn.StartCoroutine(Delay(0.5f));
+            return;
         }
+
+        pawn.StartCoroutine(AttackDelay(attackCooldown));
     }
 
-    public override void PhysicsUpdate()
+    private IEnumerator Delay(float delay)
     {
-        base.PhysicsUpdate();
+        yield return new WaitForSeconds(delay);
+
+        pawn.StateMachine.ChangeState(pawn.ChaseState);
     }
 
-    private IEnumerator WaitForAttackToFinish()
+    private IEnumerator AttackDelay(float delay)
     {
-        yield return new WaitUntil(() =>
-            pawn.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
-        );
+        yield return new WaitForSeconds(delay);
 
-        yield return new WaitUntil(() =>
-            !pawn.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
-        );
-
-    }
-
-    private IEnumerator Attack()
-    {
-        while (pawn.inAttackRange)
-        {
-            yield return new WaitForSeconds(2f);
-            if (Random.value < 0.5f)
-            {
-                pawn.animator.SetTrigger("attack");
-            }
-            else
-            {
-                pawn.animator.SetTrigger("parryableAttack");
-            }
-        }
+        // Only trigger next attack if player still in range
+        if (pawn.inAttackRange)
+            TriggerAttack();
+        else
+            pawn.StartCoroutine(Delay(0.5f));
     }
 }
