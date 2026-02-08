@@ -18,22 +18,38 @@ public class Attack : MonoBehaviour
             if (gameObj.GetComponent<Player>() != null)
             {
                 Player player = gameObj.GetComponent<Player>();
-                if (gameObj.GetComponent<Player>().parry && parryable)
+                if (player.parry && parryable)
                 {
-                    player.StartCoroutine(player.Parry());
-                    Debug.Log("parried!");
-
                     Enemy enemy = GetComponentInParent<Enemy>();
                     if (enemy != null)
                     {
-                        // 2 seconds stun
-                        enemy.ParryKnockback(hitDirection);
-                        enemy.StateMachine.ChangeState(enemy.StunnedState);
+                        Vector2 directionToEnemy = (enemy.transform.position - player.transform.position).normalized;
+                        Vector2 playerForward;
+                        if(player.transform.localScale.x > 0)
+                        {
+                            playerForward = Vector2.right;
+                        }
+                        else
+                        {
+                            playerForward = Vector2.left;
+                        }
+
+                        float dotProduct = Vector2.Dot(playerForward, directionToEnemy);
+
+                        if(dotProduct >= 0.7f)
+                        {
+                            player.StartCoroutine(player.Parry());
+                            player.PlaySound(player.parryClip);
+                            player.PlaySound(player.impactClip);
+
+                            enemy.ParryKnockback(hitDirection);
+                            enemy.StateMachine.ChangeState(enemy.StunnedState);
+                        }
+                        else
+                        {
+                            hit.TakeHit(attackDamage, hitDirection, knockbackForce);
+                        }
                     }
-                }
-                else if(gameObj.GetComponent<Player>().StateMachine.CurrentPlayerState == player.BlockState && blockable)
-                {
-                    Debug.Log("blocked!");
                 }
                 else
                 {

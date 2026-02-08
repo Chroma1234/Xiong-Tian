@@ -18,6 +18,7 @@ public class PawnChaseState : PawnState
     public override void EnterState()
     {
         base.EnterState();
+
         Debug.Log("i see you");
     }
 

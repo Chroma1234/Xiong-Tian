@@ -21,6 +21,8 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
 
+        player.PlaySound(player.dashClip);
+
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");
 

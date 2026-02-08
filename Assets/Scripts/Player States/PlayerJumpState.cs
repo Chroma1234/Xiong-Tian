@@ -15,6 +15,8 @@ public class PlayerJumpState : PlayerState
     {
         base.EnterState();
         Jump();
+
+        player.PlaySound(player.jumpClip);
     }
 
     public override void ExitState()
@@ -32,10 +34,10 @@ public class PlayerJumpState : PlayerState
             player.dashCount--;
         }
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            TryDoubleJump();
-        }
+        //if (Input.GetKeyDown(KeyCode.Space))
+        //{
+        //    TryDoubleJump();
+        //}
     }
 
     public override void PhysicsUpdate()
@@ -43,18 +45,12 @@ public class PlayerJumpState : PlayerState
         base.PhysicsUpdate();
 
         float horizontalInput = Input.GetAxisRaw("Horizontal");
-        player.rb.linearVelocity = new Vector2(
-            horizontalInput * player.moveSpeed,
-            player.rb.linearVelocity.y
-        );
+        player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
 
         if (player.rb.linearVelocity.y <= 0f)
         {
             player.StateMachine.ChangeState(player.FallState);
         }
-
-        //float horizontalInput = Input.GetAxisRaw("Horizontal");
-        //player.rb.linearVelocity = new Vector2(horizontalInput * player.moveSpeed, player.rb.linearVelocity.y);
     }
 
     private void Jump()

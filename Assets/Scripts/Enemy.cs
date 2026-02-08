@@ -8,6 +8,10 @@ public class Enemy : MonoBehaviour, IDamageable
     public static event Action<Enemy> OnEnemyHit;
     public static event Action<Enemy> OnEnemyKilled;
 
+    private Vector3 spawnPosition;
+    private Quaternion spawnRotation;
+    private GameManager manager;
+
     [HideInInspector] public SpriteRenderer spriteRenderer;
     public Animator animator;
     BoxCollider2D boxCollider;
@@ -27,13 +31,22 @@ public class Enemy : MonoBehaviour, IDamageable
     Vector2 lastPosition;
 
     [SerializeField] private LayerMask playerLayer;
-    private int enemyLayer;
+    private GameObject stars;
+    public ParticleSystem eyeFlash;
+
+    private AudioSource audioSource;
+    [SerializeField] private AudioClip hit;
 
     //raptor-x-z
     public GameObject player;
     public Vector3 leftLimit;
     public Vector3 rightLimit;
     public bool canMove = true;
+
+    public Vector2 FacingDirection
+    {
+        get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+    }
 
     #region States
     public PawnStateMachine StateMachine { get; set; }
@@ -67,6 +80,8 @@ public class Enemy : MonoBehaviour, IDamageable
 
         Health -= damage;
 
+        audioSource.PlayOneShot(hit);
+
         Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
         StartCoroutine(Knockback(launchDir));
 
@@ -96,8 +111,13 @@ public class Enemy : MonoBehaviour, IDamageable
 
         animator = GetComponent<Animator>();
         boxCollider = GetComponent<BoxCollider2D>();
+        audioSource = GetComponent<AudioSource>();
 
-        enemyLayer = LayerMask.NameToLayer("EnemyHitbox");
+        spawnPosition = transform.position;
+        spawnRotation = transform.rotation;
+
+        manager = FindFirstObjectByType<GameManager>();
+        manager.RegisterEnemy(this);
     }
 
     private void Start()
@@ -123,7 +143,6 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             if (hit.collider.CompareTag("Player") && StateMachine.CurrentPawnState == ChaseState && StateMachine.CurrentPawnState != DeadState)
             {
-                Debug.Log("attack!");
                 inAttackRange = true;
             }
         }
@@ -151,6 +170,17 @@ public class Enemy : MonoBehaviour, IDamageable
         }
     }
 
+    private void OnTriggerStay2D(Collider2D collision)
+    {
+        GameObject obj = collision.gameObject;
+
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentPawnState != ChaseState && StateMachine.CurrentPawnState != DeadState && StateMachine.CurrentPawnState != AttackState && StateMachine.CurrentPawnState != StunnedState)
+        {
+            player = obj;
+            StateMachine.ChangeState(ChaseState);
+        }
+    }
+
     public void OnAttackFinished()
     {
         StateMachine.CurrentPawnState?.OnAttackFinished();
@@ -162,11 +192,19 @@ public class Enemy : MonoBehaviour, IDamageable
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(hitFlashDuration);
         spriteRenderer.color = originalColor;
-    } 
+    }
+
+    public void EyeFlash()
+    {
+        if (eyeFlash != null)
+        {
+            eyeFlash.Play();
+        }
+    }
 
     public void Stunned()
     {
-        GameObject stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+        stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
         ParticleSystem ps = stars.GetComponent<ParticleSystem>();
         ps.Play();
         Destroy(stars, ps.main.duration + ps.main.startLifetime.constantMax);
@@ -210,19 +248,48 @@ public class Enemy : MonoBehaviour, IDamageable
             col.enabled = false;
         }
 
+        if(stars != null)
+        {
+            Destroy(stars);
+        }
+
         StopAllCoroutines();
         IsAlive = false;
         OnEnemyKilled?.Invoke(this);
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        StartCoroutine(DestroyAfterTime(1f));
+        StartCoroutine(DisableAfterTime(1f));
     }
 
-    public IEnumerator DestroyAfterTime(float time)
+    public void ResetEnemy()
+    {
+        StopAllCoroutines();
+        transform.position = spawnPosition;
+        transform.rotation = spawnRotation;
+        Collider2D[] cols = GetComponentsInChildren<Collider2D>();
+        foreach (var col in cols)
+        {
+            if (col != boxCollider && col.name != "NormalAtkHitbox" && col.name != "ParryAtkHitbox")
+                col.enabled = true;
+        }
+        IsAlive = true;
+        StateMachine.ChangeState(IdleState);
+        animator.Rebind();
+        animator.Update(0f);
+        gameObject.SetActive(true);
+    }
+
+
+    public IEnumerator DisableAfterTime(float time)
     {
         yield return new WaitForSeconds(time);
-        Destroy(gameObject);
+        gameObject.SetActive(false);
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
     }
 }
 

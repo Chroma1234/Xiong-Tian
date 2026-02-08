@@ -4,9 +4,13 @@ using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour, IDamageable
 {
+    public event System.Action<int> OnHealthChanged;
+    public event System.Action<int> OnManaChanged;
+
     #region Component References
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Animator animator;
+    [HideInInspector] public AudioSource audioSource;
     [HideInInspector] public PlayerSoulController soulController;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D playerCollider;
@@ -55,6 +59,7 @@ public class Player : MonoBehaviour, IDamageable
         set
         {
             health = Mathf.Clamp(value, 0, maxHealth);
+            OnHealthChanged?.Invoke(health);
 
             if (health <= 0 && IsAlive)
             {
@@ -78,6 +83,7 @@ public class Player : MonoBehaviour, IDamageable
         set
         {
             mana = Mathf.Clamp(value, 0, maxMana);
+            OnManaChanged?.Invoke(mana);
         }
     }
 
@@ -121,6 +127,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] public float afterimageSpawnRate = 0.05f;
     [HideInInspector] public float afterimageTimer = 0f;
     [SerializeField] private float flickerInterval = 0.1f;
+    [SerializeField] private GameObject healingFxPrefab;
     #endregion
 
     #region States
@@ -137,8 +144,25 @@ public class Player : MonoBehaviour, IDamageable
     public PlayerDeadState DeadState { get; set; }
     #endregion
 
+    #region SFX
+    [Header("SFX")]
+    public AudioClip jumpClip;
+    public AudioClip dashClip;
+    public AudioClip attackClip;
+    public AudioClip parryClip;
+    public AudioClip impactClip;
+    public AudioClip hitClip;
+    public AudioClip deadClip;
+    public AudioClip saveClip;
+    #endregion
+
     private int collisionDisableCount = 0;
     [SerializeField] private GameObject soulOrbPrefab;
+
+    public Vector2 FacingDirection
+    {
+        get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
+    }
 
     private void Awake()
     {
@@ -149,6 +173,7 @@ public class Player : MonoBehaviour, IDamageable
         playerCollider = GetComponent<BoxCollider2D>();
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
+        audioSource = GetComponent<AudioSource>();
         soulController = GetComponent<PlayerSoulController>();
 
         StateMachine = new PlayerStateMachine();
@@ -182,7 +207,6 @@ public class Player : MonoBehaviour, IDamageable
         Enemy.OnEnemyHit += EnemyHitEffects;
         Enemy.OnEnemyKilled += RecoverManaOnKill;
         Enemy.OnEnemyKilled += EnemyHitEffects;
-        //Enemy.OnEnemyKilled += SpawnSoulOrb;
     }
 
     private void Update()
@@ -194,11 +218,6 @@ public class Player : MonoBehaviour, IDamageable
             {
                 rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.25f);
             }
-
-            //if (Input.GetMouseButtonDown(0))
-            //{
-            //    attackBufferCounter = attackBufferTime;
-            //}
 
             if (IsGrounded())
             {
@@ -286,7 +305,6 @@ public class Player : MonoBehaviour, IDamageable
         Enemy.OnEnemyHit -= EnemyHitEffects;
         Enemy.OnEnemyKilled -= RecoverManaOnKill;
         Enemy.OnEnemyKilled -= EnemyHitEffects;
-        //Enemy.OnEnemyKilled -= SpawnSoulOrb;
     }
 
     private void RecoverManaOnHit(Enemy enemy)
@@ -376,6 +394,7 @@ public class Player : MonoBehaviour, IDamageable
         // Enter hit state (unless dead)
         if (Health > 0)
         {
+            audioSource.PlayOneShot(hitClip);
             StateMachine.ChangeState(HitState);
         }
     }
@@ -425,6 +444,14 @@ public class Player : MonoBehaviour, IDamageable
         gameManager.DoHitStop(attackHitstopDuration);
     }
 
+    public void SaveEffects()
+    {
+        GameObject heal = Instantiate(healingFxPrefab, transform.position, Quaternion.Euler(-90, 0, 0), transform);
+        ParticleSystem ps = heal.GetComponent<ParticleSystem>();
+        ps.Play();
+        Destroy(heal, ps.main.duration + ps.main.startLifetime.constantMax);
+    }
+
     private void Die()
     {
         IsAlive = false;
@@ -436,7 +463,28 @@ public class Player : MonoBehaviour, IDamageable
         DisableAttackCollider();
         DisableBlockCollider();
 
+        audioSource.PlayOneShot(deadClip);
+
         StateMachine.ChangeState(DeadState);
+        gameManager.RespawnPlayer();
+    }
+
+    public void Respawn(Vector3 spawnPoint)
+    {
+        StopAllCoroutines();
+
+        IsAlive = true;
+        Health = maxHealth;
+        Mana = maxMana;
+
+        rb.linearVelocity = Vector2.zero;
+        transform.position = spawnPoint;
+
+        EnablePlayerCollider();
+        EnableBlockCollider();
+        DisableAttackCollider();
+
+        StateMachine.ChangeState(IdleState);
     }
 
     public void EnablePlayerCollider()
@@ -500,5 +548,10 @@ public class Player : MonoBehaviour, IDamageable
             afterimage.SetSprite(sr.sprite, transform.localScale, Color.white);
             afterimageTimer = afterimageSpawnRate;
         }
+    }
+
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
     }
 }

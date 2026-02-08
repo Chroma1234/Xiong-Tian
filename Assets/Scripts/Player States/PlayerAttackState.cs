@@ -19,6 +19,9 @@ public class PlayerAttackState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
+
+        player.PlaySound(player.attackClip);
+
         player.animator.SetTrigger("attack");
 
         float moveX = Input.GetAxisRaw("Horizontal");

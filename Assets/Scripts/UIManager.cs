@@ -1,12 +1,12 @@
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
 {
     #region Component References
     [Header("Component References")]
     [SerializeField] Player player;
-    IDamageable damageable;
     #endregion
 
     #region Text UI
@@ -15,18 +15,23 @@ public class UIManager : MonoBehaviour
     [SerializeField] TextMeshProUGUI manaText;
     [SerializeField] TextMeshProUGUI staminaText;
     [SerializeField] TextMeshProUGUI parryChargeText;
+    [SerializeField] Image healthBar;
+    [SerializeField] Image manaBar;
     #endregion
 
     private void Awake()
     {
         player = GetComponent<Player>();
-        damageable = GetComponent<IDamageable>();
+    }
+
+    private void Start()
+    {
+        player.OnHealthChanged += health => healthBar.fillAmount = health / 100f;
+        player.OnManaChanged += mana => manaBar.fillAmount = mana / 100f;
     }
 
     private void Update()
     {
-        healthText.text = "Health: " + damageable.Health.ToString();
-        manaText.text = "Mana: " + player.Mana.ToString();
         staminaText.text = "Dashes: " + player.dashCount.ToString();
         parryChargeText.text = "Parry Charge: " + player.hasParryCharge.ToString();
     }

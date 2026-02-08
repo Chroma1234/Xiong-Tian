@@ -25,8 +25,11 @@ public class PawnIdleState : PawnState
         base.EnterState();
         Debug.Log("im idle");
 
-        startPos = pawn.transform.position;
-        wanderRoutine = pawn.StartCoroutine(Wander());
+        if (pawn.isActiveAndEnabled)
+        {
+            startPos = pawn.transform.position;
+            wanderRoutine = pawn.StartCoroutine(Wander());
+        }
     }  
 
     public override void ExitState()
@@ -41,6 +44,11 @@ public class PawnIdleState : PawnState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+
+        if(wanderRoutine == null)
+        {
+            wanderRoutine = pawn.StartCoroutine(Wander());
+        }
     }
 
     public override void PhysicsUpdate()

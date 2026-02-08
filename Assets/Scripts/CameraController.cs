@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+    private Camera cam;
+
     [SerializeField] private Transform player;
     [SerializeField] private float forwardOffset;
     [SerializeField] private float heightOffset;
@@ -18,13 +20,17 @@ public class CameraController : MonoBehaviour
     [SerializeField] private BoxCollider2D bounds;
     [SerializeField] private float transitionSpeed = 3f;
 
-    private void FixedUpdate()
+    private void Awake()
+    {
+        cam = Camera.main;
+    }
+    private void LateUpdate()
     {
         targetX = Mathf.Lerp(targetX, (forwardOffset * player.localScale.x), Time.deltaTime * xFollowSpeed);
         targetY = Mathf.Lerp(transform.position.y, player.position.y + heightOffset, Time.deltaTime * yFollowSpeed);
 
-        float camHalfHeight = Camera.main.orthographicSize;
-        float camHalfWidth = camHalfHeight * Camera.main.aspect;
+        float camHalfHeight = cam.orthographicSize;
+        float camHalfWidth = camHalfHeight * cam.aspect;
 
         float minX = bounds.bounds.min.x + camHalfWidth;
         float maxX = bounds.bounds.max.x - camHalfWidth;
@@ -49,7 +55,6 @@ public class CameraController : MonoBehaviour
 
         while (elapsed < duration)
         {
-            // Use Perlin noise for smoother, less predictable shake
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
 
@@ -57,10 +62,10 @@ public class CameraController : MonoBehaviour
 
             elapsed += Time.deltaTime;
 
-            yield return null; // Wait until the next frame
+            yield return null;
         }
 
-        transform.localPosition = originalPos; // Return to original position
+        transform.localPosition = originalPos;
     }
 
     public void ZoomIn()
@@ -71,31 +76,28 @@ public class CameraController : MonoBehaviour
 
     private IEnumerator ZoomCoroutine()
     {
-        float originalSize = Camera.main.orthographicSize;
+        float originalSize = cam.orthographicSize;
         float targetSize = originalSize / zoomAmount;
         float elapsed = 0f;
 
         while (elapsed < zoomDuration)
         {
             elapsed += Time.deltaTime;
-            Camera.main.orthographicSize = Mathf.Lerp(originalSize, targetSize, elapsed / zoomDuration);
+            cam.orthographicSize = Mathf.Lerp(originalSize, targetSize, elapsed / zoomDuration);
             yield return null;
         }
 
-        Camera.main.orthographicSize = targetSize;
-
-        // Hold zoom briefly
-        //yield return new WaitForSeconds(0.2f);
+        cam.orthographicSize = targetSize;
 
         elapsed = 0f;
         while (elapsed < zoomDuration)
         {
             elapsed += Time.deltaTime;
-            Camera.main.orthographicSize = Mathf.Lerp(targetSize, originalSize, elapsed / zoomDuration);
+            cam.orthographicSize = Mathf.Lerp(targetSize, originalSize, elapsed / zoomDuration);
             yield return null;
         }
 
-        Camera.main.orthographicSize = originalSize;
+        cam.orthographicSize = originalSize;
     }
 
     public void MoveToRoom(BoxCollider2D room)
