@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class PawnAttackState : PawnState
 {
-    private bool attackFinished;
     private float attackCooldown = 1.0f;    // delay between attacks
 
     public PawnAttackState(Enemy pawn, PawnStateMachine sm) : base(pawn, sm) { }
@@ -12,7 +11,6 @@ public class PawnAttackState : PawnState
     public override void EnterState()
     {
         pawn.canMove = false;
-        attackFinished = false;
 
         TriggerAttack();
     }
@@ -24,8 +22,6 @@ public class PawnAttackState : PawnState
 
     private void TriggerAttack()
     {
-        attackFinished = false;
-
         pawn.animator.ResetTrigger("attack");
         pawn.animator.ResetTrigger("parryableAttack");
 
@@ -37,8 +33,6 @@ public class PawnAttackState : PawnState
 
     public override void OnAttackFinished()
     {
-        attackFinished = true;
-
         if (!pawn.inAttackRange)
         {
             pawn.StartCoroutine(Delay(0.5f));

@@ -11,6 +11,8 @@ public class SavePoint : MonoBehaviour
 
     [SerializeField] private GameObject saveText;
 
+    [SerializeField] private ParticleSystem flameParticles;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent(out Player p))
@@ -41,7 +43,18 @@ public class SavePoint : MonoBehaviour
             lastSaveTime = Time.time;
 
             GameManager gm = FindFirstObjectByType<GameManager>();
+
+            if (gm.currentSavePoint != null && gm.currentSavePoint != this)
+            {
+                gm.currentSavePoint.Deactivate();
+            }
+
+            // Set & enable this save point
+            gm.currentSavePoint = this;
             gm.currentSpawnPoint = transform.position;
+            Activate();
+
+
             gm.DoFlash();
 
             player.Health = 100;
@@ -50,5 +63,17 @@ public class SavePoint : MonoBehaviour
             player.SaveEffects();
             player.PlaySound(player.saveClip);
         }
+    }
+
+    public void Activate()
+    {
+        if (!flameParticles.isPlaying)
+            flameParticles.Play();
+    }
+
+    public void Deactivate()
+    {
+        if (flameParticles.isPlaying)
+            flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
     }
 }

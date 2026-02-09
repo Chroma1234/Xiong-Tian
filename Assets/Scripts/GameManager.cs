@@ -23,6 +23,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private float respawnDelay = 0.5f;
     [SerializeField] private float flashDuration;
 
+    public SavePoint currentSavePoint;
     public Vector3 currentSpawnPoint;
 
     [SerializeField] private AudioSource bgm;

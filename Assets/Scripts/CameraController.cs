@@ -18,7 +18,6 @@ public class CameraController : MonoBehaviour
     private float targetY;
 
     [SerializeField] private BoxCollider2D bounds;
-    [SerializeField] private float transitionSpeed = 3f;
 
     private void Awake()
     {
