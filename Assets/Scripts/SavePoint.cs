@@ -12,6 +12,7 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private GameObject saveText;
 
     [SerializeField] private ParticleSystem flameParticles;
+    [SerializeField] private GameObject saveLighting;
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -69,11 +70,13 @@ public class SavePoint : MonoBehaviour
     {
         if (!flameParticles.isPlaying)
             flameParticles.Play();
+        saveLighting.SetActive(true);
     }
 
     public void Deactivate()
     {
         if (flameParticles.isPlaying)
             flameParticles.Stop(true, ParticleSystemStopBehavior.StopEmitting);
+        saveLighting.SetActive(false);
     }
 }

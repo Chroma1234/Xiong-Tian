@@ -38,7 +38,7 @@ public class Attack : MonoBehaviour
 
                         if(dotProduct >= 0.7f)
                         {
-                            player.StartCoroutine(player.Parry());
+                            player.Parry();
                             player.PlaySound(player.parryClip);
                             player.PlaySound(player.impactClip);
 

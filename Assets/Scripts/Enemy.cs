@@ -204,7 +204,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void Stunned()
     {
-        stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+        stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
         ParticleSystem ps = stars.GetComponent<ParticleSystem>();
         ps.Play();
         Destroy(stars, ps.main.duration + ps.main.startLifetime.constantMax);

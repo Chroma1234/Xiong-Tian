@@ -108,11 +108,13 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float parryWindow;
     public bool hasParryCharge;
     [SerializeField] private float parryChargeDuration;
+    private float parryChargeEndTime;
     [SerializeField] private float parryCameraShakeDuration;
     [SerializeField] private float parryCameraShakeMagnitude;
     [SerializeField] private float parrySlowdownFactor;
     [SerializeField] private float parrySlowdownDuration;
     [SerializeField] private GameObject parrySparksPrefab;
+    [SerializeField] private GameObject parryChargeFX;
     #endregion
 
     #region Layer Masks
@@ -285,6 +287,13 @@ public class Player : MonoBehaviour, IDamageable
             }
         }
 
+        if((hasParryCharge && Time.time >= parryChargeEndTime) || !hasParryCharge)
+        {
+            hasParryCharge = false;
+            parryChargeFX.SetActive(false);
+            parryChargeFX.GetComponent<ParticleSystem>().Stop();
+        }
+
         HandleAnimators();
     }
 
@@ -422,7 +431,7 @@ public class Player : MonoBehaviour, IDamageable
         parry = false;
     }
 
-    public IEnumerator Parry()
+    public void Parry()
     {
         cam.DoShake(parryCameraShakeMagnitude, parryCameraShakeDuration);
         cam.ZoomIn();
@@ -434,8 +443,9 @@ public class Player : MonoBehaviour, IDamageable
         Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
         hasParryCharge = true;
-        yield return new WaitForSeconds(parryChargeDuration);
-        hasParryCharge = false;
+        parryChargeFX.SetActive(true);
+        parryChargeFX.GetComponent<ParticleSystem>().Play();
+        parryChargeEndTime = Time.time + parryChargeDuration;
     }
 
     public void EnemyHitEffects(Enemy enemy)

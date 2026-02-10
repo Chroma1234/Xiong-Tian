@@ -33,7 +33,6 @@ public class UIManager : MonoBehaviour
     private void Update()
     {
         staminaText.text = "Dashes: " + player.dashCount.ToString();
-        parryChargeText.text = "Parry Charge: " + player.hasParryCharge.ToString();
     }
 
 }

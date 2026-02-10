@@ -20,7 +20,7 @@ TagManager:
   - Ground
   - EnemyHitbox
   - Attack
-  - 
+  - Background
   - 
   - 
   - 
@@ -43,6 +43,9 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 3142880443
+    locked: 0
   - name: Default
     uniqueID: 0
     locked: 0
