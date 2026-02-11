@@ -50,6 +50,8 @@ public class PlayerHealState : PlayerState
 
         player.Health += player.healingAmt;
         player.Mana -= player.healingManaCost;
+        player.SaveEffects();
+        player.PlaySound(player.healClip);
 
         if (player.IsGrounded())
         {

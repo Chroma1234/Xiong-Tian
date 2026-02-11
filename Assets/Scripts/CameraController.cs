@@ -23,7 +23,7 @@ public class CameraController : MonoBehaviour
     {
         cam = Camera.main;
     }
-    private void LateUpdate()
+    private void Update()
     {
         targetX = Mathf.Lerp(targetX, (forwardOffset * player.localScale.x), Time.deltaTime * xFollowSpeed);
         targetY = Mathf.Lerp(transform.position.y, player.position.y + heightOffset, Time.deltaTime * yFollowSpeed);
@@ -75,28 +75,28 @@ public class CameraController : MonoBehaviour
 
     private IEnumerator ZoomCoroutine()
     {
-        float originalSize = cam.orthographicSize;
+        float originalSize = cam.fieldOfView;
         float targetSize = originalSize / zoomAmount;
         float elapsed = 0f;
 
         while (elapsed < zoomDuration)
         {
             elapsed += Time.deltaTime;
-            cam.orthographicSize = Mathf.Lerp(originalSize, targetSize, elapsed / zoomDuration);
+            cam.fieldOfView = Mathf.Lerp(originalSize, targetSize, elapsed / zoomDuration);
             yield return null;
         }
 
-        cam.orthographicSize = targetSize;
+        cam.fieldOfView = targetSize;
 
         elapsed = 0f;
         while (elapsed < zoomDuration)
         {
             elapsed += Time.deltaTime;
-            cam.orthographicSize = Mathf.Lerp(targetSize, originalSize, elapsed / zoomDuration);
+            cam.fieldOfView = Mathf.Lerp(targetSize, originalSize, elapsed / zoomDuration);
             yield return null;
         }
 
-        cam.orthographicSize = originalSize;
+        cam.fieldOfView = originalSize;
     }
 
     public void MoveToRoom(BoxCollider2D room)

@@ -375,7 +375,7 @@ MonoBehaviour:
     m_Value: 0
   gaussianStart:
     m_OverrideState: 1
-    m_Value: 4.9
+    m_Value: 0
   gaussianEnd:
     m_OverrideState: 1
     m_Value: 1.9
@@ -733,7 +733,7 @@ MonoBehaviour:
   active: 1
   postExposure:
     m_OverrideState: 1
-    m_Value: 0
+    m_Value: 0.27
   contrast:
     m_OverrideState: 1
     m_Value: 0

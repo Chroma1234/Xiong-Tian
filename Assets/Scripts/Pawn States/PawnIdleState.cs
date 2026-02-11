@@ -5,12 +5,13 @@ using UnityEngine;
 public class PawnIdleState : PawnState
 {
     protected Vector3 startPos;
-    protected float pawnIdleSpeed = 1f;
+    private float pawnIdleSpeed = 1f;
+    private float waitTime = 1f;
+    private float arriveThreshold = 0.05f;
 
-    protected bool facingRight = false;
+    private Vector2 currentTarget;
+    private Coroutine wanderRoutine;
 
-    Coroutine wanderRoutine;
-    
     public PawnIdleState(Enemy pawn, PawnStateMachine pawnStateMachine) : base(pawn, pawnStateMachine)
     {
     }
@@ -23,11 +24,12 @@ public class PawnIdleState : PawnState
     public override void EnterState()
     {
         base.EnterState();
-        Debug.Log("im idle");
 
         if (pawn.isActiveAndEnabled)
         {
-            startPos = pawn.transform.position;
+            currentTarget = pawn.leftLimit;
+            FaceTarget(currentTarget);
+
             wanderRoutine = pawn.StartCoroutine(Wander());
         }
     }  
@@ -44,11 +46,6 @@ public class PawnIdleState : PawnState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-
-        if(wanderRoutine == null)
-        {
-            wanderRoutine = pawn.StartCoroutine(Wander());
-        }
     }
 
     public override void PhysicsUpdate()
@@ -56,52 +53,38 @@ public class PawnIdleState : PawnState
         base.PhysicsUpdate();
     }
 
-    public IEnumerator Wander()
+    private IEnumerator Wander()
     {
         while (true)
         {
-            if (pawn.canMove)
+            // Move toward current target
+            while (Vector2.Distance(pawn.transform.position, currentTarget) > arriveThreshold)
             {
-                if (!facingRight)
-                {
-                    pawn.transform.localScale = Vector3.one;
-                    pawn.transform.position += Vector3.left * pawnIdleSpeed * Time.deltaTime;
-                }
-                else
-                {
-                    pawn.transform.localScale = new Vector3(-1, 1, 1);
-                    pawn.transform.position += Vector3.right * pawnIdleSpeed * Time.deltaTime;
-                }
+                Vector2 targetPos = new Vector2(currentTarget.x, pawn.transform.position.y);
+
+                pawn.transform.position = Vector2.MoveTowards(pawn.transform.position, targetPos, pawnIdleSpeed * Time.deltaTime);
+                yield return null;
             }
 
-            // Left limit
-            if (pawn.transform.position.x <= pawn.leftLimit.x)
-            {
-                pawn.canMove = false;
+            // Pause at the point
+            yield return new WaitForSeconds(waitTime);
 
-                yield return new WaitForSeconds(1f);
-
-                facingRight = true;
-                pawn.transform.localScale = new Vector3(-1, 1, 1);
-                pawn.canMove = true;
-            }
-
-            // Right limit
-            if (pawn.transform.position.x >= pawn.rightLimit.x)
-            {
-                pawn.canMove = false;
-
-                yield return new WaitForSeconds(1f);
-
-                facingRight = false;
-                pawn.transform.localScale = Vector3.one;
-                pawn.canMove = true;
-            }
-
-            yield return null;
+            // Switch direction
+            currentTarget = currentTarget == pawn.leftLimit ? pawn.rightLimit : pawn.leftLimit;
+            FaceTarget(currentTarget);
         }
     }
 
+    private void FaceTarget(Vector2 target)
+    {
+        float direction = target.x - pawn.transform.position.x;
 
+        if (Mathf.Abs(direction) < 0.01f)
+            return; // don't flip if basically aligned
+
+        Vector3 scale = pawn.transform.localScale;
+        scale.x = direction > 0 ? -Mathf.Abs(scale.x) : Mathf.Abs(scale.x);
+        pawn.transform.localScale = scale;
+    }
 }
 

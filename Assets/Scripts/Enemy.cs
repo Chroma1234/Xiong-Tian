@@ -16,7 +16,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public Animator animator;
     BoxCollider2D boxCollider;
 
-    [SerializeField] private int maxHealth = 100;
+    [SerializeField] private int maxHealth;
     [HideInInspector] private int health;
 
     [SerializeField] public float knockbackForce = 8f;
@@ -39,14 +39,16 @@ public class Enemy : MonoBehaviour, IDamageable
 
     //raptor-x-z
     public GameObject player;
-    public Vector3 leftLimit;
-    public Vector3 rightLimit;
+    public Vector2 leftLimit;
+    public Vector2 rightLimit;
     public bool canMove = true;
 
     public Vector2 FacingDirection
     {
         get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
     }
+
+    public Transform groundCheck;
 
     #region States
     public PawnStateMachine StateMachine { get; set; }
@@ -204,7 +206,10 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void Stunned()
     {
-        stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+        if(transform.localScale.x == 1)
+            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+        else
+            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(-0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
         ParticleSystem ps = stars.GetComponent<ParticleSystem>();
         ps.Play();
         Destroy(stars, ps.main.duration + ps.main.startLifetime.constantMax);
@@ -273,6 +278,7 @@ public class Enemy : MonoBehaviour, IDamageable
             if (col != boxCollider && col.name != "NormalAtkHitbox" && col.name != "ParryAtkHitbox")
                 col.enabled = true;
         }
+        Health = maxHealth;
         IsAlive = true;
         StateMachine.ChangeState(IdleState);
         animator.Rebind();

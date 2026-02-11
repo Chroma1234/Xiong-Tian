@@ -11,7 +11,6 @@ public class Player : MonoBehaviour, IDamageable
     [HideInInspector] public Rigidbody2D rb;
     [HideInInspector] public Animator animator;
     [HideInInspector] public AudioSource audioSource;
-    [HideInInspector] public PlayerSoulController soulController;
     private SpriteRenderer spriteRenderer;
     private BoxCollider2D playerCollider;
     private PolygonCollider2D attackCollider;
@@ -139,7 +138,6 @@ public class Player : MonoBehaviour, IDamageable
     public PlayerDashState DashState { get; set; }
     public PlayerJumpState JumpState { get; set; }
     public PlayerAttackState AttackState { get; set; }
-    public PlayerCastingState CastingState { get; set; }
     public PlayerBlockState BlockState { get; set; }
     public PlayerHitState HitState { get; set; }
     public PlayerHealState HealState { get; set; }
@@ -154,6 +152,7 @@ public class Player : MonoBehaviour, IDamageable
     public AudioClip parryClip;
     public AudioClip impactClip;
     public AudioClip hitClip;
+    public AudioClip healClip;
     public AudioClip deadClip;
     public AudioClip saveClip;
     #endregion
@@ -176,7 +175,6 @@ public class Player : MonoBehaviour, IDamageable
         animator = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
         audioSource = GetComponent<AudioSource>();
-        soulController = GetComponent<PlayerSoulController>();
 
         StateMachine = new PlayerStateMachine();
 
@@ -185,7 +183,6 @@ public class Player : MonoBehaviour, IDamageable
         DashState = new PlayerDashState(this, StateMachine);
         JumpState = new PlayerJumpState(this, StateMachine);
         AttackState = new PlayerAttackState(this, StateMachine);
-        CastingState = new PlayerCastingState(this, StateMachine);
         BlockState = new PlayerBlockState(this, StateMachine);
         HitState = new PlayerHitState(this, StateMachine);
         HealState = new PlayerHealState(this, StateMachine);
@@ -280,11 +277,7 @@ public class Player : MonoBehaviour, IDamageable
                 }
             }
 
-
-            if (StateMachine.CurrentPlayerState != CastingState)
-            {
-                GetLastFacingDirection();
-            }
+            GetLastFacingDirection();
         }
 
         if((hasParryCharge && Time.time >= parryChargeEndTime) || !hasParryCharge)
@@ -301,7 +294,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
 
-        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != CastingState && StateMachine.CurrentPlayerState != DeadState)
+        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DeadState)
         {
             HandleMovement();
             FlipPlayerSprite();

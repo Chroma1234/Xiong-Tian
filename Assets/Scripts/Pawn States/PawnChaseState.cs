@@ -6,6 +6,9 @@ public class PawnChaseState : PawnState
 {
     protected Vector2 targetPlayer;
     protected float pawnSpeed = 2.0f;
+
+    private float groundCheckDistance = 0.2f;
+    private LayerMask groundLayer = LayerMask.GetMask("Ground");
     public PawnChaseState(Enemy pawn, PawnStateMachine pawnStateMachine) : base(pawn, pawnStateMachine)
     {
     }
@@ -53,26 +56,38 @@ public class PawnChaseState : PawnState
             pawn.StateMachine.ChangeState(pawn.AttackState);
         }
 
-        else if (pawn.canMove)
+        //else if (pawn.canMove)
+        //{
+        //Updates position to match with the player
+        if (IsGroundAhead())
         {
-            //Updates position to match with the player
             pawn.transform.position = Vector2.MoveTowards(pawn.transform.position, new Vector3(pawn.player.transform.position.x, pawn.transform.position.y, pawn.transform.position.z), pawnSpeed * Time.deltaTime);
-        }   
-
-        //Checking if Pawn hits the range limit
-        if (pawn.transform.position.x < pawn.leftLimit.x + 0.5)
+        }
+        else if (!IsGroundAhead())
         {
             pawn.StateMachine.ChangeState(pawn.IdleState);
         }
+        //}   
 
-        if (pawn.transform.position.x > pawn.rightLimit.x - 0.5)
-        {
-            pawn.StateMachine.ChangeState(pawn.IdleState);
-        }
+        ////Checking if Pawn hits the range limit
+        //if (pawn.transform.position.x < pawn.leftLimit.x + 0.5)
+        //{
+        //    pawn.StateMachine.ChangeState(pawn.IdleState);
+        //}
+
+        //if (pawn.transform.position.x > pawn.rightLimit.x - 0.5)
+        //{
+        //    pawn.StateMachine.ChangeState(pawn.IdleState);
+        //}
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    bool IsGroundAhead()
+    {
+        return Physics2D.Raycast(pawn.groundCheck.position, Vector2.down, groundCheckDistance, groundLayer);
     }
 }
