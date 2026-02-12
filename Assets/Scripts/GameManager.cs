@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviour
         yield return StartCoroutine(Fade(1f, 0f));
     }
 
-    private IEnumerator Fade(float from, float to)
+    public IEnumerator Fade(float from, float to)
     {
         float timer = 0f;
         Color c = fadeImage.color;

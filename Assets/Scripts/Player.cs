@@ -158,12 +158,7 @@ public class Player : MonoBehaviour, IDamageable
     #endregion
 
     private int collisionDisableCount = 0;
-    [SerializeField] private GameObject soulOrbPrefab;
-
-    public Vector2 FacingDirection
-    {
-        get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
-    }
+    public bool isTeleporting = false;
 
     private void Awake()
     {
@@ -294,7 +289,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
 
-        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DeadState)
+        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DeadState && !isTeleporting)
         {
             HandleMovement();
             FlipPlayerSprite();
@@ -335,7 +330,7 @@ public class Player : MonoBehaviour, IDamageable
     {
         animator.SetBool("isGrounded", IsGrounded());
         animator.SetFloat("yVelocity", rb.linearVelocity.y);
-        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState)
+        if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && !isTeleporting)
         {
             animator.SetBool("isMoving", Mathf.Abs(Input.GetAxisRaw("Horizontal")) > 0.01f);
         }
