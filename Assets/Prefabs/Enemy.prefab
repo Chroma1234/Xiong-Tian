@@ -301,7 +301,7 @@ MonoBehaviour:
   animator: {fileID: 0}
   maxHealth: 50
   knockbackForce: 5
-  stunDuration: 5
+  stunDuration: 2
   stunnedStarsPrefab: {fileID: 7347345292627970672, guid: 6f8c280269484c641a3f90aae2280ced, type: 3}
   hitFlashDuration: 0.05
   inAttackRange: 0

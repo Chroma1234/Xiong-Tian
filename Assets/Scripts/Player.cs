@@ -41,7 +41,7 @@ public class Player : MonoBehaviour, IDamageable
     public float attackMomentum;
     [SerializeField] public float attackBufferTime = 0.15f;
     [HideInInspector] public float attackBufferCounter;
-    [SerializeField] private float iFrameDuration = 1f;
+    [SerializeField] private float iFrameDuration;
     [SerializeField] private float attackCameraShakeDuration;
     [SerializeField] private float attackCameraShakeMagnitude;
     [SerializeField] private float attackHitstopDuration;
