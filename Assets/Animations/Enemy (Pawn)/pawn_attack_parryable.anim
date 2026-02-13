@@ -31,7 +31,7 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
+        time: 0.6
         value: 1
         inSlope: Infinity
         outSlope: Infinity
@@ -40,7 +40,7 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1.1
+        time: 0.8
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -72,16 +72,10 @@ AnimationClip:
     - time: 0.5
       value: {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - time: 0.6
-      value: {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - time: 0.7
-      value: {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - time: 0.8
-      value: {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - time: 0.9
       value: {fileID: 21300000, guid: 563d874a64fa7304eb46250c508607b4, type: 3}
-    - time: 1
+    - time: 0.7
       value: {fileID: 21300000, guid: 9595c4b16ae23484cbba275dc7451e94, type: 3}
-    - time: 1.1
+    - time: 0.8
       value: {fileID: 21300000, guid: 9244e056e870eff4e86d9613a586ecdf, type: 3}
     attribute: m_Sprite
     path: 
@@ -120,9 +114,6 @@ AnimationClip:
     - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
-    - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - {fileID: 21300000, guid: 563d874a64fa7304eb46250c508607b4, type: 3}
     - {fileID: 21300000, guid: 9595c4b16ae23484cbba275dc7451e94, type: 3}
     - {fileID: 21300000, guid: 9244e056e870eff4e86d9613a586ecdf, type: 3}
@@ -131,7 +122,7 @@ AnimationClip:
     m_AdditiveReferencePoseClip: {fileID: 0}
     m_AdditiveReferencePoseTime: 0
     m_StartTime: 0
-    m_StopTime: 1.2
+    m_StopTime: 0.90000004
     m_OrientationOffsetY: 0
     m_Level: 0
     m_CycleOffset: 0
@@ -161,7 +152,7 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1
+        time: 0.6
         value: 1
         inSlope: Infinity
         outSlope: Infinity
@@ -170,7 +161,7 @@ AnimationClip:
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
-        time: 1.1
+        time: 0.8
         value: 0
         inSlope: Infinity
         outSlope: Infinity
@@ -204,14 +195,14 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.9
+  - time: 0.6
     functionName: PlaySound
     data: 
     objectReferenceParameter: {fileID: 8300000, guid: e6645e1f9c29b9a47be35739b1db2cb1, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 1.1
+  - time: 0.8
     functionName: OnAttackFinished
     data: 
     objectReferenceParameter: {fileID: 0}
