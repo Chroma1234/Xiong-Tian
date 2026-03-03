@@ -190,10 +190,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private IEnumerator FlashSprite()
     {
-        Color originalColor = spriteRenderer.color;
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(hitFlashDuration);
-        spriteRenderer.color = originalColor;
+        spriteRenderer.color = Color.white;
     }
 
     public void EyeFlash()

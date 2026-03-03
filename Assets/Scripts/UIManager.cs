@@ -12,7 +12,6 @@ public class UIManager : MonoBehaviour
     #region Text UI
     [Header("Text UI")]
     [SerializeField] TextMeshProUGUI healthText;
-    [SerializeField] TextMeshProUGUI manaText;
     [SerializeField] TextMeshProUGUI staminaText;
     [SerializeField] TextMeshProUGUI parryChargeText;
     [SerializeField] Image healthBar;
@@ -27,7 +26,6 @@ public class UIManager : MonoBehaviour
     private void Start()
     {
         player.OnHealthChanged += health => healthBar.fillAmount = health / 100f;
-        player.OnManaChanged += mana => manaBar.fillAmount = mana / 100f;
     }
 
     private void Update()

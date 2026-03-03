@@ -59,7 +59,6 @@ public class SavePoint : MonoBehaviour
             gm.DoFlash();
 
             player.Health = 100;
-            player.Mana = 100;
 
             player.SaveEffects();
             player.PlaySound(player.saveClip);
