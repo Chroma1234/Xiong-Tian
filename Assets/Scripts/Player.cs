@@ -205,84 +205,87 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        StateMachine.CurrentPlayerState.FrameUpdate();
-        if (StateMachine.CurrentPlayerState != DeadState)
+        if (!gameManager.paused)
         {
-            if (Input.GetKeyUp(KeyCode.Space) && rb.linearVelocity.y > 0)
+            StateMachine.CurrentPlayerState.FrameUpdate();
+            if (StateMachine.CurrentPlayerState != DeadState)
             {
-                rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.25f);
-            }
-
-            if (IsGrounded())
-            {
-                coyoteTimeCounter = coyoteTime;
-                hasDoubleJumped = false;    
-
-                if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
+                if (Input.GetKeyUp(KeyCode.Space) && rb.linearVelocity.y > 0)
                 {
-                    if (mana >= healingManaCost)
+                    rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * 0.25f);
+                }
+
+                if (IsGrounded())
+                {
+                    coyoteTimeCounter = coyoteTime;
+                    hasDoubleJumped = false;
+
+                    if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
                     {
-                        if (Health < maxHealth)
+                        if (mana >= healingManaCost)
                         {
-                            StateMachine.ChangeState(HealState);
+                            if (Health < maxHealth)
+                            {
+                                StateMachine.ChangeState(HealState);
+                            }
+                        }
+                        else
+                        {
+                            //insufficient mana / full health!
                         }
                     }
-                    else
+                }
+                else
+                {
+                    coyoteTimeCounter -= Time.deltaTime;
+                }
+
+                attackBufferCounter -= Time.deltaTime;
+
+                if (attackBufferCounter > 0f && StateMachine.CurrentPlayerState != AttackState)
+                {
+                    Attack();
+                    attackBufferCounter = 0f;
+                }
+
+                if (StateMachine.CurrentPlayerState == DashState)
+                {
+                    SpawnAfterimages();
+                }
+
+                if (!canRecover)
+                {
+                    dashRecoveryTimer -= Time.deltaTime;
+
+                    if (dashRecoveryTimer <= 0f)
                     {
-                        //insufficient mana / full health!
+                        canRecover = true;
                     }
                 }
-            }
-            else
-            {
-                coyoteTimeCounter -= Time.deltaTime;
-            }
 
-            attackBufferCounter -= Time.deltaTime;
-
-            if (attackBufferCounter > 0f && StateMachine.CurrentPlayerState != AttackState)
-            {
-                Attack();
-                attackBufferCounter = 0f;
-            }
-
-            if (StateMachine.CurrentPlayerState == DashState)
-            {
-                SpawnAfterimages();
-            }
-
-            if (!canRecover)
-            {
-                dashRecoveryTimer -= Time.deltaTime;
-
-                if (dashRecoveryTimer <= 0f)
+                if (dashCount < maxDashCount && canRecover)
                 {
-                    canRecover = true;
+                    dashRecoveryTimer += Time.deltaTime;
+
+                    if (dashRecoveryTimer >= dashRecoveryTime)
+                    {
+                        dashCount++;
+                        dashRecoveryTimer = 0f;
+                    }
                 }
+
+                GetLastFacingDirection();
             }
 
-            if (dashCount < maxDashCount && canRecover)
+            if ((hasParryCharge && Time.time >= parryChargeEndTime) || !hasParryCharge)
             {
-                dashRecoveryTimer += Time.deltaTime;
-
-                if (dashRecoveryTimer >= dashRecoveryTime)
-                {
-                    dashCount++;
-                    dashRecoveryTimer = 0f;
-                }
+                hasParryCharge = false;
+                parryChargeFX.SetActive(false);
+                parryChargeFX.GetComponent<ParticleSystem>().Stop();
             }
 
-            GetLastFacingDirection();
+            HandleAnimators();
         }
-
-        if((hasParryCharge && Time.time >= parryChargeEndTime) || !hasParryCharge)
-        {
-            hasParryCharge = false;
-            parryChargeFX.SetActive(false);
-            parryChargeFX.GetComponent<ParticleSystem>().Stop();
-        }
-
-        HandleAnimators();
     }
 
     private void FixedUpdate()

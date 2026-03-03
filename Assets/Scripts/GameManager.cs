@@ -31,6 +31,11 @@ public class GameManager : MonoBehaviour
 
     private readonly List<Enemy> enemies = new List<Enemy>();
 
+    private float currentTimeScale = 1f;
+    public bool paused = false;
+
+    [SerializeField] private CanvasGroup pauseScreen;
+
     private void Awake()
     {
         if (instance == null)
@@ -43,6 +48,50 @@ public class GameManager : MonoBehaviour
         }
 
         Application.targetFrameRate = fps;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (!paused)
+            {
+                Pause();
+            }
+            else
+            {
+                Resume();
+            }
+        }
+    }
+
+    private void Pause()
+    {
+        paused = true;
+        currentTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        pauseScreen.alpha = 1f;
+        pauseScreen.interactable = true;
+
+        Cursor.lockState = CursorLockMode.None;
+    }
+
+    public void Resume()
+    {
+        paused = false;
+        Time.timeScale = currentTimeScale;
+
+        pauseScreen.alpha = 0f;
+        pauseScreen.interactable = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void Exit()
+    {
+        Application.Quit();
     }
 
     public void RegisterEnemy(Enemy enemy)
@@ -130,7 +179,13 @@ public class GameManager : MonoBehaviour
 
     IEnumerator SlowMotion(float factor, float duration)
     {
-        Time.timeScale = factor;
+        currentTimeScale = factor;
+
+        if (!paused)
+        {
+            Time.timeScale = factor;
+        }
+
         Time.fixedDeltaTime = Time.timeScale * 0.02f;
         float t = 0f;
         while (t < 0.2f)
@@ -156,7 +211,13 @@ public class GameManager : MonoBehaviour
 
         bgm.pitch = 1;
 
-        Time.timeScale = 1f;
+        currentTimeScale = 1f;
+
+        if (!paused)
+        {
+            Time.timeScale = currentTimeScale;
+        }
+
         Time.fixedDeltaTime = 0.02f;
     }
 
