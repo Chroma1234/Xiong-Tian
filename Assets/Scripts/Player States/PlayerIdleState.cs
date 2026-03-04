@@ -16,6 +16,8 @@ public class PlayerIdleState : PlayerState
     public override void EnterState()
     {
         base.EnterState();
+
+        player.parryCounterAttackHitbox.SetActive(false);
     }
 
     public override void ExitState()
@@ -37,13 +39,26 @@ public class PlayerIdleState : PlayerState
             player.StateMachine.ChangeState(player.DashState);
             player.dashCount--;
         }
-        else if (Input.GetMouseButtonDown(1) && player.IsGrounded())
+        else if (Input.GetMouseButtonDown(1) && player.IsGrounded() && player.parryCooldownTimer <= 0f)
         {
             player.StateMachine.ChangeState(player.BlockState);
         }
         else if (Input.GetMouseButtonDown(0))
         {
-            player.StateMachine.ChangeState(player.AttackState);
+            if (player.hasParryCharge)
+            {
+                player.StateMachine.ChangeState(player.DashState);
+                player.parryCounterAttackHitbox.SetActive(true);
+            }
+            else
+            {
+                player.StateMachine.ChangeState(player.AttackState);
+            }
+        }
+
+        if (player.parryCooldownTimer > 0f)
+        {
+            player.parryCooldownTimer -= Time.deltaTime;
         }
     }
 

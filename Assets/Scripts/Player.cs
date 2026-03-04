@@ -1,5 +1,7 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour, IDamageable
@@ -84,6 +86,9 @@ public class Player : MonoBehaviour, IDamageable
     [HideInInspector] public bool parry = false;
     private Coroutine parryCoroutine;
     [SerializeField] private float parryWindow;
+    public float parryCooldown;
+    [HideInInspector] public float parryCooldownTimer;
+    public float parryDuration;
     public bool hasParryCharge;
     [SerializeField] private float parryChargeDuration;
     private float parryChargeEndTime;
@@ -93,6 +98,8 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float parrySlowdownDuration;
     [SerializeField] private GameObject parrySparksPrefab;
     [SerializeField] private GameObject parryChargeFX;
+    [SerializeField] public GameObject parryRingFX;
+    [SerializeField] public GameObject parryCounterAttackHitbox;
     #endregion
 
     #region Layer Masks

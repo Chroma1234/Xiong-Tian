@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerBlockState : PlayerState
@@ -15,28 +16,39 @@ public class PlayerBlockState : PlayerState
     {
         base.EnterState();
 
+        player.parryCooldownTimer = player.parryCooldown;
+
         player.rb.linearVelocity = Vector2.zero;
         player.EnableBlockCollider();
+        player.parryRingFX.SetActive(true);
+        player.parryRingFX.GetComponent<ParticleSystem>().Play();
+
+        player.StartCoroutine(ParryWindow(player.parryDuration));
     }
 
     public override void ExitState()
     {
         base.ExitState();
+
+        player.parryRingFX.GetComponent<ParticleSystem>().Stop();
+        player.parryRingFX.SetActive(false);
     }
 
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-
-        if (Input.GetMouseButtonUp(1))
-        {
-            player.DisableBlockCollider();
-            player.StateMachine.ChangeState(player.IdleState);
-        }
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+    }
+
+    private IEnumerator ParryWindow(float time)
+    {
+        yield return new WaitForSeconds(time);
+
+        player.DisableBlockCollider();
+        player.StateMachine.ChangeState(player.IdleState);
     }
 }
