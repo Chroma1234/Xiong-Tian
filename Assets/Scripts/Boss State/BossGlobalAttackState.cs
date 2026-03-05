@@ -17,14 +17,36 @@ public class BossGlobalAttackState : BossState
     {
         base.EnterState();
 
-        //Insert Global Attack Animation here
-        boss.triggerGlobal = false;
+        Debug.Log("Enters Global Attack State");
 
-        Debug.Log("Trigger Global: " + boss.triggerGlobal);
+        //Teleports to the middle
+        boss.transform.position = new Vector2(boss.originalPos.x, boss.originalPos.y);
 
-        setGlobalAttack();
 
-        //boss.StartCoroutine(boss.exitGlobal());
+        //Activates alternating warning pointS
+        for (int i = 0; i < boss.warningList.Count; i++)
+        {
+
+            if (i % 2 == 0 && boss.globalEven)
+            {
+                boss.warningList[i].SetActive(true);
+            }
+
+            if (i % 2 != 0 && !boss.globalEven)
+            {
+                boss.warningList[i].SetActive(true);
+            }
+
+        }
+
+        boss.globalEven = !boss.globalEven;
+
+
+        //Coroutine to trigger damageble warning points
+
+
+        //
+
 
     }
 
@@ -32,9 +54,11 @@ public class BossGlobalAttackState : BossState
     {
         base.ExitState();
 
-        for (int i = 0; i < boss.globalArray.Length; i++)
+        Debug.Log("Exit Global Attack State");
+
+        for (int i = 0; i < boss.warningList.Count; i++)
         {
-            //boss.globalArray[i].SetActive(false);
+            boss.warningList[i].SetActive(false);
 
         }
 
@@ -43,42 +67,11 @@ public class BossGlobalAttackState : BossState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
+
     }
 
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
-    }
-
-    private void setGlobalAttack()
-    {
-        
-
-        int spawnCount = Random.Range(1, boss.globalArray.Length);
-
-        for (int i = 0; i < spawnCount; i++)
-        {
-            if (i == 0)
-            {
-
-                //Debug.Log("Trigger setGlobalAttack");
-
-                boss.globalArray[i].transform.position = new Vector3(boss.player.transform.position.x, boss.player.transform.position.y, 0f);
-
-                boss.globalArray[i].SetActive(true);
-
-                boss.StartCoroutine(boss.delayGlobalAttackTrigger(boss.globalArray[i]));
-
-            }
-
-            else
-            {
-                boss.globalArray[i].transform.position = new Vector3(boss.player.transform.position.x + Random.Range(-5f, 5f), boss.player.transform.position.y + Random.Range(-5f, 5f), 0f);
-
-                boss.globalArray[i].SetActive(true);
-
-                boss.StartCoroutine(boss.delayGlobalAttackTrigger(boss.globalArray[i]));
-            }
-        }
     }
 }

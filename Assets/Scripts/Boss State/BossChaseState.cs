@@ -23,8 +23,12 @@ public class BossChaseState : BossState
         base.EnterState();
 
         Debug.Log("i see you");
-    }
 
+        //Trigger the coroutine to trigger global attacks after a set amount of time
+        boss.StartCoroutine(boss.StartGlobal());
+
+    }
+    
     public override void ExitState()
     {
         base.ExitState();
@@ -63,10 +67,13 @@ public class BossChaseState : BossState
         {
             boss.transform.position = Vector2.MoveTowards(boss.transform.position, new Vector3(boss.player.transform.position.x, boss.transform.position.y, boss.transform.position.z), pawnSpeed * Time.deltaTime);
 
-
-            if (boss.transform.position.x == boss.player.transform.position.x && boss.triggerGlobal)
+            //Condition to enter Global Attack State
+            if (boss.triggerGlobal)
             {
+                Debug.Log(boss.triggerGlobal);
+
                 boss.StateMachine.ChangeState(boss.GlobalAttackState);
+                boss.StopCoroutine(boss.StartGlobal());
             }
         }
         else if (!IsGroundAhead())

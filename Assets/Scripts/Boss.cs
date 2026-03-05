@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 using System.Xml;
+using TMPro;
 using UnityEngine;
 
 public class Boss : MonoBehaviour, IDamageable
@@ -43,10 +46,15 @@ public class Boss : MonoBehaviour, IDamageable
     public Vector2 rightLimit;
     public bool canMove = true;
 
-    public GameObject areaEffect;
-    public bool triggerGlobal = true;
+    public bool triggerGlobal;
+    public bool globalEven = true;
 
-    [HideInInspector] public GameObject[] globalArray = new GameObject[4];
+    public Vector2 originalPos;
+
+    //public GameObject[] warningArray = new GameObject[8];
+    public List<GameObject> warningList = new List<GameObject>();
+
+    public GameObject warningObject;
 
     public Vector2 FacingDirection
     {
@@ -129,20 +137,22 @@ public class Boss : MonoBehaviour, IDamageable
         manager = FindFirstObjectByType<GameManager>();
         manager.RegisterBoss(this);
 
-        for (int i = 0; i < globalArray.Length; i++)
+        originalPos = transform.position;
+
+        triggerGlobal = false;
+        //Debug.Log(warningArray.Length);
+
+        float warningPosX = -12f;
+
+        for (int i = 0; i < 22; i++)
         {
-            Vector2 pos = transform.position;
+            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y + 5), Quaternion.identity);
 
-            GameObject spawnObject = Instantiate(areaEffect, pos, Quaternion.identity);
+            newPrefab.gameObject.SetActive(false);
 
-            globalArray[i] = spawnObject;
-
-            spawnObject.gameObject.GetComponent<CircleCollider2D>().enabled = false;
-            spawnObject.SetActive(false);
-
+            warningList.Add(newPrefab);
+            warningPosX += 1f;
         }
-
-        
     }
 
     private void Start()
@@ -188,7 +198,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
@@ -199,10 +209,22 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        GameObject obj = collision.gameObject;
+
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && triggerGlobal)
+        {
+            player = obj;
+            triggerGlobal = false;
+            StateMachine.ChangeState(IdleState);
         }
     }
 
@@ -321,34 +343,19 @@ public class Boss : MonoBehaviour, IDamageable
         audioSource.PlayOneShot(clip);
     }
 
-    public IEnumerator globalAttackCooldown()
+    //Placeholder condition to trigger global attack
+    public IEnumerator StartGlobal()
     {
-        Debug.Log("Trigger Cooldown");
-
-        yield return new WaitForSeconds(20);
+        yield return new WaitForSeconds(5);
+        Debug.Log("Countdown to enter global ends");
 
         triggerGlobal = true;
-
-        Debug.Log("Cooldown ends: " + triggerGlobal);
-
     }
 
-    public IEnumerator exitGlobal()
+    public IEnumerator GlobalAttack()
     {
 
-        yield return new WaitForSeconds(60);
-
-        StartCoroutine(globalAttackCooldown());
-
-        StateMachine.ChangeState(ChaseState);
-
+        yield return null;
     }
 
-    public IEnumerator delayGlobalAttackTrigger(GameObject radius)
-    {
-        yield return new WaitForSeconds(1.5f);
-
-        radius.gameObject.GetComponent<CircleCollider2D>().enabled = true;
-        radius.gameObject.GetComponent<SpriteRenderer>().color = Color.red;
-    }
 }
