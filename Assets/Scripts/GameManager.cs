@@ -39,6 +39,9 @@ public class GameManager : MonoBehaviour
 
     [SerializeField] private CanvasGroup pauseScreen;
 
+    public bool blockPauseInput = false;
+    public bool inTutorial = false;
+
     private void Awake()
     {
         if (instance == null)
@@ -56,7 +59,10 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Escape))
+        if (blockPauseInput) return;
+        if (inTutorial) return;
+
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (!paused)
             {
@@ -69,7 +75,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private void Pause()
+    public void Pause()
     {
         paused = true;
         currentTimeScale = Time.timeScale;
@@ -81,6 +87,15 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.None;
     }
 
+    public void PauseTimeOnly()
+    {
+        paused = true;
+        currentTimeScale = Time.timeScale;
+        Time.timeScale = 0f;
+
+        Cursor.lockState = CursorLockMode.None;
+    }
+
     public void Resume()
     {
         paused = false;
@@ -88,6 +103,14 @@ public class GameManager : MonoBehaviour
 
         pauseScreen.alpha = 0f;
         pauseScreen.interactable = false;
+
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    public void ResumeTimeOnly()
+    {
+        paused = false;
+        Time.timeScale = currentTimeScale;
 
         Cursor.lockState = CursorLockMode.Locked;
     }

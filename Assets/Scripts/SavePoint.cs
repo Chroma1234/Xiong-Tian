@@ -14,13 +14,20 @@ public class SavePoint : MonoBehaviour
     [SerializeField] private ParticleSystem flameParticles;
     [SerializeField] private GameObject saveLighting;
 
+    private GameManager gm;
+
+    private void Awake()
+    {
+        gm = FindFirstObjectByType<GameManager>();
+    }
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.TryGetComponent(out Player p))
         {
             playerInRange = true;
             player = p;
-            saveText.SetActive(true);
+            //saveText.SetActive(true);
         }
     }
 
@@ -30,20 +37,18 @@ public class SavePoint : MonoBehaviour
         {
             playerInRange = false;
             player = null;
-            saveText.SetActive(false);
+            //saveText.SetActive(false);
         }
     }
 
     private void Update()
     {
-        if (playerInRange && Input.GetKeyDown(KeyCode.Q))
+        if (playerInRange && gm.currentSavePoint != this)
         {
             if (Time.time - lastSaveTime < saveCooldown)
                 return;
 
             lastSaveTime = Time.time;
-
-            GameManager gm = FindFirstObjectByType<GameManager>();
 
             if (gm.currentSavePoint != null && gm.currentSavePoint != this)
             {

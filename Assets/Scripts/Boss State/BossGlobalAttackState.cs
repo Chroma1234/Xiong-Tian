@@ -27,6 +27,7 @@ public class BossGlobalAttackState : BossState
         for (int i = 0; i < boss.warningList.Count; i++)
         {
 
+
             if (i % 2 == 0 && boss.globalEven)
             {
                 boss.warningList[i].SetActive(true);
@@ -58,8 +59,7 @@ public class BossGlobalAttackState : BossState
 
         for (int i = 0; i < boss.warningList.Count; i++)
         {
-            boss.warningList[i].SetActive(false);
-
+            boss.warningList[i].SetActive(false);   
         }
 
     }
