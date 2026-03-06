@@ -19,7 +19,7 @@ public class PlayerHealState : PlayerState
         player.rb.linearVelocity = Vector2.zero;
         player.animator.SetTrigger("heal");
 
-        doHeal = player.StartCoroutine(Heal());
+        //doHeal = player.StartCoroutine(Heal());
     }
 
     public override void ExitState()
@@ -38,28 +38,28 @@ public class PlayerHealState : PlayerState
         base.PhysicsUpdate();
     }
 
-    private IEnumerator Heal()
-    {
-        yield return new WaitUntil(() =>
-            player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Heal")
-        );
+    //private IEnumerator Heal()
+    //{
+    //    yield return new WaitUntil(() =>
+    //        player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Heal")
+    //    );
 
-        yield return new WaitUntil(() =>
-            !player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Heal")
-        );
+    //    yield return new WaitUntil(() =>
+    //        !player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Heal")
+    //    );
 
-        player.Health += player.healingAmt;
-        player.Mana -= player.healingManaCost;
-        player.SaveEffects();
-        player.PlaySound(player.healClip);
+    //    player.Health += player.healingAmt;
+    //    player.Mana -= player.healingManaCost;
+    //    player.SaveEffects();
+    //    player.PlaySound(player.healClip);
 
-        if (player.IsGrounded())
-        {
-            player.StateMachine.ChangeState(player.IdleState);
-        }
-        else
-        {
-            player.StateMachine.ChangeState(player.FallState);
-        }
-    }
+    //    if (player.IsGrounded())
+    //    {
+    //        player.StateMachine.ChangeState(player.IdleState);
+    //    }
+    //    else
+    //    {
+    //        player.StateMachine.ChangeState(player.FallState);
+    //    }
+    //}
 }

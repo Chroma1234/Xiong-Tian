@@ -1,11 +1,12 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour, IDamageable
 {
     public event System.Action<int> OnHealthChanged;
-    public event System.Action<int> OnManaChanged;
 
     #region Component References
     [HideInInspector] public Rigidbody2D rb;
@@ -70,26 +71,6 @@ public class Player : MonoBehaviour, IDamageable
     public bool IsAlive { get; set; } = true;
     #endregion
 
-    #region Mana Mechanics
-    [SerializeField] private int maxMana;
-    [SerializeField] private int mana;
-    [SerializeField] public int healingManaCost;
-    [SerializeField] public int healingAmt;
-
-    public int Mana
-    {
-        get => mana;
-        set
-        {
-            mana = Mathf.Clamp(value, 0, maxMana);
-            OnManaChanged?.Invoke(mana);
-        }
-    }
-
-    [SerializeField] private int manaOnHit;
-    [SerializeField] private int manaOnKill;
-    #endregion
-
     #region Stamina Settings
     [Header("Stamina Settings")]
     public int dashCount;
@@ -105,6 +86,9 @@ public class Player : MonoBehaviour, IDamageable
     [HideInInspector] public bool parry = false;
     private Coroutine parryCoroutine;
     [SerializeField] private float parryWindow;
+    public float parryCooldown;
+    [HideInInspector] public float parryCooldownTimer;
+    public float parryDuration;
     public bool hasParryCharge;
     [SerializeField] private float parryChargeDuration;
     private float parryChargeEndTime;
@@ -114,6 +98,12 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private float parrySlowdownDuration;
     [SerializeField] private GameObject parrySparksPrefab;
     [SerializeField] private GameObject parryChargeFX;
+    [SerializeField] public GameObject parryRingFX;
+    [SerializeField] public GameObject parryCounterAttackHitbox;
+    [SerializeField] private float shockwaveTime = 0.75f;
+    [SerializeField] private GameObject shockwavePrefab;
+    private Coroutine shockwaveCoroutine;
+    private static int waveDistanceFromCenter = Shader.PropertyToID("_WaveDistanceFromCenter");
     #endregion
 
     #region Layer Masks
@@ -194,12 +184,9 @@ public class Player : MonoBehaviour, IDamageable
     private void Start()
     {
         health = maxHealth;
-        mana = maxMana;
         StateMachine.Initialize(IdleState);
 
-        Enemy.OnEnemyHit += RecoverManaOnHit;
         Enemy.OnEnemyHit += EnemyHitEffects;
-        Enemy.OnEnemyKilled += RecoverManaOnKill;
         Enemy.OnEnemyKilled += EnemyHitEffects;
     }
 
@@ -220,20 +207,20 @@ public class Player : MonoBehaviour, IDamageable
                     coyoteTimeCounter = coyoteTime;
                     hasDoubleJumped = false;
 
-                    if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
-                    {
-                        if (mana >= healingManaCost)
-                        {
-                            if (Health < maxHealth)
-                            {
-                                StateMachine.ChangeState(HealState);
-                            }
-                        }
-                        else
-                        {
-                            //insufficient mana / full health!
-                        }
-                    }
+                    //if (Input.GetKeyDown(KeyCode.E) && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DashState)
+                    //{
+                    //    if (mana >= healingManaCost)
+                    //    {
+                    //        if (Health < maxHealth)
+                    //        {
+                    //            StateMachine.ChangeState(HealState);
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        //insufficient mana / full health!
+                    //    }
+                    //}
                 }
                 else
                 {
@@ -301,26 +288,8 @@ public class Player : MonoBehaviour, IDamageable
 
     private void OnDestroy()
     {
-        Enemy.OnEnemyHit -= RecoverManaOnHit;
         Enemy.OnEnemyHit -= EnemyHitEffects;
-        Enemy.OnEnemyKilled -= RecoverManaOnKill;
         Enemy.OnEnemyKilled -= EnemyHitEffects;
-    }
-
-    private void RecoverManaOnHit(Enemy enemy)
-    {
-        if (Mana <= maxMana - manaOnHit)
-        {
-            Mana += manaOnHit;
-        }
-    }
-
-    private void RecoverManaOnKill(Enemy enemy)
-    {
-        if (Mana <= maxMana - manaOnKill)
-        {
-            Mana += manaOnKill;
-        }
     }
 
     public void HandleMovement()
@@ -433,10 +402,36 @@ public class Player : MonoBehaviour, IDamageable
         ps.Play();
         Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
+        StartCoroutine(Shockwave(-0.1f, 1f));
+
         hasParryCharge = true;
         parryChargeFX.SetActive(true);
         parryChargeFX.GetComponent<ParticleSystem>().Play();
         parryChargeEndTime = Time.time + parryChargeDuration;
+    }
+
+    private IEnumerator Shockwave(float startPos, float endPos)
+    {
+        GameObject shockwave = Instantiate(shockwavePrefab, blockCollider.transform.position, Quaternion.identity);
+        Material shockwaveMat = shockwave.GetComponent<SpriteRenderer>().material;
+
+        shockwaveMat.SetFloat(waveDistanceFromCenter, startPos);
+
+        float lerpedAmt = 0f;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < shockwaveTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            lerpedAmt = Mathf.Lerp(startPos, endPos, (elapsedTime / shockwaveTime));
+            shockwaveMat.SetFloat(waveDistanceFromCenter, lerpedAmt);
+
+            yield return null;
+        }
+
+        Destroy(shockwave);
     }
 
     public void EnemyHitEffects(Enemy enemy)
@@ -476,7 +471,6 @@ public class Player : MonoBehaviour, IDamageable
 
         IsAlive = true;
         Health = maxHealth;
-        Mana = maxMana;
 
         rb.linearVelocity = Vector2.zero;
         transform.position = spawnPoint;

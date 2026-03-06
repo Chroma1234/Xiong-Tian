@@ -7,32 +7,39 @@ public class UIManager : MonoBehaviour
     #region Component References
     [Header("Component References")]
     [SerializeField] Player player;
+    private Camera cam;
     #endregion
 
     #region Text UI
     [Header("Text UI")]
     [SerializeField] TextMeshProUGUI healthText;
-    [SerializeField] TextMeshProUGUI manaText;
-    [SerializeField] TextMeshProUGUI staminaText;
-    [SerializeField] TextMeshProUGUI parryChargeText;
+    [SerializeField] private RectTransform dashBarUI;
+    [SerializeField] private CanvasGroup dashBarCanvasGrp;
+    [SerializeField] private Image dashFill;
     [SerializeField] Image healthBar;
-    [SerializeField] Image manaBar;
     #endregion
 
     private void Awake()
     {
         player = GetComponent<Player>();
+        cam = Camera.main;
     }
 
     private void Start()
     {
         player.OnHealthChanged += health => healthBar.fillAmount = health / 100f;
-        player.OnManaChanged += mana => manaBar.fillAmount = mana / 100f;
     }
 
     private void Update()
     {
-        staminaText.text = "Dashes: " + player.dashCount.ToString();
+        dashFill.fillAmount = Mathf.Lerp(dashFill.fillAmount, (float)player.dashCount / player.maxDashCount, 10f * Time.deltaTime);
+        dashBarCanvasGrp.alpha = Mathf.Lerp(dashBarCanvasGrp.alpha, dashFill.fillAmount < 0.99f ? 1f : 0f, 8f * Time.deltaTime);
+    }
+
+    private void LateUpdate()
+    {
+        Vector3 screenPos = cam.WorldToScreenPoint(player.transform.position + new Vector3(0, 1.3f, 0));
+        dashBarUI.position = screenPos;
     }
 
 }

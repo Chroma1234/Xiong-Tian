@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
@@ -30,6 +32,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioLowPassFilter filter;
 
     private readonly List<Enemy> enemies = new List<Enemy>();
+    private readonly List<Boss> bosses = new List<Boss>();
 
     private float currentTimeScale = 1f;
     public bool paused = false;
@@ -98,6 +101,12 @@ public class GameManager : MonoBehaviour
     {
         if (!enemies.Contains(enemy))
             enemies.Add(enemy);
+    }
+
+    public void RegisterBoss(Boss boss)
+    {
+        if (!bosses.Contains(boss))
+            bosses.Add(boss);
     }
 
     public void RespawnPlayer()

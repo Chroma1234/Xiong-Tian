@@ -34,7 +34,7 @@ public class PlayerAttackState : PlayerState
             player.rb.linearVelocity = Vector2.zero;
         }
 
-        player.StartCoroutine(MoveForward());
+        //player.StartCoroutine(MoveForward());
         attackDelay = player.StartCoroutine(WaitForAttackToFinish());
     }
 

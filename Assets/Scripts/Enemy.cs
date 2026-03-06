@@ -13,6 +13,11 @@ public class Enemy : MonoBehaviour, IDamageable
     private GameManager manager;
 
     [HideInInspector] public SpriteRenderer spriteRenderer;
+    private Material enemyMat;
+
+    [SerializeField] private float dissolveTime = 0.75f;
+    private int dissolveAmt = Shader.PropertyToID("_DissolveAmt");
+
     public Animator animator;
     BoxCollider2D boxCollider;
 
@@ -25,6 +30,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private GameObject stunnedStarsPrefab;
 
     [SerializeField] private float hitFlashDuration;
+    [SerializeField] private GameObject sparksPrefab;
 
     [HideInInspector] public bool inAttackRange = false;
     [SerializeField] private bool moveTest;
@@ -82,6 +88,11 @@ public class Enemy : MonoBehaviour, IDamageable
 
         Health -= damage;
 
+        GameObject sparks = Instantiate(sparksPrefab, transform.position, Quaternion.identity);
+        ParticleSystem ps = sparks.GetComponent<ParticleSystem>();
+        ps.Play();
+        Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
+
         audioSource.PlayOneShot(hit);
 
         Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
@@ -98,6 +109,7 @@ public class Enemy : MonoBehaviour, IDamageable
     private void Awake()
     {
         spriteRenderer = GetComponent<SpriteRenderer>();
+        enemyMat = spriteRenderer.material;
 
         StateMachine = new PawnStateMachine();
         IdleState = new PawnIdleState(this, StateMachine);
@@ -190,10 +202,9 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private IEnumerator FlashSprite()
     {
-        Color originalColor = spriteRenderer.color;
         spriteRenderer.color = Color.red;
         yield return new WaitForSeconds(hitFlashDuration);
-        spriteRenderer.color = originalColor;
+        spriteRenderer.color = Color.white;
     }
 
     public void EyeFlash()
@@ -264,7 +275,7 @@ public class Enemy : MonoBehaviour, IDamageable
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        StartCoroutine(DisableAfterTime(1f));
+        StartCoroutine(Vanish());
     }
 
     public void ResetEnemy()
@@ -286,10 +297,20 @@ public class Enemy : MonoBehaviour, IDamageable
         gameObject.SetActive(true);
     }
 
-
-    public IEnumerator DisableAfterTime(float time)
+    private IEnumerator Vanish()
     {
-        yield return new WaitForSeconds(time);
+        yield return new WaitForSeconds(0.5f);
+        float elapsedTime = 0f;
+        while (elapsedTime < dissolveTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
+
+            enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
+            yield return null;
+        }
+
         gameObject.SetActive(false);
     }
 

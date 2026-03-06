@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Room : MonoBehaviour
@@ -48,7 +49,23 @@ public class Room : MonoBehaviour
     {
         if (blocker != null)
         {
-            blocker.SetActive(false);
+            StartCoroutine(Vanish());
         }
+    }
+
+    private IEnumerator Vanish()
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < 0.75f)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / 0.75f));
+
+            blocker.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
+            yield return null;
+        }
+
+        blocker.SetActive(false);
     }
 }
