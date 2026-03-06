@@ -55,5 +55,8 @@ TagManager:
   - name: DebugOverlay
     uniqueID: 575361943
     locked: 0
+  - name: CameraSortingLayer
+    uniqueID: 1329956431
+    locked: 0
   m_RenderingLayers:
   - Default

@@ -100,6 +100,10 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private GameObject parryChargeFX;
     [SerializeField] public GameObject parryRingFX;
     [SerializeField] public GameObject parryCounterAttackHitbox;
+    [SerializeField] private float shockwaveTime = 0.75f;
+    [SerializeField] private GameObject shockwavePrefab;
+    private Coroutine shockwaveCoroutine;
+    private static int waveDistanceFromCenter = Shader.PropertyToID("_WaveDistanceFromCenter");
     #endregion
 
     #region Layer Masks
@@ -398,10 +402,36 @@ public class Player : MonoBehaviour, IDamageable
         ps.Play();
         Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
+        StartCoroutine(Shockwave(-0.1f, 1f));
+
         hasParryCharge = true;
         parryChargeFX.SetActive(true);
         parryChargeFX.GetComponent<ParticleSystem>().Play();
         parryChargeEndTime = Time.time + parryChargeDuration;
+    }
+
+    private IEnumerator Shockwave(float startPos, float endPos)
+    {
+        GameObject shockwave = Instantiate(shockwavePrefab, blockCollider.transform.position, Quaternion.identity);
+        Material shockwaveMat = shockwave.GetComponent<SpriteRenderer>().material;
+
+        shockwaveMat.SetFloat(waveDistanceFromCenter, startPos);
+
+        float lerpedAmt = 0f;
+
+        float elapsedTime = 0f;
+
+        while (elapsedTime < shockwaveTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            lerpedAmt = Mathf.Lerp(startPos, endPos, (elapsedTime / shockwaveTime));
+            shockwaveMat.SetFloat(waveDistanceFromCenter, lerpedAmt);
+
+            yield return null;
+        }
+
+        Destroy(shockwave);
     }
 
     public void EnemyHitEffects(Enemy enemy)

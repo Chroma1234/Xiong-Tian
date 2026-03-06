@@ -30,6 +30,7 @@ public class CameraController : MonoBehaviour
     [SerializeField] private Volume volume;
     private Vignette vignette;
     private LensDistortion lensDistortion;
+    private ChromaticAberration chromaticAberration;
 
     private void Awake()
     {
@@ -48,6 +49,12 @@ public class CameraController : MonoBehaviour
         {
             vignette.active = true;
             vignette.intensity.overrideState = true;
+        }
+
+        if (volume.profile.TryGet<ChromaticAberration>(out chromaticAberration))
+        {
+            chromaticAberration.active = true;
+            chromaticAberration.intensity.overrideState = true;
         }
     }
 
@@ -110,6 +117,7 @@ public class CameraController : MonoBehaviour
 
         float originalDistortion = lensDistortion.intensity.value;
         float originalVignette = vignette.intensity.value;
+        float originalAberration = chromaticAberration.intensity.value;
 
         float elapsed = 0f;
         float elapsedPP = 0f;
@@ -121,8 +129,9 @@ public class CameraController : MonoBehaviour
             cam.fieldOfView = Mathf.Lerp(originalSize, targetSize, elapsed / zoomDuration);
 
             float fraction = Mathf.Clamp01(elapsedPP / zoomDuration * 2f);
-            lensDistortion.intensity.value = Mathf.SmoothStep(originalDistortion, -0.5f, fraction);
+            lensDistortion.intensity.value = Mathf.SmoothStep(originalDistortion, -0.3f, fraction);
             vignette.intensity.value = Mathf.SmoothStep(originalVignette, 0.5f, fraction);
+            chromaticAberration.intensity.value = Mathf.SmoothStep(originalAberration, 0.3f, fraction);
 
             yield return null;
         }
@@ -137,8 +146,9 @@ public class CameraController : MonoBehaviour
             elapsed += Time.deltaTime;
             cam.fieldOfView = Mathf.Lerp(targetSize, originalSize, elapsed / zoomDuration);
 
-            lensDistortion.intensity.value = Mathf.SmoothStep(-0.5f, originalDistortion, elapsed / zoomDuration);
+            lensDistortion.intensity.value = Mathf.SmoothStep(-0.3f, originalDistortion, elapsed / zoomDuration);
             vignette.intensity.value = Mathf.SmoothStep(0.5f, originalVignette, elapsed / zoomDuration);
+            chromaticAberration.intensity.value = Mathf.SmoothStep(0.3f, originalAberration, elapsed / zoomDuration);
 
             yield return null;
         }
