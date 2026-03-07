@@ -26,12 +26,15 @@ public class PlayerAttackState : PlayerState
 
         float moveX = Input.GetAxisRaw("Horizontal");
         moveDirection = new Vector2(moveX, 0).normalized;
-        player.rb.linearVelocity += moveDirection;
+        //player.rb.linearVelocity += moveDirection; //Bryan - Don't think this does anything?
 
 
         if (player.IsGrounded())
         {
-            player.rb.linearVelocity = Vector2.zero;
+            player.rb.linearVelocity = new Vector2(player.lastFacingDirection.x * 1f, player.rb.linearVelocity.y); //When attacking, move forward slightly
+
+            //player.rb.linearVelocity = moveDirection * 1f; //When holding down direction key, move forward slightly when attacking
+            //player.rb.linearVelocity = Vector2.one * 0.5f; //No movement at all when attacking
         }
 
         //player.StartCoroutine(MoveForward());
