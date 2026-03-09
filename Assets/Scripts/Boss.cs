@@ -2,8 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using System.Net;
+using System.Runtime.InteropServices;
 using System.Xml;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Boss : MonoBehaviour, IDamageable
@@ -44,17 +47,28 @@ public class Boss : MonoBehaviour, IDamageable
     public GameObject player;
     public Vector2 leftLimit;
     public Vector2 rightLimit;
-    public bool canMove = true;
+    [HideInInspector] public bool canMove = true;
 
-    public bool triggerGlobal;
-    public bool globalEven = true;
+    [HideInInspector] public bool triggerGlobal = false;
+    [HideInInspector] public bool exitGlobal = false;
+    [HideInInspector] public bool globalEven = true;
 
-    public Vector2 originalPos;
+    [HideInInspector] public Vector2 originalPos;
 
-    //public GameObject[] warningArray = new GameObject[8];
-    public List<GameObject> warningList = new List<GameObject>();
+    [HideInInspector] public List<GameObject> warningList = new List<GameObject>();
+    [HideInInspector] public List<GameObject> arrowList = new List<GameObject>();
 
     public GameObject warningObject;
+    public GameObject arrowObject;
+
+    public bool triggerLeft = false;
+
+    public float globalAttackCooldownValue = 10f;
+    public float globalAttackTimer = 5f;
+    public float warningFadeIn = 3f;
+    public float warningFadeOut = 2f;
+
+    public float arrowGravity = 40;
 
     public Vector2 FacingDirection
     {
@@ -140,19 +154,49 @@ public class Boss : MonoBehaviour, IDamageable
         originalPos = transform.position;
 
         triggerGlobal = false;
+        exitGlobal = false;
         //Debug.Log(warningArray.Length);
 
         float warningPosX = -12f;
+        float arrowPosX = -12f;
 
+        //Instantiate warning blocking
         for (int i = 0; i < 22; i++)
         {
-            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y + 5), Quaternion.identity);
+            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
             warningList.Add(newPrefab);
             warningPosX += 1f;
         }
+
+        //Instantiate arrows positions
+        for (int i = 0; i < 22; i++)
+        {
+            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, 50f), Quaternion.identity);
+
+            newPrefab.gameObject.SetActive(false);
+
+            newPrefab.gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+
+            newPrefab.gameObject.GetComponent<Rigidbody2D>().gravityScale = arrowGravity;
+
+            arrowList.Add(newPrefab);
+            arrowPosX += 1f;
+        }
+
+        //Instantiate arrow objects
+        //for (int i = 0; i < 22; i++)
+        //{
+        //    GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f), Quaternion.identity);
+
+        //    newPrefab.gameObject.SetActive(false);
+
+        //    warningList.Add(newPrefab);
+        //    warningPosX += 1f;
+        //}
+
     }
 
     private void Start()
@@ -198,7 +242,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
@@ -209,21 +253,29 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
         }
     }
 
+    //Temp to exit GLobal State
     private void OnTriggerExit2D(Collider2D collision)
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == GlobalAttackState && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
         {
             player = obj;
             triggerGlobal = false;
+            exitGlobal = false;
+            StateMachine.ChangeState(IdleState);
+        }
+
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
+        {
+            player = obj;
             StateMachine.ChangeState(IdleState);
         }
     }
@@ -343,19 +395,101 @@ public class Boss : MonoBehaviour, IDamageable
         audioSource.PlayOneShot(clip);
     }
 
-    //Placeholder condition to trigger global attack
-    public IEnumerator StartGlobal()
+    //Condition to trigger global attack
+    public IEnumerator GlobalTimer()
     {
-        yield return new WaitForSeconds(5);
-        Debug.Log("Countdown to enter global ends");
+        Debug.Log("Started Timer");
+
+        //Time to trigger Global Attack State without any interactions
+        yield return new WaitForSeconds(globalAttackTimer);
+
+        Debug.Log("Timer Ended");
 
         triggerGlobal = true;
+
     }
 
-    public IEnumerator GlobalAttack()
+    //Fade Coroutine
+    public IEnumerator FadeTo(float targetAlpha, float duration, SpriteRenderer render)
     {
+        float startAlpha = render.color.a;
+        float time = 0;
 
-        yield return null;
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            float blend = Mathf.Clamp01(time / duration);
+
+            Color newColor = new Color(render.color.r, render.color.g, render.color.b, Mathf.Lerp(startAlpha, targetAlpha, blend));
+
+            render.color = newColor;
+
+            yield return null;
+        }
+    }
+
+    public IEnumerator GlobalStateCooldown()
+    {
+        Debug.Log("Cooldown Triggered");
+
+        yield return new WaitForSeconds(globalAttackCooldownValue);
+        Debug.Log("Cooldown ended");
+
+        triggerGlobal = true;
+        exitGlobal = true;
+    }
+
+    //Trigger Arrows Coroutine
+    public IEnumerator triggerArrows()
+    {
+        Debug.Log("Triggering arrowAttacks function");
+
+        //Delay
+        yield return new WaitForSeconds(warningFadeIn + 0.2f);
+
+        //Starting Arrows Attack
+        //Fade out warning pillars
+        for (int i = 0; i < warningList.Count; i++)
+        {
+            if (warningList[i].gameObject.activeSelf)
+            {
+                GameObject stanceObject = warningList[i];
+
+                SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
+
+                Color newColor = Color.red;
+                stanceObjRender.color = newColor;
+
+                //Coroutine to fade out object
+                StartCoroutine(FadeTo(0f, warningFadeOut, stanceObjRender));
+                
+            }
+            
+        }
+
+        yield return new WaitForSeconds(warningFadeOut + 0.2f);
+
+        //Triggers Arrow Rain
+        Debug.Log("Rained Arrows");
+        for (int i = 0; i < arrowList.Count; i++)
+        {
+            if (warningList[i].gameObject.activeSelf)
+            {
+                arrowList[i].gameObject.SetActive(true);
+                warningList[i].gameObject.SetActive(false);
+
+                //Resets the position of the arrows
+                arrowList[i].gameObject.transform.position = new Vector2(this.transform.position.x, 50f);
+            }
+
+            arrowList[i].gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        }
+
+        yield return new WaitForSeconds(1f);
+
+        triggerGlobal = false;
+        exitGlobal = false;
+        StateMachine.ChangeState(IdleState);
     }
 
 }

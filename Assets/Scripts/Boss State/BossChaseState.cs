@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Threading;
+using System.Xml;
 using UnityEngine;
 
 public class BossChaseState : BossState
@@ -9,6 +10,9 @@ public class BossChaseState : BossState
 
     private float groundCheckDistance = 0.2f;
     private LayerMask groundLayer = LayerMask.GetMask("Ground");
+
+    private Coroutine startG;
+
     public BossChaseState(Boss boss, BossStateMachine bossStateMachine) : base(boss, bossStateMachine)
     {
     }
@@ -22,16 +26,38 @@ public class BossChaseState : BossState
     {
         base.EnterState();
 
-        Debug.Log("i see you");
+        Debug.Log("Entered Chased State");
 
         //Trigger the coroutine to trigger global attacks after a set amount of time
-        boss.StartCoroutine(boss.StartGlobal());
+        if (startG == null)
+        {
+            startG = boss.StartCoroutine(boss.GlobalTimer());
+        }
+
+        else
+        {
+            boss.StopCoroutine(startG);
+            startG = null;
+
+            startG = boss.StartCoroutine(boss.GlobalTimer());
+
+        }
 
     }
     
     public override void ExitState()
     {
         base.ExitState();
+        Debug.Log("Exit Chased State");
+
+        if (startG != null)
+        {
+            boss.StopCoroutine(startG);
+            startG = null;
+
+            Debug.Log("Disabled coroutine");
+        }
+        
     }
 
     public override void FrameUpdate()
@@ -67,13 +93,16 @@ public class BossChaseState : BossState
         {
             boss.transform.position = Vector2.MoveTowards(boss.transform.position, new Vector3(boss.player.transform.position.x, boss.transform.position.y, boss.transform.position.z), pawnSpeed * Time.deltaTime);
 
-            //Condition to enter Global Attack State
-            if (boss.triggerGlobal)
+            //Bool condition to enter Global Attack State == true
+            if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.AttackState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)          
             {
-                Debug.Log(boss.triggerGlobal);
+                Debug.Log("Trigger Global: " + boss.triggerGlobal);         
 
                 boss.StateMachine.ChangeState(boss.GlobalAttackState);
-                boss.StopCoroutine(boss.StartGlobal());
+                boss.StopCoroutine(boss.GlobalTimer());
+
+                //Global State Cooldown
+                boss.StartCoroutine(boss.GlobalStateCooldown());
             }
         }
         else if (!IsGroundAhead())
@@ -91,6 +120,15 @@ public class BossChaseState : BossState
         //if (pawn.transform.position.x > pawn.rightLimit.x - 0.5)
         //{
         //    pawn.StateMachine.ChangeState(pawn.IdleState);
+        //}
+
+
+        //if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState == boss.AttackState || boss.StateMachine.CurrentBossState == boss.StunnedState || boss.StateMachine.CurrentBossState == boss.DeadState && boss.triggerGlobal && startG != null)
+        //{
+        //    boss.StopCoroutine(startG);
+        //    startG = null;
+
+        //    Debug.Log("Disabled coroutine");
         //}
     }
 
