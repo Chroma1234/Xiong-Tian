@@ -96,7 +96,7 @@ public class BossChaseState : BossState
             //Bool condition to enter Global Attack State == true
             if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.AttackState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)          
             {
-                Debug.Log("Trigger Global: " + boss.triggerGlobal);         
+                //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
 
                 boss.StateMachine.ChangeState(boss.GlobalAttackState);
                 boss.StopCoroutine(boss.GlobalTimer());

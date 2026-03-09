@@ -63,12 +63,15 @@ public class Boss : MonoBehaviour, IDamageable
 
     public bool triggerLeft = false;
 
-    public float globalAttackCooldownValue = 10f;
+    public float globalAttackCooldown = 10f;
     public float globalAttackTimer = 5f;
     public float warningFadeIn = 3f;
     public float warningFadeOut = 2f;
 
     public float arrowGravity = 40;
+
+    [HideInInspector] public bool globalCooldown = false;
+    [HideInInspector] public int globalCounter = 0;
 
     public Vector2 FacingDirection
     {
@@ -224,7 +227,7 @@ public class Boss : MonoBehaviour, IDamageable
             {
                 inAttackRange = true;
             }
-        }
+        } 
         else
         {
             inAttackRange = false;
@@ -405,7 +408,10 @@ public class Boss : MonoBehaviour, IDamageable
 
         Debug.Log("Timer Ended");
 
-        triggerGlobal = true;
+        if (!globalCooldown)
+        {
+            triggerGlobal = true;
+        }
 
     }
 
@@ -431,18 +437,19 @@ public class Boss : MonoBehaviour, IDamageable
     public IEnumerator GlobalStateCooldown()
     {
         Debug.Log("Cooldown Triggered");
+        globalCooldown = true;
 
-        yield return new WaitForSeconds(globalAttackCooldownValue);
+        yield return new WaitForSeconds(globalAttackCooldown);
         Debug.Log("Cooldown ended");
 
-        triggerGlobal = true;
-        exitGlobal = true;
+        globalCooldown = false;
+    
     }
 
     //Trigger Arrows Coroutine
     public IEnumerator triggerArrows()
     {
-        Debug.Log("Triggering arrowAttacks function");
+        //Debug.Log("Triggering arrowAttacks function");
 
         //Delay
         yield return new WaitForSeconds(warningFadeIn + 0.2f);
@@ -470,7 +477,7 @@ public class Boss : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(warningFadeOut + 0.2f);
 
         //Triggers Arrow Rain
-        Debug.Log("Rained Arrows");
+        //Debug.Log("Rained Arrows");
         for (int i = 0; i < arrowList.Count; i++)
         {
             if (warningList[i].gameObject.activeSelf)
@@ -479,7 +486,7 @@ public class Boss : MonoBehaviour, IDamageable
                 warningList[i].gameObject.SetActive(false);
 
                 //Resets the position of the arrows
-                arrowList[i].gameObject.transform.position = new Vector2(this.transform.position.x, 50f);
+                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, 50f);
             }
 
             arrowList[i].gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
@@ -487,9 +494,21 @@ public class Boss : MonoBehaviour, IDamageable
 
         yield return new WaitForSeconds(1f);
 
-        triggerGlobal = false;
-        exitGlobal = false;
-        StateMachine.ChangeState(IdleState);
+        if (globalCounter == 0)
+        {
+            StateMachine.ChangeState(GlobalAttackState);
+            globalCounter++;
+        }
+
+        else if (globalCounter == 1)
+        {
+            globalCounter = 0;
+
+            triggerGlobal = false;
+            exitGlobal = false;
+
+            StateMachine.ChangeState(IdleState);
+        }
     }
 
 }
