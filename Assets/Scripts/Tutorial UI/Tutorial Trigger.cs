@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class TutorialTrigger : MonoBehaviour
 {
+    
     public WorldTutorialFade tutorial; // Reference to the tutorial popup
     private bool triggered = false;
 

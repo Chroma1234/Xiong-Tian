@@ -9,7 +9,22 @@ public class WorldTutorialFade : MonoBehaviour
     public float fadeSpeed = 2f;
 
     Coroutine fadeRoutine;
+    public void Start()
+    {
+        foreach (SpriteRenderer s in sprites)
+        {
+            Color c = s.color;
+            c.a = 0f;
+            s.color = c;
+        }
 
+        foreach (TextMeshPro t in texts)
+        {
+            Color c = t.color;
+            c.a = 0f;
+            t.color = c;
+        }
+    }
     public void FadeIn()
     {
         if (fadeRoutine != null)
