@@ -32,6 +32,8 @@ public class BossIdleState : BossState
 
             wanderRoutine = boss.StartCoroutine(Wander());
         }
+
+        boss.spriteRenderer.color = Color.white;
     }
 
     public override void ExitState()

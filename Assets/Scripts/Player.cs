@@ -188,6 +188,8 @@ public class Player : MonoBehaviour, IDamageable
 
         Enemy.OnEnemyHit += EnemyHitEffects;
         Enemy.OnEnemyKilled += EnemyHitEffects;
+        Boss.OnBossHit += EnemyHitEffects;
+        Boss.OnBossKilled += EnemyHitEffects;
     }
 
     private void Update()
@@ -290,6 +292,8 @@ public class Player : MonoBehaviour, IDamageable
     {
         Enemy.OnEnemyHit -= EnemyHitEffects;
         Enemy.OnEnemyKilled -= EnemyHitEffects;
+        Boss.OnBossHit -= EnemyHitEffects;
+        Boss.OnBossKilled -= EnemyHitEffects;
     }
 
     public void HandleMovement()
@@ -435,6 +439,12 @@ public class Player : MonoBehaviour, IDamageable
     }
 
     public void EnemyHitEffects(Enemy enemy)
+    {
+        cam.DoShake(attackCameraShakeMagnitude, attackCameraShakeDuration);
+        gameManager.DoHitStop(attackHitstopDuration);
+    }
+
+    public void EnemyHitEffects(Boss boss)
     {
         cam.DoShake(attackCameraShakeMagnitude, attackCameraShakeDuration);
         gameManager.DoHitStop(attackHitstopDuration);

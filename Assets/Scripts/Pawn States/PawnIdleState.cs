@@ -32,6 +32,8 @@ public class PawnIdleState : PawnState
 
             wanderRoutine = pawn.StartCoroutine(Wander());
         }
+
+        pawn.spriteRenderer.color = Color.white;
     }  
 
     public override void ExitState()

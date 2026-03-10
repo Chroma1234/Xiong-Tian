@@ -117,8 +117,8 @@ public class Boss : MonoBehaviour, IDamageable
 
         audioSource.PlayOneShot(hit);
 
-        Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
-        StartCoroutine(Knockback(launchDir));
+        //Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
+        //StartCoroutine(Knockback(launchDir));
 
         OnBossHit?.Invoke(this);
 
