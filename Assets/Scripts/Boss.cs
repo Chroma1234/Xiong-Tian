@@ -63,6 +63,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     public bool triggerLeft = false;
 
+    public float warningArrowOffset = 40f;
     public float globalAttackCooldown = 10f;
     public float globalAttackTimer = 5f;
     public float warningFadeIn = 3f;
@@ -166,7 +167,7 @@ public class Boss : MonoBehaviour, IDamageable
         //Instantiate warning blocking
         for (int i = 0; i < 22; i++)
         {
-            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f), Quaternion.identity);
+            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f + warningArrowOffset), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
@@ -177,7 +178,7 @@ public class Boss : MonoBehaviour, IDamageable
         //Instantiate arrows positions
         for (int i = 0; i < 22; i++)
         {
-            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, 50f), Quaternion.identity);
+            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, 50f + warningArrowOffset), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
@@ -449,7 +450,7 @@ public class Boss : MonoBehaviour, IDamageable
     //Trigger Arrows Coroutine
     public IEnumerator triggerArrows()
     {
-        //Debug.Log("Triggering arrowAttacks function");
+        Debug.Log("Triggering arrowAttacks function");
 
         //Delay
         yield return new WaitForSeconds(warningFadeIn + 0.2f);
@@ -477,7 +478,7 @@ public class Boss : MonoBehaviour, IDamageable
         yield return new WaitForSeconds(warningFadeOut + 0.2f);
 
         //Triggers Arrow Rain
-        //Debug.Log("Rained Arrows");
+        Debug.Log("Raining Arrows");
         for (int i = 0; i < arrowList.Count; i++)
         {
             if (warningList[i].gameObject.activeSelf)

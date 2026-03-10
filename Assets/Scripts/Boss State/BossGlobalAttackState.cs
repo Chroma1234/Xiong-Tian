@@ -98,7 +98,7 @@ public class BossGlobalAttackState : BossState
 
     private void appearFadeIn(SpriteRenderer render)
     {
-        //Debug.Log("Trigger appearFadeIn()");
+        Debug.Log("Trigger appearFadeIn()");
 
         //Warning pillars appear with an Alpha of 0
         Color newColor = new Color(render.color.r, render.color.g, render.color.b, 0);
@@ -106,7 +106,7 @@ public class BossGlobalAttackState : BossState
         render.color = newColor;
 
         //Fade in warning pillars
-        //Debug.Log("Trigger FadeIn Coroutine");
+        Debug.Log("Trigger FadeIn Coroutine");
         boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, render));
 
     }

@@ -11,8 +11,6 @@ GameObject:
   - component: {fileID: 7358560002833708938}
   - component: {fileID: 9056502886414117372}
   - component: {fileID: 6690052556931173357}
-  - component: {fileID: 7814725648557581161}
-  - component: {fileID: 6478391063590468203}
   m_Layer: 0
   m_Name: WarningPre
   m_TagString: Untagged
@@ -111,31 +109,3 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 1, y: 1, z: 0.2}
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &7814725648557581161
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 109767606089165567}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1b2c3baf7e19d3a43a2a8eaa6f8fe92f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &6478391063590468203
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 109767606089165567}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3232a98fdfcc04e49bdf2bd28772b763, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  attackDamage: 2
-  knockbackForce: 1
-  blockable: 0
-  parryable: 0
