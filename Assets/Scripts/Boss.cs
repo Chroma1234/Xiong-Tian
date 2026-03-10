@@ -224,7 +224,7 @@ public class Boss : MonoBehaviour, IDamageable
         Debug.DrawRay(transform.position, direction * 1f, Color.green);
         if (hit.collider != null)
         {
-            if (hit.collider.CompareTag("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != DeadState)
+            if (hit.collider.CompareTag("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != GlobalAttackState)
             {
                 inAttackRange = true;
             }
@@ -246,7 +246,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
@@ -257,10 +257,17 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
+        }
+
+        if (StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && triggerGlobal)
+        {
+            //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
+
+            StateMachine.ChangeState(GlobalAttackState);
         }
     }
 
@@ -269,7 +276,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == GlobalAttackState && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == GlobalAttackState && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
         {
             player = obj;
             triggerGlobal = false;
@@ -277,7 +284,7 @@ public class Boss : MonoBehaviour, IDamageable
             StateMachine.ChangeState(IdleState);
         }
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
         {
             player = obj;
             StateMachine.ChangeState(IdleState);
@@ -376,12 +383,12 @@ public class Boss : MonoBehaviour, IDamageable
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
         {
-            if (col != boxCollider && col.name != "NormalAtkHitbox" && col.name != "ParryAtkHitbox")
+            if (col != boxCollider && col.name != "NormalAtkHitbox" && col.name != "ParryAtkHitbox" && !triggerGlobal)
                 col.enabled = true;
         }
         Health = maxHealth;
         IsAlive = true;
-        StateMachine.ChangeState(IdleState);
+        StateMachine.ChangeState(IdleState); 
         animator.Rebind();
         animator.Update(0f);
         gameObject.SetActive(true);
@@ -487,21 +494,25 @@ public class Boss : MonoBehaviour, IDamageable
                 warningList[i].gameObject.SetActive(false);
 
                 //Resets the position of the arrows
-                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, 50f);
+                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, 50f + warningArrowOffset);
             }
 
             arrowList[i].gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         }
 
+        globalCounter++;
+
+        Debug.Log(globalCounter);
+
         yield return new WaitForSeconds(1f);
 
-        if (globalCounter == 0)
+        if (globalCounter <= 1)
         {
             StateMachine.ChangeState(GlobalAttackState);
-            globalCounter++;
+            
         }
 
-        else if (globalCounter == 1)
+        else if (globalCounter <= 2)
         {
             globalCounter = 0;
 
