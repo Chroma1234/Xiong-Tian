@@ -31,9 +31,9 @@ public class PlayerAttackState : PlayerState
 
         if (player.IsGrounded())
         {
-            player.rb.linearVelocity = new Vector2(player.lastFacingDirection.x * 1f, player.rb.linearVelocity.y); //When attacking, move forward slightly
+            //player.rb.linearVelocity = new Vector2(player.lastFacingDirection.x * 1f, player.rb.linearVelocity.y); //When attacking, move forward slightly
 
-            //player.rb.linearVelocity = moveDirection * 1f; //When holding down direction key, move forward slightly when attacking
+            player.rb.linearVelocity = moveDirection * 0.5f; //When holding down direction key, move forward slightly when attacking
             //player.rb.linearVelocity = Vector2.one * 0.5f; //No movement at all when attacking
         }
 
