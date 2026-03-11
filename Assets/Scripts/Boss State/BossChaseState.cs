@@ -94,7 +94,7 @@ public class BossChaseState : BossState
             boss.transform.position = Vector2.MoveTowards(boss.transform.position, new Vector3(boss.player.transform.position.x, boss.transform.position.y, boss.transform.position.z), pawnSpeed * Time.deltaTime);
 
             //Bool condition to enter Global Attack State == true
-            if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.AttackState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)          
+            if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)          
             {
                 //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
 

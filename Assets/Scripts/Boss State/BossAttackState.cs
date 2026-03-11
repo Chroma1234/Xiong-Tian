@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BossAttackState : BossState
 {
-    private float attackCooldown = 1.0f;    // delay between attacks
+    private float attackCooldown =1.0f;    // delay between attacks
 
     public BossAttackState(Boss boss, BossStateMachine sm) : base(boss, sm) { }
 
@@ -13,15 +13,22 @@ public class BossAttackState : BossState
         boss.canMove = false;
 
         TriggerAttack();
+
+        Debug.Log("Enter Attack State");
+
     }
 
     public override void ExitState()
     {
         boss.canMove = true;
+        Debug.Log("Exit Attack State");
     }
 
     private void TriggerAttack()
     {
+        Debug.Log("TriggerAttack()");
+        Debug.Log(boss.inAttackRange);
+
         boss.animator.ResetTrigger("attack");
         boss.animator.ResetTrigger("parryableAttack");
 
@@ -33,6 +40,8 @@ public class BossAttackState : BossState
 
     public override void OnAttackFinished()
     {
+        Debug.Log("onAttackFinished()");
+
         if (!boss.inAttackRange)
         {
             boss.StartCoroutine(Delay(0.5f));
@@ -44,6 +53,8 @@ public class BossAttackState : BossState
 
     private IEnumerator Delay(float delay)
     {
+        Debug.Log("Delay()");
+
         yield return new WaitForSeconds(delay);
 
         boss.StateMachine.ChangeState(boss.ChaseState);
@@ -51,6 +62,8 @@ public class BossAttackState : BossState
 
     private IEnumerator AttackDelay(float delay)
     {
+        Debug.Log("AttackDelay()");
+
         yield return new WaitForSeconds(delay);
 
         // Only trigger next attack if player still in range

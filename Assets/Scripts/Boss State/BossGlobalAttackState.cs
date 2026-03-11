@@ -10,10 +10,8 @@ public class BossGlobalAttackState : BossState
 
     public BossGlobalAttackState(Boss boss, BossStateMachine bossStateMachine) : base(boss, bossStateMachine)
     {
-    }
 
-    private bool triggerArrows = false;
-    private bool triggerWarning = false;
+    }
 
     public override void AnimationTriggerEvent()
     {
@@ -23,6 +21,8 @@ public class BossGlobalAttackState : BossState
     public override void EnterState()
     {
         base.EnterState();
+
+        //boss.animator.SetTrigger("dipped");
 
         Debug.Log("Enters Global Attack State");
 
@@ -62,6 +62,9 @@ public class BossGlobalAttackState : BossState
 
         boss.triggerLeft = !boss.triggerLeft;
         boss.StartCoroutine(boss.triggerArrows());
+
+        boss.animator.SetTrigger("global");
+
     }
 
     public override void ExitState()
@@ -81,6 +84,9 @@ public class BossGlobalAttackState : BossState
             boss.arrowList[i].SetActive(false);
 
         }
+
+        boss.animator.ResetTrigger("global");
+
 
     }
 

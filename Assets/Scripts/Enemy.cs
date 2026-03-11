@@ -49,6 +49,8 @@ public class Enemy : MonoBehaviour, IDamageable
     public Vector2 rightLimit;
     public bool canMove = true;
 
+    public bool shieldType = false;
+
     public Vector2 FacingDirection
     {
         get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;

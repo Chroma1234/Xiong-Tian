@@ -33,7 +33,7 @@ public class BossHitbox : MonoBehaviour
             }
 
             if (weapon.projectile)
-            {
+            {           
                 Destroy(obj);
             }
         }

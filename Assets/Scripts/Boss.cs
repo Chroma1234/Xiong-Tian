@@ -178,7 +178,7 @@ public class Boss : MonoBehaviour, IDamageable
         //Instantiate arrows positions
         for (int i = 0; i < 22; i++)
         {
-            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, 50f + warningArrowOffset), Quaternion.identity);
+            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, this.transform.position.y + 4f), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
@@ -189,17 +189,6 @@ public class Boss : MonoBehaviour, IDamageable
             arrowList.Add(newPrefab);
             arrowPosX += 1f;
         }
-
-        //Instantiate arrow objects
-        //for (int i = 0; i < 22; i++)
-        //{
-        //    GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f), Quaternion.identity);
-
-        //    newPrefab.gameObject.SetActive(false);
-
-        //    warningList.Add(newPrefab);
-        //    warningPosX += 1f;
-        //}
 
     }
 
@@ -220,8 +209,11 @@ public class Boss : MonoBehaviour, IDamageable
         StateMachine.CurrentBossState.FrameUpdate();
 
         Vector2 direction = transform.localScale.x == -1 ? Vector2.right : Vector2.left;
-        RaycastHit2D hit = Physics2D.Raycast(transform.position, direction, 1f, playerLayer);
-        Debug.DrawRay(transform.position, direction * 1f, Color.green);
+
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0.2f), direction, 1.5f, playerLayer);
+        
+        Debug.DrawRay(new Vector2(transform.position.x, transform.position.y - 0.2f), direction * 1.5f, Color.green);
+
         if (hit.collider != null)
         {
             if (hit.collider.CompareTag("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != GlobalAttackState)
@@ -268,6 +260,8 @@ public class Boss : MonoBehaviour, IDamageable
             //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
 
             StateMachine.ChangeState(GlobalAttackState);
+            animator.SetTrigger("dipped");
+
         }
     }
 
@@ -494,7 +488,7 @@ public class Boss : MonoBehaviour, IDamageable
                 warningList[i].gameObject.SetActive(false);
 
                 //Resets the position of the arrows
-                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, 50f + warningArrowOffset);
+                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, arrowList[i].gameObject.transform.position.y);
             }
 
             arrowList[i].gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;

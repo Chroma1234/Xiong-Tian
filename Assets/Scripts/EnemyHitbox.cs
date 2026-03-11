@@ -30,7 +30,7 @@ public class EnemyHitbox : MonoBehaviour
                     //add other fx
                 }
 
-                else
+                else if (!enemy.shieldType)
                 {
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
