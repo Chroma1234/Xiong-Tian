@@ -64,7 +64,6 @@ public class Room_TrapDoors : MonoBehaviour
 
             float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / 0.75f));
 
-            //blocker.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
             foreach(GameObject e in blockers)
             {
                 e.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
@@ -76,6 +75,5 @@ public class Room_TrapDoors : MonoBehaviour
         {
             e.SetActive(false);
         }
-        //blocker.SetActive(false);
     }
 }

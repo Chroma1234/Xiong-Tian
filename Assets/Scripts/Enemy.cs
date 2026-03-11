@@ -281,6 +281,7 @@ public class Enemy : MonoBehaviour, IDamageable
     public void ResetEnemy()
     {
         StopAllCoroutines();
+        enemyMat.SetFloat(dissolveAmt, 0f);
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();

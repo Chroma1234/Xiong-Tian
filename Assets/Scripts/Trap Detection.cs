@@ -5,7 +5,7 @@ using static Unity.Collections.AllocatorManager;
 
 public class Trap_Detection : MonoBehaviour
 {
-    CameraController cam;
+
     [SerializeField] 
     public BoxCollider2D trap_detection;
     public GameObject trapdoor;
@@ -20,12 +20,12 @@ public class Trap_Detection : MonoBehaviour
         if (collision.CompareTag("Player"))
         {
             trap_detection.enabled = false;
-            StartCoroutine(Vanish());           
+            StartCoroutine(Appear());           
         }
     }
 
     
-    private IEnumerator Vanish()
+    private IEnumerator Appear()
     {
         trapdoor.SetActive(true);
         float elapsedTime = 0f;
