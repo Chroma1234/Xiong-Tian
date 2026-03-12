@@ -309,9 +309,9 @@ public class Boss : MonoBehaviour, IDamageable
     public void Stunned()
     {
         if (transform.localScale.x == 1)
-            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(-0.15f, 1.8f, 0), Quaternion.Euler(90, 0, 0), transform);
         else
-            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(-0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
+            stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.15f, 1.8f, 0), Quaternion.Euler(90, 0, 0), transform);
         ParticleSystem ps = stars.GetComponent<ParticleSystem>();
         ps.Play();
         Destroy(stars, ps.main.duration + ps.main.startLifetime.constantMax);

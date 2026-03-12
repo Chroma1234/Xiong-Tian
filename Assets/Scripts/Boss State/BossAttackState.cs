@@ -32,9 +32,6 @@ public class BossAttackState : BossState
         boss.animator.ResetTrigger("attack");
         boss.animator.ResetTrigger("parryableAttack");
 
-        //if (Random.value < 0.5f)
-        //pawn.animator.SetTrigger("attack");
-        //else
         boss.animator.SetTrigger("parryableAttack");
     }
 
@@ -42,13 +39,14 @@ public class BossAttackState : BossState
     {
         Debug.Log("onAttackFinished()");
 
-        if (!boss.inAttackRange)
+        if (boss.inAttackRange)
+        {
+            boss.StartCoroutine(AttackDelay(attackCooldown));
+        }
+        else
         {
             boss.StartCoroutine(Delay(0.5f));
-            return;
         }
-
-        boss.StartCoroutine(AttackDelay(attackCooldown));
     }
 
     private IEnumerator Delay(float delay)
