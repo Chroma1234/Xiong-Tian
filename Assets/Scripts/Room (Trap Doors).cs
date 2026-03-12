@@ -49,7 +49,7 @@ public class Room_TrapDoors : MonoBehaviour
 
     public void DestroyBlocker()
     {
-        if (blocker != null)
+        if (blockers != null)
         {
             StartCoroutine(Vanish());
         }
