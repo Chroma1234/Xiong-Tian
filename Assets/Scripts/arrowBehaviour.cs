@@ -1,54 +1,54 @@
 using System.Collections;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class arrowBehaviour : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private float dissolveTime = 0.75f;
+    private int dissolveAmt = Shader.PropertyToID("_DissolveAmt");
+
+    private SpriteRenderer spriteRenderer;
+    private Material enemyMat;
+    private Rigidbody2D rb;
+
+    private void Awake()
     {
-        
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();   
+        enemyMat = spriteRenderer.material;
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+    private IEnumerator Vanish()
+    {  
+        float elapsedTime = 0f;
+        while (elapsedTime < dissolveTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
+
+            enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
+            yield return null;
+        }
+
+        gameObject.SetActive(false);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
-        if (collision.gameObject.CompareTag("Player"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Ground"))
         {
-            Fade();
-            //this.gameObject.SetActive(false);
-            Debug.Log("Disabled oneself");
-        }
+            //this.gameObject.SetActive(false); 
+            //this.gameObject.GetComponent<BoxCollider>().isTrigger = false;
+            rb.gravityScale = 0f;
+            rb.linearVelocity = Vector3.zero;
+            StartCoroutine(Vanish());
+            //Debug.Log("Disabled oneself");
 
-        if (collision.gameObject.CompareTag("Ground"))
-        {
-            StartCoroutine(Fade());
-            Debug.Log("Trigger");
         }
-
         
     }
-
-    private IEnumerator Fade()
-    {
-        float elapsedTime = 0f;
-        while (elapsedTime < 0.75f)
-        {
-            elapsedTime += Time.deltaTime;
-
-            float lerpedDissolve = Mathf.Lerp(0f, 0, (elapsedTime / 0.75f));
-
-            this.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
-
-            yield return null;
-        }
-
-        this.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), 0);
-    }
+    
 }
