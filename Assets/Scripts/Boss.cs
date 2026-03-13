@@ -14,6 +14,8 @@ public class Boss : MonoBehaviour, IDamageable
     public static event Action<Boss> OnBossHit;
     public static event Action<Boss> OnBossKilled;
 
+    [SerializeField] CameraController cam;
+
     private Vector3 spawnPosition;
     private Quaternion spawnRotation;
     private GameManager manager;
@@ -42,6 +44,7 @@ public class Boss : MonoBehaviour, IDamageable
     public ParticleSystem eyeFlash;
 
     private AudioSource audioSource;
+    [SerializeField] AudioSource bgm;
     [SerializeField] private AudioClip hit;
 
     //raptor-x-z
@@ -79,6 +82,7 @@ public class Boss : MonoBehaviour, IDamageable
     [HideInInspector] public bool globalCooldown = false;
     [HideInInspector] public int globalCounter = 0;
 
+    [SerializeField] private AudioClip arrowFallingClip;
     public Vector2 FacingDirection
     {
         get => transform.localScale.x > 0 ? Vector2.right : Vector2.left;
@@ -110,8 +114,8 @@ public class Boss : MonoBehaviour, IDamageable
 
             if (health <= 0 && IsAlive)
             {
+                
                 Die();
-                Debug.Log("dead");
             }
         }
     }
@@ -412,6 +416,11 @@ public class Boss : MonoBehaviour, IDamageable
 
     public void Die()
     {
+        StopAllCoroutines();
+        manager.DoSlowDown(0.025f, 0.5f);
+        cam.ZoomIn();
+        StartCoroutine(FadeAudio(0f, 1f));
+
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
         {
@@ -423,14 +432,12 @@ public class Boss : MonoBehaviour, IDamageable
         {
             Destroy(stars);
         }
-
-        StopAllCoroutines();
         IsAlive = false;
         OnBossKilled?.Invoke(this);
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        StartCoroutine(DisableAfterTime(1f));
+        //StartCoroutine(DisableAfterTime(1f));
     }
 
     public void ResetEnemy()
@@ -544,6 +551,7 @@ public class Boss : MonoBehaviour, IDamageable
 
         //Triggers Arrow Rain
         Debug.Log("Raining Arrows");
+        PlaySound(arrowFallingClip);
         for (int i = 0; i < arrowList.Count; i++)
         {
             if (warningList[i].gameObject.activeSelf)
@@ -584,6 +592,34 @@ public class Boss : MonoBehaviour, IDamageable
 
         //    StateMachine.ChangeState(IdleState);
         //}
+    }
+
+    private IEnumerator FadeAudio(float targetVolume, float duration)
+    {
+        float startVolume = bgm.volume;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            bgm.volume = Mathf.Lerp(startVolume, targetVolume, time / duration);
+            yield return null;
+        }
+
+        bgm.volume = targetVolume;
+    }
+
+    public void ResetWarnings()
+    {
+        for (int i = 0; i < warningList.Count; i++)
+        {
+            warningList[i].SetActive(true);
+
+            SpriteRenderer sr = warningList[i].GetComponent<SpriteRenderer>();
+            Color c = sr.color;
+            c.a = 1f;
+            sr.color = c;
+        }
     }
 
 }

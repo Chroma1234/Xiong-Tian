@@ -32,7 +32,7 @@ public class Trap_Detection : MonoBehaviour
 
     private void Update()
     {
-        if (!player.IsAlive)
+        if (player != null & !player.IsAlive)
         {
             trapdoor.SetActive(false);
             trap_detection.enabled = true;

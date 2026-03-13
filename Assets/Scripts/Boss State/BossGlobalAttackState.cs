@@ -150,7 +150,5 @@ public class BossGlobalAttackState : BossState
 
         boss.triggerLeft = !boss.triggerLeft;
         boss.StartCoroutine(boss.triggerArrows());
-
-        //boss.animator.SetTrigger("global");
     }
 }

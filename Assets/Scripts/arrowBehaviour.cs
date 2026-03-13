@@ -2,6 +2,7 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class arrowBehaviour : MonoBehaviour
 {
@@ -11,6 +12,9 @@ public class arrowBehaviour : MonoBehaviour
     private SpriteRenderer spriteRenderer;
     private Material enemyMat;
     private Rigidbody2D rb;
+
+    [SerializeField] AudioSource audioSource;
+    [SerializeField] AudioClip impactClip;
 
     private void Awake()
     {
@@ -40,15 +44,20 @@ public class arrowBehaviour : MonoBehaviour
         
         if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Ground"))
         {
+            PlaySound(impactClip);
             //this.gameObject.SetActive(false); 
             //this.gameObject.GetComponent<BoxCollider>().isTrigger = false;
             rb.gravityScale = 0f;
             rb.linearVelocity = Vector3.zero;
             StartCoroutine(Vanish());
             //Debug.Log("Disabled oneself");
-
         }
         
     }
-    
+
+    public void PlaySound(AudioClip clip)
+    {
+        audioSource.PlayOneShot(clip);
+    }
+
 }
