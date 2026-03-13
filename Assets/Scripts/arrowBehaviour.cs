@@ -1,3 +1,5 @@
+using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class arrowBehaviour : MonoBehaviour
@@ -16,12 +18,37 @@ public class arrowBehaviour : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        //Debug.Log(collision);
-
-        if (collision.gameObject.CompareTag("Ground") || collision.gameObject.CompareTag("Player"))
+        
+        if (collision.gameObject.CompareTag("Player"))
         {
-            this.gameObject.SetActive(false);
-            //Debug.Log("Disabled oneself");
+            Fade();
+            //this.gameObject.SetActive(false);
+            Debug.Log("Disabled oneself");
         }
+
+        if (collision.gameObject.CompareTag("Ground"))
+        {
+            StartCoroutine(Fade());
+            Debug.Log("Trigger");
+        }
+
+        
+    }
+
+    private IEnumerator Fade()
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < 0.75f)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float lerpedDissolve = Mathf.Lerp(0f, 0, (elapsedTime / 0.75f));
+
+            this.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
+
+            yield return null;
+        }
+
+        this.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), 0);
     }
 }

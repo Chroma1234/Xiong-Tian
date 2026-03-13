@@ -34,6 +34,15 @@ public class EnemyHitbox : MonoBehaviour
                 {
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
+
+                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
+                }
+
+                else if (enemy.shieldType)
+                {
+                    int dmgTaken = 0;
+                    Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
+
                     enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
                 }
             }

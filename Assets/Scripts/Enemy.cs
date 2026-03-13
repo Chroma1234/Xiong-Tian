@@ -102,7 +102,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
         OnEnemyHit?.Invoke(this);
 
-        if (Health > 0)
+        if (Health > 0 && damage != 0)
         {
             StartCoroutine(FlashSprite());
         }
