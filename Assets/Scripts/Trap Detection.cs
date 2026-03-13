@@ -20,11 +20,24 @@ public class Trap_Detection : MonoBehaviour
 
     [SerializeField] private AudioClip bossMusic;
 
+    private Player player;
+
     private void Awake()
     {
         trap_detection = GetComponent<BoxCollider2D>();
         trapdoor.gameObject.SetActive(false);
         gameManager = FindFirstObjectByType<GameManager>();
+
+    }
+
+    private void Update()
+    {
+        if (!player.IsAlive)
+        {
+            trapdoor.SetActive(false);
+            trap_detection.enabled = true;
+            //Debug.Log("Player died");
+        }
     }
     private void OnTriggerEnter2D(Collider2D collision)
     {
@@ -33,7 +46,7 @@ public class Trap_Detection : MonoBehaviour
             trap_detection.enabled = false;
             StartCoroutine(Appear());
 
-            Player player = collision.gameObject.GetComponent<Player>();
+            player = collision.gameObject.GetComponent<Player>();
 
             if (boss != null)
             {
@@ -41,6 +54,8 @@ public class Trap_Detection : MonoBehaviour
                 player.rb.linearVelocity = Vector2.zero;
                 StartCoroutine(Setup(player));
             }
+
+
         }
     }
 
