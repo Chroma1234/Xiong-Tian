@@ -43,6 +43,12 @@ public class BossChaseState : BossState
 
         }
 
+        if (boss.justStunned)
+        {
+            boss.Teleport();
+            boss.justStunned = false;
+        }
+
     }
     
     public override void ExitState()
@@ -64,72 +70,54 @@ public class BossChaseState : BossState
     {
         base.FrameUpdate();
 
-        //raptor-x-z
-        if (boss.player != null)
+        if (boss.canMove)
         {
-            //Gets player position
-            targetPlayer = boss.player.transform.position;
-
-            if (boss.player.transform.position.x < boss.transform.position.x)
+            //raptor-x-z
+            if (boss.player != null)
             {
-                boss.transform.localScale = Vector3.one;
+                //Gets player position
+                targetPlayer = boss.player.transform.position;
+
+                if (boss.player.transform.position.x < boss.transform.position.x)
+                {
+                    boss.transform.localScale = Vector3.one;
+                }
+
+                if (boss.player.transform.position.x > boss.transform.position.x)
+                {
+                    boss.transform.localScale = new Vector3(-1, 1, 1);
+                }
             }
 
-            if (boss.player.transform.position.x > boss.transform.position.x)
+            if (boss.inAttackRange && !boss.justStunned && !boss.justTeleported)
             {
-                boss.transform.localScale = new Vector3(-1, 1, 1);
+                boss.StateMachine.ChangeState(boss.AttackState);
+            }
+
+            //else if (pawn.canMove)
+            //{
+            //Updates position to match with the player
+            if (IsGroundAhead())
+            {
+                boss.transform.position = Vector2.MoveTowards(boss.transform.position, new Vector3(boss.player.transform.position.x, boss.transform.position.y, boss.transform.position.z), pawnSpeed * Time.deltaTime);
+
+                //Bool condition to enter Global Attack State == true
+                if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)
+                {
+                    //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
+
+                    boss.StateMachine.ChangeState(boss.GlobalAttackState);
+                    boss.StopCoroutine(boss.GlobalTimer());
+
+                    //Global State Cooldown
+                    boss.StartCoroutine(boss.GlobalStateCooldown());
+                }
+            }
+            else if (!IsGroundAhead())
+            {
+                boss.StateMachine.ChangeState(boss.IdleState);
             }
         }
-
-        if (boss.inAttackRange)
-        {
-            boss.StateMachine.ChangeState(boss.AttackState);
-        }
-
-        //else if (pawn.canMove)
-        //{
-        //Updates position to match with the player
-        if (IsGroundAhead())
-        {
-            boss.transform.position = Vector2.MoveTowards(boss.transform.position, new Vector3(boss.player.transform.position.x, boss.transform.position.y, boss.transform.position.z), pawnSpeed * Time.deltaTime);
-
-            //Bool condition to enter Global Attack State == true
-            if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState != boss.StunnedState && boss.StateMachine.CurrentBossState != boss.GlobalAttackState && boss.triggerGlobal)          
-            {
-                //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
-
-                boss.StateMachine.ChangeState(boss.GlobalAttackState);
-                boss.StopCoroutine(boss.GlobalTimer());
-
-                //Global State Cooldown
-                boss.StartCoroutine(boss.GlobalStateCooldown());
-            }
-        }
-        else if (!IsGroundAhead())
-        {
-            boss.StateMachine.ChangeState(boss.IdleState);
-        }
-        //}   
-
-        ////Checking if Pawn hits the range limit
-        //if (pawn.transform.position.x < pawn.leftLimit.x + 0.5)
-        //{
-        //    pawn.StateMachine.ChangeState(pawn.IdleState);
-        //}
-
-        //if (pawn.transform.position.x > pawn.rightLimit.x - 0.5)
-        //{
-        //    pawn.StateMachine.ChangeState(pawn.IdleState);
-        //}
-
-
-        //if (boss.StateMachine.CurrentBossState != boss.DeadState && boss.StateMachine.CurrentBossState == boss.AttackState || boss.StateMachine.CurrentBossState == boss.StunnedState || boss.StateMachine.CurrentBossState == boss.DeadState && boss.triggerGlobal && startG != null)
-        //{
-        //    boss.StopCoroutine(startG);
-        //    startG = null;
-
-        //    Debug.Log("Disabled coroutine");
-        //}
     }
 
     public override void PhysicsUpdate()

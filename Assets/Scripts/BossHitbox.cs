@@ -31,11 +31,6 @@ public class BossHitbox : MonoBehaviour
                 Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
                 boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
             }
-
-            if (weapon.projectile)
-            {           
-                Destroy(obj);
-            }
         }
     }
 }

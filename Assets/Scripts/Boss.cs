@@ -31,6 +31,7 @@ public class Boss : MonoBehaviour, IDamageable
     [SerializeField] private GameObject stunnedStarsPrefab;
 
     [SerializeField] private float hitFlashDuration;
+    [SerializeField] private GameObject sparksPrefab;
 
     [HideInInspector] public bool inAttackRange = false;
     [SerializeField] private bool moveTest;
@@ -71,6 +72,10 @@ public class Boss : MonoBehaviour, IDamageable
 
     public float arrowGravity = 40;
 
+    [SerializeField] private float vanishDuration = 0.5f;
+    [SerializeField] private float reappearDelay = 0.2f;
+    [SerializeField] private BoxCollider2D teleportArea;
+
     [HideInInspector] public bool globalCooldown = false;
     [HideInInspector] public int globalCounter = 0;
 
@@ -80,6 +85,10 @@ public class Boss : MonoBehaviour, IDamageable
     }
 
     public Transform groundCheck;
+    public bool justStunned = false;
+
+    [HideInInspector] public bool justTeleported = false;
+    [SerializeField] private float teleportLockTime = 0.3f; // time boss cannot attack after teleport
 
     #region States
     public BossStateMachine StateMachine { get; set; }
@@ -102,6 +111,7 @@ public class Boss : MonoBehaviour, IDamageable
             if (health <= 0 && IsAlive)
             {
                 Die();
+                Debug.Log("dead");
             }
         }
     }
@@ -114,6 +124,11 @@ public class Boss : MonoBehaviour, IDamageable
             return;
 
         Health -= damage;
+
+        GameObject sparks = Instantiate(sparksPrefab, transform.position, Quaternion.identity);
+        ParticleSystem ps = sparks.GetComponent<ParticleSystem>();
+        ps.Play();
+        Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
         audioSource.PlayOneShot(hit);
 
@@ -161,22 +176,22 @@ public class Boss : MonoBehaviour, IDamageable
         exitGlobal = false;
         //Debug.Log(warningArray.Length);
 
-        float warningPosX = -12f;
-        float arrowPosX = -12f;
+        float warningPosX = -20f;
+        float arrowPosX = -20f;
 
         //Instantiate warning blocking
-        for (int i = 0; i < 22; i++)
+        for (int i = 0; i < 40; i++)
         {
             GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f + warningArrowOffset), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
             warningList.Add(newPrefab);
-            warningPosX += 1f;
+            warningPosX += 1.5f;
         }
 
         //Instantiate arrows positions
-        for (int i = 0; i < 22; i++)
+        for (int i = 0; i < 40; i++)
         {
             GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, this.transform.position.y + 4f), Quaternion.identity);
 
@@ -187,7 +202,7 @@ public class Boss : MonoBehaviour, IDamageable
             newPrefab.gameObject.GetComponent<Rigidbody2D>().gravityScale = arrowGravity;
 
             arrowList.Add(newPrefab);
-            arrowPosX += 1f;
+            arrowPosX += 1.5f;
         }
 
     }
@@ -290,6 +305,11 @@ public class Boss : MonoBehaviour, IDamageable
         StateMachine.CurrentBossState?.OnAttackFinished();
     }
 
+    public void StartAttack()
+    {
+        GlobalAttackState.OnVanishComplete();
+    }
+
     private IEnumerator FlashSprite()
     {
         Color originalColor = spriteRenderer.color;
@@ -336,6 +356,50 @@ public class Boss : MonoBehaviour, IDamageable
                 yield return null;
             }
         }
+    }
+
+    public void Teleport()
+    {
+        StartCoroutine(TeleportRoutine());
+    }
+
+    private IEnumerator TeleportRoutine()
+    {
+        justTeleported = true;
+        canMove = false;
+        animator.SetTrigger("vanish");
+        yield return new WaitForSeconds(vanishDuration);
+        transform.position = GetRandomPointInCollider(teleportArea);
+        yield return new WaitForSeconds(reappearDelay);
+        animator.SetTrigger("reappear");
+        yield return new WaitForSeconds(teleportLockTime);
+        StateMachine.ChangeState(GlobalAttackState);
+        justTeleported = false;
+        canMove = true;
+        animator.ResetTrigger("vanish");
+        animator.ResetTrigger("reappear");
+    }
+
+    private Vector2 GetRandomPointInCollider(BoxCollider2D box)
+    {
+        Vector2 size = box.size;
+        Vector2 center = box.offset + (Vector2)box.transform.position;
+
+        float minDistance = 5f; // minimum distance from player
+        Vector2 playerPos = player.transform.position;
+
+        Vector2 randomPos;
+        int attempts = 0;
+
+        do
+        {
+            float randomX = UnityEngine.Random.Range(center.x - size.x / 2f, center.x + size.x / 2f);
+            randomPos = new Vector2(randomX, transform.position.y);
+            attempts++;
+        }
+        while (Vector2.Distance(randomPos, playerPos) < minDistance && attempts < 20);
+
+        return randomPos;
     }
 
     public void HandleAnimators()
@@ -484,37 +548,42 @@ public class Boss : MonoBehaviour, IDamageable
         {
             if (warningList[i].gameObject.activeSelf)
             {
+                arrowList[i].transform.position = new Vector2(
+            arrowList[i].transform.position.x,   // keep X the same
+            transform.position.y + 4f           // reset Y to boss spawn height
+            );
+                Rigidbody2D rb = arrowList[i].GetComponent<Rigidbody2D>();
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                arrowList[i].SetActive(true);
                 arrowList[i].gameObject.SetActive(true);
                 warningList[i].gameObject.SetActive(false);
-
-                //Resets the position of the arrows
-                arrowList[i].gameObject.transform.position = new Vector2(arrowList[i].gameObject.transform.position.x, arrowList[i].gameObject.transform.position.y);
             }
 
             arrowList[i].gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
         }
 
-        globalCounter++;
+        //globalCounter++;
 
-        Debug.Log(globalCounter);
+        //yield return new WaitForSeconds(1f);
 
-        yield return new WaitForSeconds(1f);
-
-        if (globalCounter <= 1)
+        for (int wave = 0; wave < 2; wave++)
         {
-            StateMachine.ChangeState(GlobalAttackState);
-            
+            // spawn arrows
+            yield return new WaitForSeconds(warningFadeOut);
         }
+        StateMachine.ChangeState(IdleState);
+        triggerGlobal = false;
+        globalCounter = 0;
 
-        else if (globalCounter <= 2)
-        {
-            globalCounter = 0;
+        //if (globalCounter <= 2)
+        //{
+        //    globalCounter = 0;
 
-            triggerGlobal = false;
-            exitGlobal = false;
+        //    triggerGlobal = false;
+        //    exitGlobal = false;
 
-            StateMachine.ChangeState(IdleState);
-        }
+        //    StateMachine.ChangeState(IdleState);
+        //}
     }
 
 }

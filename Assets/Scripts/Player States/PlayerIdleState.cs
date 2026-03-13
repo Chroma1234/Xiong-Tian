@@ -28,31 +28,33 @@ public class PlayerIdleState : PlayerState
     public override void FrameUpdate()
     {
         base.FrameUpdate();
-
-        if (Input.GetKeyDown(KeyCode.Space) && player.coyoteTimeCounter > 0f)
+        if (!player.isTeleporting)
         {
-            player.coyoteTimeCounter = 0f;
-            player.StateMachine.ChangeState(player.JumpState);
-        }
-        else if(Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
-        {
-            player.StateMachine.ChangeState(player.DashState);
-            player.dashCount--;
-        }
-        else if (Input.GetMouseButtonDown(1) && player.IsGrounded() && player.parryCooldownTimer <= 0f)
-        {
-            player.StateMachine.ChangeState(player.BlockState);
-        }
-        else if (Input.GetMouseButtonDown(0))
-        {
-            if (player.hasParryCharge)
+            if (Input.GetKeyDown(KeyCode.Space) && player.coyoteTimeCounter > 0f)
+            {
+                player.coyoteTimeCounter = 0f;
+                player.StateMachine.ChangeState(player.JumpState);
+            }
+            else if (Input.GetKeyDown(KeyCode.LeftShift) && player.dashCount > 0)
             {
                 player.StateMachine.ChangeState(player.DashState);
-                player.parryCounterAttackHitbox.SetActive(true);
+                player.dashCount--;
             }
-            else
+            else if (Input.GetMouseButtonDown(1) && player.IsGrounded() && player.parryCooldownTimer <= 0f)
             {
-                player.StateMachine.ChangeState(player.AttackState);
+                player.StateMachine.ChangeState(player.BlockState);
+            }
+            else if (Input.GetMouseButtonDown(0))
+            {
+                if (player.hasParryCharge)
+                {
+                    player.StateMachine.ChangeState(player.DashState);
+                    player.parryCounterAttackHitbox.SetActive(true);
+                }
+                else
+                {
+                    player.StateMachine.ChangeState(player.AttackState);
+                }
             }
         }
 

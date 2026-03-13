@@ -36,11 +36,14 @@ public class Room : MonoBehaviour
 
     private bool AllEnemiesInRoomDead()
     {
-        foreach(GameObject e in enemiesInRoom)
+        if (enemiesInRoom != null)
         {
-            if (e.activeSelf)
+            foreach (GameObject e in enemiesInRoom)
             {
-                return false;
+                if (e != null && e.activeSelf)
+                {
+                    return false;
+                }
             }
         }
         return true;

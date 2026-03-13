@@ -16,6 +16,9 @@ public class Trap_Detection : MonoBehaviour
     [SerializeField] private SpriteRenderer[] bossBGSprites;
 
     private GameManager gameManager;
+    [SerializeField] private AudioSource bgm;
+
+    [SerializeField] private AudioClip bossMusic;
 
     private void Awake()
     {
@@ -61,6 +64,7 @@ public class Trap_Detection : MonoBehaviour
     private IEnumerator Setup(Player player)
     {
         yield return StartCoroutine(gameManager.Fade(0f, 1f));
+        yield return StartCoroutine(FadeAudio(0f, 0.5f));
         player.gameObject.transform.position = bossTeleport.position;
         yield return new WaitForSeconds(0.5f);
         caveBG.SetActive(false);
@@ -71,7 +75,26 @@ public class Trap_Detection : MonoBehaviour
         }
 
         boss.SetActive(true);
+        bgm.clip = bossMusic;
+        bgm.Play();
+
+        yield return StartCoroutine(FadeAudio(0.1f, 0.5f));
         yield return StartCoroutine(gameManager.Fade(1f, 0f));
         player.isTeleporting = false;
+    }
+
+    private IEnumerator FadeAudio(float targetVolume, float duration)
+    {
+        float startVolume = bgm.volume;
+        float time = 0f;
+
+        while (time < duration)
+        {
+            time += Time.deltaTime;
+            bgm.volume = Mathf.Lerp(startVolume, targetVolume, time / duration);
+            yield return null;
+        }
+
+        bgm.volume = targetVolume;
     }
 }

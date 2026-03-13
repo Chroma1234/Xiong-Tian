@@ -22,48 +22,48 @@ public class BossGlobalAttackState : BossState
     {
         base.EnterState();
 
-        //boss.animator.SetTrigger("dipped");
+        boss.animator.SetTrigger("global");
 
         Debug.Log("Enters Global Attack State");
 
         //Teleports to the middle
-        boss.transform.position = new Vector2(boss.originalPos.x, boss.originalPos.y);
+        //boss.transform.position = new Vector2(boss.originalPos.x, boss.originalPos.y);
 
 
         //Activates alternating warning points, fading in + out
-        for (int i = 0; i < boss.warningList.Count; i++)
-        {
+        //for (int i = 0; i < boss.warningList.Count; i++)
+        //{
 
-            if (i % 2 == 0 && !boss.triggerLeft)
-            {
-                GameObject stanceObject = boss.warningList[i];
+        //    if (i % 2 == 0 && !boss.triggerLeft)
+        //    {
+        //        GameObject stanceObject = boss.warningList[i];
 
-                SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
+        //        SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
 
-                stanceObject.SetActive(true);
+        //        stanceObject.SetActive(true);
 
-                //Coroutine to increase alpha value (visability)
-                appearFadeIn(stanceObjRender);
-            }
+        //        //Coroutine to increase alpha value (visability)
+        //        appearFadeIn(stanceObjRender);
+        //    }
 
-            if (i % 2 != 0 && boss.triggerLeft)
-            {
-                GameObject stanceObject = boss.warningList[i];
+        //    if (i % 2 != 0 && boss.triggerLeft)
+        //    {
+        //        GameObject stanceObject = boss.warningList[i];
 
-                SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
+        //        SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
 
-                stanceObject.SetActive(true);
+        //        stanceObject.SetActive(true);
 
-                //Coroutine to increase alpha value (visability)
-                appearFadeIn(stanceObjRender);
-            }
+        //        //Coroutine to increase alpha value (visability)
+        //        appearFadeIn(stanceObjRender);
+        //    }
 
-        }
+        //}
 
-        boss.triggerLeft = !boss.triggerLeft;
-        boss.StartCoroutine(boss.triggerArrows());
+        //boss.triggerLeft = !boss.triggerLeft;
+        //boss.StartCoroutine(boss.triggerArrows());
 
-        boss.animator.SetTrigger("global");
+        //boss.animator.SetTrigger("global");
 
     }
 
@@ -130,5 +130,27 @@ public class BossGlobalAttackState : BossState
         }
     }
 
+    public void OnVanishComplete()
+    {
+        for (int i = 0; i < boss.warningList.Count; i++)
+        {
+            if (i % 2 == 0 && !boss.triggerLeft)
+            {
+                SpriteRenderer r = boss.warningList[i].GetComponent<SpriteRenderer>();
+                boss.warningList[i].SetActive(true);
+                boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
+            }
+            if (i % 2 != 0 && boss.triggerLeft)
+            {
+                SpriteRenderer r = boss.warningList[i].GetComponent<SpriteRenderer>();
+                boss.warningList[i].SetActive(true);
+                boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
+            }
+        }
 
+        boss.triggerLeft = !boss.triggerLeft;
+        boss.StartCoroutine(boss.triggerArrows());
+
+        //boss.animator.SetTrigger("global");
+    }
 }

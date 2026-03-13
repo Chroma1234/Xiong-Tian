@@ -43,24 +43,41 @@ public class WorldTutorialFade : MonoBehaviour
 
     IEnumerator Fade(float targetAlpha)
     {
-        float currentAlpha = sprites[0].color.a;
+        float currentAlpha = 0f;
+
+        if (sprites != null && sprites.Length > 0)
+        {
+            currentAlpha = sprites[0].color.a;
+        }
+        else if (texts != null && texts.Length > 0)
+        {
+            currentAlpha = texts[0].color.a;
+        }
 
         while (!Mathf.Approximately(currentAlpha, targetAlpha))
         {
             currentAlpha = Mathf.MoveTowards(currentAlpha, targetAlpha, fadeSpeed * Time.deltaTime);
 
-            foreach (SpriteRenderer s in sprites)
+            if (sprites != null)
             {
-                Color c = s.color;
-                c.a = currentAlpha;
-                s.color = c;
+                foreach (SpriteRenderer s in sprites)
+                {
+                    if (s == null) continue;
+                    Color c = s.color;
+                    c.a = currentAlpha;
+                    s.color = c;
+                }
             }
 
-            foreach (TextMeshPro t in texts)
+            if (texts != null)
             {
-                Color c = t.color;
-                c.a = currentAlpha;
-                t.color = c;
+                foreach (TextMeshPro t in texts)
+                {
+                    if (t == null) continue;
+                    Color c = t.color;
+                    c.a = currentAlpha;
+                    t.color = c;
+                }
             }
 
             yield return null;

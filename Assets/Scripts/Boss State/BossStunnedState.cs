@@ -23,6 +23,7 @@ public class BossStunnedState : BossState
 
         Debug.Log("im stunned!");
 
+        boss.justStunned = true;
         boss.canMove = false;
         boss.Stunned();
 
@@ -52,9 +53,9 @@ public class BossStunnedState : BossState
     {
         yield return new WaitForSeconds(stunDuration);
 
-        if (boss.inAttackRange)
-            boss.StateMachine.ChangeState(boss.AttackState);
-        else
-            boss.StateMachine.ChangeState(boss.ChaseState);
+        //if (boss.inAttackRange)
+        //    boss.StateMachine.ChangeState(boss.AttackState);
+        //else
+            boss.StateMachine.ChangeState(boss.IdleState);
     }
 }

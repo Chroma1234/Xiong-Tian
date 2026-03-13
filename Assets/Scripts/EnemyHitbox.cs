@@ -21,7 +21,7 @@ public class EnemyHitbox : MonoBehaviour
                 Weapon weapon = obj.GetComponent<Weapon>();
                 if (player.hasParryCharge)
                 {
-                    int dmgTaken = weapon.weaponDamage * 5;
+                    int dmgTaken = weapon.weaponDamage * 3;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
                     enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
 
@@ -36,20 +36,16 @@ public class EnemyHitbox : MonoBehaviour
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
                     enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
                 }
-
-                if (weapon.projectile)
-                {
-                    Destroy(obj);
-                }
             }
 
             if (boss != null)
             {
                 Player player = obj.GetComponentInParent<Player>();
                 Weapon weapon = obj.GetComponent<Weapon>();
+                Debug.Log("Weapon damage: " + weapon.weaponDamage);
                 if (player.hasParryCharge)
                 {
-                    int dmgTaken = weapon.weaponDamage * 5;
+                    int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
                     boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
 
@@ -63,11 +59,6 @@ public class EnemyHitbox : MonoBehaviour
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
                     boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
-                }
-
-                if (weapon.projectile)
-                {
-                    Destroy(obj);
                 }
             }
         }

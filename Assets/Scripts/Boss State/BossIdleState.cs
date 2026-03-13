@@ -27,10 +27,18 @@ public class BossIdleState : BossState
 
         if (boss.isActiveAndEnabled)
         {
-            currentTarget = boss.leftLimit;
-            FaceTarget(currentTarget);
+            if (boss.justStunned)
+            {
+                boss.Teleport();
+                boss.justStunned = false;
+            }
+            else if (boss.canMove)
+            {
+                currentTarget = boss.leftLimit;
+                FaceTarget(currentTarget);
 
-            wanderRoutine = boss.StartCoroutine(Wander());
+                wanderRoutine = boss.StartCoroutine(Wander());
+            }
         }
 
         boss.spriteRenderer.color = Color.white;
