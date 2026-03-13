@@ -80,7 +80,7 @@ public class Trap_Detection : MonoBehaviour
     {
         yield return StartCoroutine(gameManager.Fade(0f, 1f));
         yield return StartCoroutine(FadeAudio(0f, 0.5f));
-        player.gameObject.transform.position = bossTeleport.position;
+        player.gameObject.transform.position = new Vector2(bossTeleport.position.x, player.transform.position.y);
         yield return new WaitForSeconds(0.5f);
         caveBG.SetActive(false);
 
