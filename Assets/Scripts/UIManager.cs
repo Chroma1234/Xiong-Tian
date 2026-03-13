@@ -19,8 +19,16 @@ public class UIManager : MonoBehaviour
     [SerializeField] private Image dashFill;
     [SerializeField] Image healthBar;
     [SerializeField] Image lowHealthOverlay;
+    
 
     private bool lowHealthActive;
+    #endregion
+
+    #region Low Health Pulse Settings
+    [Header("Low Health Pulse")]
+    [SerializeField] private float lowHealthPulseSpeed = 2f;
+    [SerializeField] private float lowHealthMinAlpha = 0.3f;
+    [SerializeField] private float lowHealthMaxAlpha = 0.7f;
     #endregion
 
     private void Awake()
@@ -38,6 +46,21 @@ public class UIManager : MonoBehaviour
     {
         dashFill.fillAmount = Mathf.Lerp(dashFill.fillAmount, (float)player.dashCount / player.maxDashCount, 10f * Time.deltaTime);
         dashBarCanvasGrp.alpha = Mathf.Lerp(dashBarCanvasGrp.alpha, dashFill.fillAmount < 0.99f ? 1f : 0f, 8f * Time.deltaTime);
+
+        // Low health pulsing effect
+        if (lowHealthActive)
+        {
+            Color c = lowHealthOverlay.color;
+
+            float alpha = Mathf.Lerp(
+                lowHealthMinAlpha,
+                lowHealthMaxAlpha,
+                Mathf.PingPong(Time.time * lowHealthPulseSpeed, 1)
+            );
+
+            c.a = alpha;
+            lowHealthOverlay.color = c;
+        }
     }
 
     private void LateUpdate()
@@ -58,7 +81,11 @@ public class UIManager : MonoBehaviour
             lowHealthActive = shouldShowLowHealth;
 
             // Fade overlay
-            StartCoroutine(Fade(lowHealthOverlay.color.a, lowHealthActive ? 1f : 0f, 0.5f, lowHealthOverlay));
+            if (!lowHealthActive)
+            {
+                // Fade overlay out when health is safe
+                StartCoroutine(Fade(lowHealthOverlay.color.a, 0f, 0.5f, lowHealthOverlay));
+            }
         }
     }
 
