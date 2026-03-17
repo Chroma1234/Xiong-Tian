@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
@@ -13,6 +14,9 @@ public class arrowBehaviour : MonoBehaviour
     private Material enemyMat;
     private Rigidbody2D rb;
 
+    private float gravity = 0f;
+    private Vector3 velocityScale;
+
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip impactClip;
 
@@ -21,6 +25,17 @@ public class arrowBehaviour : MonoBehaviour
         spriteRenderer = GetComponent<SpriteRenderer>();
         rb = GetComponent<Rigidbody2D>();   
         enemyMat = spriteRenderer.material;
+
+        gravity = rb.gravityScale;
+        velocityScale = rb.linearVelocity;
+    }
+
+    private void OnEnable()
+    {
+        enemyMat.SetFloat(dissolveAmt, 0);
+
+        rb.gravityScale = gravity;
+        rb.linearVelocity = velocityScale;
     }
 
     private IEnumerator Vanish()
@@ -37,6 +52,7 @@ public class arrowBehaviour : MonoBehaviour
         }
 
         gameObject.SetActive(false);
+
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

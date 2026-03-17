@@ -574,7 +574,7 @@ public class Boss : MonoBehaviour, IDamageable
 
         //yield return new WaitForSeconds(1f);
 
-        for (int wave = 0; wave < 2; wave++)
+        for (int wave = 0; wave < 5; wave++)
         {
             // spawn arrows
             yield return new WaitForSeconds(warningFadeOut);
