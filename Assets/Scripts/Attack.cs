@@ -50,7 +50,7 @@ public class Attack : MonoBehaviour
                         }
                         else
                         {
-                            hit.TakeHit(attackDamage, hitDirection, knockbackForce);
+                            hit.TakeHit(attackDamage, hitDirection, knockbackForce, false);
                         }
                     }
 
@@ -81,13 +81,13 @@ public class Attack : MonoBehaviour
                         }
                         else
                         {
-                            hit.TakeHit(attackDamage, hitDirection, knockbackForce);
+                            hit.TakeHit(attackDamage, hitDirection, knockbackForce, false);
                         }
                     }
                 }
                 else
                 {
-                    hit.TakeHit(attackDamage, hitDirection, knockbackForce);
+                    hit.TakeHit(attackDamage, hitDirection, knockbackForce, false);
                 }
             }
         }

@@ -45,7 +45,7 @@ Material:
     - _DissolveScale: 50
     - _OutlineThickness: 0.025
     m_Colors:
-    - _OutlineColor: {r: 64, g: 64, b: 64, a: 1}
+    - _OutlineColor: {r: 0, g: 24.487043, b: 85.445015, a: 1}
   m_BuildTextureStacks: []
   m_AllowLocking: 1
 --- !u!114 &1306108298127535856

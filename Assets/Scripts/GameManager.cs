@@ -32,7 +32,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private AudioLowPassFilter filter;
 
     private readonly List<Enemy> enemies = new List<Enemy>();
-    private readonly List<Boss> bosses = new List<Boss>();
+    [SerializeField] private Boss boss;
 
     private float currentTimeScale = 1f;
     public bool paused = false;
@@ -126,12 +126,6 @@ public class GameManager : MonoBehaviour
             enemies.Add(enemy);
     }
 
-    public void RegisterBoss(Boss boss)
-    {
-        if (!bosses.Contains(boss))
-            bosses.Add(boss);
-    }
-
     public void RespawnPlayer()
     {
         StartCoroutine(RespawnRoutine());
@@ -151,6 +145,8 @@ public class GameManager : MonoBehaviour
         {
             enemy.ResetEnemy();
         }
+
+        boss.ResetEnemy();
 
         yield return new WaitForSeconds(0.5f);
         yield return StartCoroutine(Fade(1f, 0f));
