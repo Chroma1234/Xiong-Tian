@@ -46,6 +46,7 @@ public class Boss : MonoBehaviour, IDamageable
     private AudioSource audioSource;
     [SerializeField] AudioSource bgm;
     [SerializeField] private AudioClip hit;
+    [SerializeField] private AudioClip normalBGM;
 
     //raptor-x-z
     public GameObject player;
@@ -94,6 +95,9 @@ public class Boss : MonoBehaviour, IDamageable
     [HideInInspector] public bool justTeleported = false;
     [SerializeField] private float teleportLockTime = 0.3f; // time boss cannot attack after teleport
 
+    [SerializeField] private GameObject caveBG;
+    [SerializeField] private SpriteRenderer[] bossBGSprites;
+
     #region States
     public BossStateMachine StateMachine { get; set; }
     public BossIdleState IdleState { get; set; }
@@ -122,7 +126,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     public bool IsAlive { get; set; } = true;
 
-    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce)
+    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce, bool blocked)
     {
         if (!IsAlive)
             return;
@@ -172,7 +176,6 @@ public class Boss : MonoBehaviour, IDamageable
         spawnRotation = transform.rotation;
 
         manager = FindFirstObjectByType<GameManager>();
-        manager.RegisterBoss(this);
 
         originalPos = transform.position;
 
@@ -437,7 +440,7 @@ public class Boss : MonoBehaviour, IDamageable
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        //StartCoroutine(DisableAfterTime(1f));
+        StartCoroutine(DisableAfterTime(1f));
     }
 
     public void ResetEnemy()
@@ -448,7 +451,7 @@ public class Boss : MonoBehaviour, IDamageable
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
         {
-            if (col != boxCollider && col.name != "NormalAtkHitbox" && col.name != "ParryAtkHitbox" && !triggerGlobal)
+            if (col != boxCollider && col.name != "Hitbox" && !triggerGlobal)
                 col.enabled = true;
         }
         Health = maxHealth;
@@ -457,6 +460,19 @@ public class Boss : MonoBehaviour, IDamageable
         animator.Rebind();
         animator.Update(0f);
         gameObject.SetActive(true);
+
+        StartCoroutine(FadeAudio(0f, 1f));
+        bgm.Stop();
+        bgm.clip = normalBGM;
+        caveBG.SetActive(true);
+
+        foreach (SpriteRenderer renderer in bossBGSprites)
+        {
+            renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0);
+        }
+
+        bgm.Play();
+        StartCoroutine(FadeAudio(0.1f, 1f));
     }
 
 
@@ -577,7 +593,7 @@ public class Boss : MonoBehaviour, IDamageable
         for (int wave = 0; wave < 5; wave++)
         {
             // spawn arrows
-            yield return new WaitForSeconds(warningFadeOut);
+            yield return new WaitForSeconds(0.5f);
         }
         StateMachine.ChangeState(IdleState);
         triggerGlobal = false;

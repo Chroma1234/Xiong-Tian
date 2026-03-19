@@ -222,14 +222,21 @@ AnimationClip:
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.2
+  - time: 0
+    functionName: PlaySound
+    data: 
+    objectReferenceParameter: {fileID: 8300000, guid: 19d43f496daa30a4a80802e8eb619274, type: 3}
+    floatParameter: 0
+    intParameter: 0
+    messageOptions: 0
+  - time: 0.4
     functionName: PlaySound
     data: 
     objectReferenceParameter: {fileID: 8300000, guid: e6645e1f9c29b9a47be35739b1db2cb1, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
-  - time: 0.3
+  - time: 0.7
     functionName: OnAttackFinished
     data: 
     objectReferenceParameter: {fileID: 0}

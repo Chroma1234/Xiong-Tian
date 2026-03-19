@@ -23,7 +23,7 @@ public class EnemyHitbox : MonoBehaviour
                 {
                     int dmgTaken = weapon.weaponDamage * 3;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
+                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce, false);
 
                     player.hasParryCharge = false;
                     Debug.Log("used parry charge!");
@@ -35,7 +35,7 @@ public class EnemyHitbox : MonoBehaviour
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
 
-                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
+                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce, false);
                 }
 
                 else if (enemy.shieldType)
@@ -43,7 +43,7 @@ public class EnemyHitbox : MonoBehaviour
                     int dmgTaken = 0;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
 
-                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce);
+                    enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce, true);
                 }
             }
 
@@ -56,7 +56,7 @@ public class EnemyHitbox : MonoBehaviour
                 {
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                    boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
+                    boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
 
                     player.hasParryCharge = false;
                     Debug.Log("used parry charge!");
@@ -67,7 +67,7 @@ public class EnemyHitbox : MonoBehaviour
                 {
                     int dmgTaken = weapon.weaponDamage;
                     Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                    boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
+                    boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
                 }
             }
         }

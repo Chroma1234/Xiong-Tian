@@ -58,15 +58,13 @@ public class arrowBehaviour : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("BossFloor"))
         {
             PlaySound(impactClip);
-            //this.gameObject.SetActive(false); 
-            //this.gameObject.GetComponent<BoxCollider>().isTrigger = false;
+
             rb.gravityScale = 0f;
             rb.linearVelocity = Vector3.zero;
             StartCoroutine(Vanish());
-            //Debug.Log("Disabled oneself");
         }
         
     }
