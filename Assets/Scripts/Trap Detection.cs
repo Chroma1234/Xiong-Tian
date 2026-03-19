@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 using static Unity.Collections.AllocatorManager;
 
 public class Trap_Detection : MonoBehaviour
@@ -22,12 +23,13 @@ public class Trap_Detection : MonoBehaviour
 
     private Player player;
 
+    [SerializeField] private GameObject bossHealthbar;
+
     private void Awake()
     {
         trap_detection = GetComponent<BoxCollider2D>();
         trapdoor.gameObject.SetActive(false);
         gameManager = FindFirstObjectByType<GameManager>();
-
     }
 
     private void Update()
@@ -57,8 +59,6 @@ public class Trap_Detection : MonoBehaviour
                 player.rb.linearVelocity = Vector2.zero;
                 StartCoroutine(Setup(player));
             }
-
-
         }
     }
 
@@ -99,6 +99,9 @@ public class Trap_Detection : MonoBehaviour
         yield return StartCoroutine(FadeAudio(0.1f, 0.5f));
         yield return StartCoroutine(gameManager.Fade(1f, 0f));
         player.isTeleporting = false;
+
+        bossHealthbar.SetActive(true);
+        StartCoroutine(Fade(0f, 1f, bossHealthbar.GetComponent<CanvasGroup>(), 0.5f));
     }
 
     private IEnumerator FadeAudio(float targetVolume, float duration)
@@ -114,5 +117,22 @@ public class Trap_Detection : MonoBehaviour
         }
 
         bgm.volume = targetVolume;
+    }
+
+    public IEnumerator Fade(float from, float to, CanvasGroup fadeImage, float fadeDuration)
+    {
+        float timer = 0f;
+        float a = fadeImage.alpha;
+
+        while (timer < fadeDuration)
+        {
+            timer += Time.deltaTime;
+            a = Mathf.Lerp(from, to, timer / fadeDuration);
+            fadeImage.alpha = a;
+            yield return null;
+        }
+
+        a = to;
+        fadeImage.alpha = a;
     }
 }

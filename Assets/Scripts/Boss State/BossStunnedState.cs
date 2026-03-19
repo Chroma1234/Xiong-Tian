@@ -21,8 +21,6 @@ public class BossStunnedState : BossState
     {
         base.EnterState();
 
-        Debug.Log("im stunned!");
-
         boss.justStunned = true;
         boss.canMove = false;
         boss.Stunned();

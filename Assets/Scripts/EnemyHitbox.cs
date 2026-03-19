@@ -26,8 +26,6 @@ public class EnemyHitbox : MonoBehaviour
                     enemy.TakeHit(dmgTaken, hitDirection, enemy.knockbackForce, false);
 
                     player.hasParryCharge = false;
-                    Debug.Log("used parry charge!");
-                    //add other fx
                 }
 
                 else if (!enemy.shieldType)
@@ -51,7 +49,7 @@ public class EnemyHitbox : MonoBehaviour
             {
                 Player player = obj.GetComponentInParent<Player>();
                 Weapon weapon = obj.GetComponent<Weapon>();
-                Debug.Log("Weapon damage: " + weapon.weaponDamage);
+   
                 if (player.hasParryCharge)
                 {
                     int dmgTaken = weapon.weaponDamage;
@@ -59,15 +57,22 @@ public class EnemyHitbox : MonoBehaviour
                     boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
 
                     player.hasParryCharge = false;
-                    Debug.Log("used parry charge!");
-                    //add other fx
                 }
 
                 else
                 {
-                    int dmgTaken = weapon.weaponDamage;
-                    Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                    boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
+                    if ((boss.StateMachine.CurrentBossState == boss.GlobalAttackState) || (boss.StateMachine.CurrentBossState == boss.StunnedState))
+                    {
+                        int dmgTaken = weapon.weaponDamage;
+                        Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
+                        boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
+                    }
+                    else
+                    {
+                        int dmgTaken = 0;
+                        Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
+                        boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, true);
+                    }
                 }
             }
         }

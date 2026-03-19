@@ -48,6 +48,13 @@ public class BossChaseState : BossState
             boss.Teleport();
             boss.justStunned = false;
         }
+        //else
+        //{
+        //    if (boss.shieldRenderer.material.GetFloat(Shader.PropertyToID("_DissolveAmt")) == 1.1f)
+        //    {
+        //        boss.StartCoroutine(boss.ShieldVanish(1.1f, 0f));
+        //    }
+        //}
 
     }
     

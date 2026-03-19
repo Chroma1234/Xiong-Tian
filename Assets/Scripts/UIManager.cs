@@ -8,20 +8,25 @@ public class UIManager : MonoBehaviour
     #region Component References
     [Header("Component References")]
     [SerializeField] Player player;
+    [SerializeField] Boss boss;
     private Camera cam;
     #endregion
 
-    #region Text UI
-    [Header("Text UI")]
-    [SerializeField] TextMeshProUGUI healthText;
+    #region Player UI
+    [Header("Player UI")]
     [SerializeField] private RectTransform dashBarUI;
     [SerializeField] private CanvasGroup dashBarCanvasGrp;
     [SerializeField] private Image dashFill;
     [SerializeField] Image healthBar;
     [SerializeField] Image lowHealthOverlay;
     
-
     private bool lowHealthActive;
+    #endregion
+
+    #region Boss UI
+    [Header("Boss UI")]
+    [SerializeField] Image bossHealthBar;
+    [SerializeField] CanvasGroup bossUI;
     #endregion
 
     #region Low Health Pulse Settings
@@ -34,12 +39,16 @@ public class UIManager : MonoBehaviour
     private void Awake()
     {
         player = GetComponent<Player>();
+        boss = FindFirstObjectByType<Boss>();
+        
         cam = Camera.main;
     }
 
     private void Start()
     {
         player.OnHealthChanged += OnHealthChanged;
+        boss.OnHealthChanged += OnBossHealthChanged;
+        Boss.OnBossKilled += OnBossKilled;
     }
 
     private void Update()
@@ -89,6 +98,16 @@ public class UIManager : MonoBehaviour
         }
     }
 
+    private void OnBossHealthChanged(int health)
+    {
+        bossHealthBar.fillAmount = (float)health / 350f;
+    }
+
+    private void OnBossKilled(Boss boss)
+    {
+        StartCoroutine(Fade(1f, 0f, 0.5f, bossUI));
+    }
+
     private IEnumerator Fade(float from, float to, float duration, Image image)
     {
         float timer = 0f;
@@ -104,5 +123,22 @@ public class UIManager : MonoBehaviour
 
         c.a = to;
         image.color = c;
+    }
+
+    private IEnumerator Fade(float from, float to, float duration, CanvasGroup image)
+    {
+        float timer = 0f;
+        float c = image.alpha;
+
+        while (timer < duration)
+        {
+            timer += Time.deltaTime;
+            c = Mathf.Lerp(from, to, timer / duration);
+            image.alpha = c;
+            yield return null;
+        }
+
+        c = to;
+        image.alpha = c;
     }
 }

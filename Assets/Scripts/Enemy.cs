@@ -105,7 +105,7 @@ public class Enemy : MonoBehaviour, IDamageable
             audioSource.PlayOneShot(hit);
         }
 
-            Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
+        Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
         StartCoroutine(Knockback(launchDir));
 
         OnEnemyHit?.Invoke(this);

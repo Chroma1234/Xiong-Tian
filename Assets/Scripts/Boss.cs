@@ -14,6 +14,8 @@ public class Boss : MonoBehaviour, IDamageable
     public static event Action<Boss> OnBossHit;
     public static event Action<Boss> OnBossKilled;
 
+    public event System.Action<int> OnHealthChanged;
+
     [SerializeField] CameraController cam;
 
     private Vector3 spawnPosition;
@@ -46,6 +48,7 @@ public class Boss : MonoBehaviour, IDamageable
     private AudioSource audioSource;
     [SerializeField] AudioSource bgm;
     [SerializeField] private AudioClip hit;
+    [SerializeField] private AudioClip shieldHit;
     [SerializeField] private AudioClip normalBGM;
 
     //raptor-x-z
@@ -98,6 +101,10 @@ public class Boss : MonoBehaviour, IDamageable
     [SerializeField] private GameObject caveBG;
     [SerializeField] private SpriteRenderer[] bossBGSprites;
 
+    [SerializeField] private float dissolveTime = 0.75f;
+    private int shieldDissolveAmt = Shader.PropertyToID("_DissolveAmt");
+    [SerializeField] public ParticleSystemRenderer shieldRenderer;
+
     #region States
     public BossStateMachine StateMachine { get; set; }
     public BossIdleState IdleState { get; set; }
@@ -115,10 +122,10 @@ public class Boss : MonoBehaviour, IDamageable
         set
         {
             health = Mathf.Clamp(value, 0, maxHealth);
+            OnHealthChanged?.Invoke(health);
 
             if (health <= 0 && IsAlive)
             {
-                
                 Die();
             }
         }
@@ -138,17 +145,24 @@ public class Boss : MonoBehaviour, IDamageable
         ps.Play();
         Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
-        audioSource.PlayOneShot(hit);
+        if (blocked)
+        {
+            audioSource.PlayOneShot(shieldHit);
+        }
+        else
+        {
+            audioSource.PlayOneShot(hit);
+
+            if (Health > 0)
+            {
+                StartCoroutine(FlashSprite());
+            }
+        }
 
         //Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
         //StartCoroutine(Knockback(launchDir));
 
         OnBossHit?.Invoke(this);
-
-        if (Health > 0)
-        {
-            StartCoroutine(FlashSprite());
-        }
     }
 
     private void Awake()
@@ -297,13 +311,13 @@ public class Boss : MonoBehaviour, IDamageable
             player = obj;
             triggerGlobal = false;
             exitGlobal = false;
-            StateMachine.ChangeState(IdleState);
+            //StateMachine.ChangeState(IdleState);
         }
 
         if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
         {
             player = obj;
-            StateMachine.ChangeState(IdleState);
+            //StateMachine.ChangeState(IdleState);
         }
     }
 
@@ -335,6 +349,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     public void Stunned()
     {
+        StartCoroutine(ShieldVanish(0f, 1.1f));
         if (transform.localScale.x == 1)
             stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(-0.15f, 1.8f, 0), Quaternion.Euler(90, 0, 0), transform);
         else
@@ -593,9 +608,10 @@ public class Boss : MonoBehaviour, IDamageable
         for (int wave = 0; wave < 5; wave++)
         {
             // spawn arrows
-            yield return new WaitForSeconds(0.5f);
+            yield return new WaitForSeconds(0.2f);
         }
-        StateMachine.ChangeState(IdleState);
+        StateMachine.ChangeState(ChaseState);
+        StartCoroutine(ShieldVanish(1.1f, 0f));
         triggerGlobal = false;
         globalCounter = 0;
 
@@ -635,6 +651,20 @@ public class Boss : MonoBehaviour, IDamageable
             Color c = sr.color;
             c.a = 1f;
             sr.color = c;
+        }
+    }
+
+    public IEnumerator ShieldVanish(float from, float to)
+    {
+        float elapsedTime = 0f;
+        while (elapsedTime < dissolveTime)
+        {
+            elapsedTime += Time.deltaTime;
+
+            float lerpedDissolve = Mathf.Lerp(from, to, (elapsedTime / dissolveTime));
+
+            shieldRenderer.material.SetFloat(shieldDissolveAmt, lerpedDissolve);
+            yield return null;
         }
     }
 
