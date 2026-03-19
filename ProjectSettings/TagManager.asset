@@ -9,7 +9,6 @@ TagManager:
   - FlapObstacle
   - AudioManager
   - Ground
-  - BossFloor
   layers:
   - Default
   - TransparentFX

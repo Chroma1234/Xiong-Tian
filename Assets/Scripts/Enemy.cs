@@ -42,7 +42,6 @@ public class Enemy : MonoBehaviour, IDamageable
 
     private AudioSource audioSource;
     [SerializeField] private AudioClip hit;
-    [SerializeField] private AudioClip shieldHit;
 
     //raptor-x-z
     public GameObject player;
@@ -84,7 +83,7 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public bool IsAlive { get; set; } = true;
 
-    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce, bool blocked)
+    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce)
     {
         if (!IsAlive)
             return;
@@ -96,16 +95,9 @@ public class Enemy : MonoBehaviour, IDamageable
         ps.Play();
         Destroy(sparks, ps.main.duration + ps.main.startLifetime.constantMax);
 
-        if (blocked)
-        {
-            audioSource.PlayOneShot(shieldHit);
-        }
-        else
-        {
-            audioSource.PlayOneShot(hit);
-        }
+        audioSource.PlayOneShot(hit);
 
-            Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
+        Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
         StartCoroutine(Knockback(launchDir));
 
         OnEnemyHit?.Invoke(this);

@@ -19,7 +19,7 @@ public class BossHitbox : MonoBehaviour
             {
                 int dmgTaken = weapon.weaponDamage * 5;
                 Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
+                boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
 
                 player.hasParryCharge = false;
                 Debug.Log("used parry charge!");
@@ -29,7 +29,7 @@ public class BossHitbox : MonoBehaviour
             {
                 int dmgTaken = weapon.weaponDamage;
                 Vector2 hitDirection = (collision.transform.position - transform.position).normalized;
-                boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce, false);
+                boss.TakeHit(dmgTaken, hitDirection, boss.knockbackForce);
             }
         }
     }

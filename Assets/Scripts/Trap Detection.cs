@@ -32,14 +32,11 @@ public class Trap_Detection : MonoBehaviour
 
     private void Update()
     {
-        if (player != null && !player.IsAlive)
+        if (player != null & !player.IsAlive)
         {
-            if (trapdoor != null)
-            {
-                trapdoor.SetActive(false);
-            }
-                trap_detection.enabled = true;
-                //Debug.Log("Player died");
+            trapdoor.SetActive(false);
+            trap_detection.enabled = true;
+            //Debug.Log("Player died");
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)

@@ -76,14 +76,18 @@ public class BossGlobalAttackState : BossState
         for (int i = 0; i < boss.warningList.Count; i++)
         {
             boss.warningList[i].SetActive(false);
+
         }
 
-        //for (int i = 0; i < boss.arrowList.Count; i++)
-        //{
-        //    boss.arrowList[i].SetActive(false);
-        //}
+        for (int i = 0; i < boss.arrowList.Count; i++)
+        {
+            boss.arrowList[i].SetActive(false);
+
+        }
 
         boss.animator.ResetTrigger("global");
+
+
     }
 
     public override void FrameUpdate()

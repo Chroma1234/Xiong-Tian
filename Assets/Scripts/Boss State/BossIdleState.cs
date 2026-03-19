@@ -37,7 +37,7 @@ public class BossIdleState : BossState
                 currentTarget = boss.leftLimit;
                 FaceTarget(currentTarget);
 
-                //wanderRoutine = boss.StartCoroutine(Wander());
+                wanderRoutine = boss.StartCoroutine(Wander());
             }
         }
 

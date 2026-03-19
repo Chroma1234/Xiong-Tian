@@ -349,7 +349,7 @@ public class Player : MonoBehaviour, IDamageable
         StateMachine.ChangeState(AttackState);
     }
 
-    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce, bool blocked)
+    public void TakeHit(int damage, Vector2 hitDirection, float knockbackForce)
     {
         if (!IsAlive || StateMachine.CurrentPlayerState == DeadState || StateMachine.CurrentPlayerState == HitState)
             return;

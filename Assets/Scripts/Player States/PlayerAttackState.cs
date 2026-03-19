@@ -26,16 +26,14 @@ public class PlayerAttackState : PlayerState
 
         float moveX = Input.GetAxisRaw("Horizontal");
         moveDirection = new Vector2(moveX, 0).normalized;
-
         //player.rb.linearVelocity += moveDirection; //Bryan - Don't think this does anything?
-        player.rb.linearVelocity = Vector2.zero;
 
 
         if (player.IsGrounded())
         {
             //player.rb.linearVelocity = new Vector2(player.lastFacingDirection.x * 1f, player.rb.linearVelocity.y); //When attacking, move forward slightly
 
-            //player.rb.linearVelocity = moveDirection * 0.5f; //When holding down direction key, move forward slightly when attacking
+            player.rb.linearVelocity = moveDirection * 0.5f; //When holding down direction key, move forward slightly when attacking
             //player.rb.linearVelocity = Vector2.one * 0.5f; //No movement at all when attacking
         }
 
@@ -52,13 +50,12 @@ public class PlayerAttackState : PlayerState
     {
         base.FrameUpdate();
 
-        if (Input.GetMouseButtonDown(0) && player.IsGrounded())
-        {
-            player.StopCoroutine(attackDelay);
-            player.animator.SetTrigger("attack");
-            player.PlaySound(player.attackClip);
-            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
-        }
+        //if(Input.GetMouseButtonDown(0) && player.IsGrounded())
+        //{
+        //    player.StopCoroutine(attackDelay);
+        //    player.animator.SetTrigger("attack");
+        //    attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+        //}
     }
 
     public override void PhysicsUpdate()
