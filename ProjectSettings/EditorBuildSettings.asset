@@ -14,6 +14,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Level Draft.unity
     guid: f05171ea235a04c45bf7b710f02c23cd
+  - enabled: 1
+    path: Assets/Scenes/OpeningCutScene.unity
+    guid: 5eb9b01633cfddc4caa98d502ae4e9b1
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0

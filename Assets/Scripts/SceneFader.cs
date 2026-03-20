@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Video;
+
 
 public class SceneFader : MonoBehaviour
 {
@@ -25,7 +27,7 @@ public class SceneFader : MonoBehaviour
         float timer = 0;
         while (timer < fadeDuration)
         {
-            timer += Time.deltaTime;
+            timer += Time.unscaledDeltaTime;
             float alpha = Mathf.Lerp(1, 0, timer / fadeDuration);
             fadeImage.color = new Color(fadeImage.color.r, fadeImage.color.g, fadeImage.color.b, alpha);
             yield return null;
@@ -50,4 +52,5 @@ public class SceneFader : MonoBehaviour
         SceneManager.LoadScene(sceneName);
         // When the new scene loads, the Start() method will call FadeIn() automatically
     }
+
 }
