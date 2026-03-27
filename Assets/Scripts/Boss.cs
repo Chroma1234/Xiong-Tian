@@ -568,11 +568,16 @@ public class Boss : MonoBehaviour, IDamageable
 
                 SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
 
+                GameObject stanceWarningObj = stanceObject.transform.GetChild(0).gameObject;
+
+                SpriteRenderer stanceWarningObjRend = stanceWarningObj.GetComponent<SpriteRenderer>();
+
                 Color newColor = Color.red;
                 stanceObjRender.color = newColor;
 
                 //Coroutine to fade out object
                 StartCoroutine(FadeTo(0f, warningFadeOut, stanceObjRender));
+                StartCoroutine(FadeTo(0f, warningFadeOut, stanceWarningObjRend));
                 
             }
             

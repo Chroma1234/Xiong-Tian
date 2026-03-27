@@ -36,10 +36,13 @@ public class arrowBehaviour : MonoBehaviour
 
         rb.gravityScale = gravity;
         rb.linearVelocity = velocityScale;
+        rb.simulated = true;
+
     }
 
     private IEnumerator Vanish()
-    {  
+    {
+
         float elapsedTime = 0f;
         while (elapsedTime < dissolveTime)
         {
@@ -64,6 +67,8 @@ public class arrowBehaviour : MonoBehaviour
 
             rb.gravityScale = 0f;
             rb.linearVelocity = Vector3.zero;
+            rb.simulated = false;
+
             StartCoroutine(Vanish());
         }
         
