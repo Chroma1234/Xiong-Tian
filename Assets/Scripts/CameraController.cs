@@ -32,6 +32,8 @@ public class CameraController : MonoBehaviour
     private LensDistortion lensDistortion;
     private ChromaticAberration chromaticAberration;
 
+    public bool inCutscene = false;
+
     private void Awake()
     {
         cam = Camera.main;
@@ -60,7 +62,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
-        if (isTransitioning)
+        if (isTransitioning || inCutscene)
             return;
 
         targetX = Mathf.Lerp(targetX, (forwardOffset * player.localScale.x), Time.deltaTime * xFollowSpeed);

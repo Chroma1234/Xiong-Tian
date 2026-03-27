@@ -60,7 +60,7 @@ Material:
     - _Blend: 0
     - _CastShadows: 1
     - _Cull: 2
-    - _DissolveAmt: 0
+    - _DissolveAmt: 1.1
     - _DissolveScale: 62
     - _DstBlend: 10
     - _EnableExternalAlpha: 0

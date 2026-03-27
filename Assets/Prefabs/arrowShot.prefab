@@ -4950,7 +4950,7 @@ MonoBehaviour:
   attackDamage: 20
   knockbackForce: 8
   blockable: 0
-  parryable: 0
+  parryable: 1
 --- !u!61 &6521801744187851047
 BoxCollider2D:
   m_ObjectHideFlags: 0

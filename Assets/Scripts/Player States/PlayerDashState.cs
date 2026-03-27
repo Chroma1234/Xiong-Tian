@@ -103,7 +103,7 @@ public class PlayerDashState : PlayerState
         }
 
         player.rb.linearVelocity = Vector2.zero;
-        //player.EnablePlayerCollider();
+        player.EnablePlayerCollider();
         if (player.IsGrounded())
         {
             player.StateMachine.ChangeState(player.IdleState);

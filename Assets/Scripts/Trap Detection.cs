@@ -25,11 +25,16 @@ public class Trap_Detection : MonoBehaviour
 
     [SerializeField] private GameObject bossHealthbar;
 
+    private Camera cam;
+    private CameraController camController;
+
     private void Awake()
     {
         trap_detection = GetComponent<BoxCollider2D>();
         trapdoor.gameObject.SetActive(false);
         gameManager = FindFirstObjectByType<GameManager>();
+        cam = Camera.main;
+        camController = cam.GetComponent<CameraController>();
     }
 
     private void Update()
@@ -92,16 +97,13 @@ public class Trap_Detection : MonoBehaviour
             renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 1);
         }
 
-        boss.SetActive(true);
         bgm.clip = bossMusic;
         bgm.Play();
 
         yield return StartCoroutine(FadeAudio(0.1f, 0.5f));
         yield return StartCoroutine(gameManager.Fade(1f, 0f));
-        player.isTeleporting = false;
-
-        bossHealthbar.SetActive(true);
-        StartCoroutine(Fade(0f, 1f, bossHealthbar.GetComponent<CanvasGroup>(), 0.5f));
+        //player.isTeleporting = false;
+        StartCoroutine(CutsceneRoutine());
     }
 
     private IEnumerator FadeAudio(float targetVolume, float duration)
@@ -134,5 +136,54 @@ public class Trap_Detection : MonoBehaviour
 
         a = to;
         fadeImage.alpha = a;
+    }
+
+    private IEnumerator CutsceneRoutine()
+    {
+        camController.inCutscene = true;
+
+        Vector3 originalPos = cam.transform.position;
+        Vector3 camPos = new Vector3(421.07f, 51.2f, cam.transform.position.z);
+        float elapsedTime = 0;
+
+        while (elapsedTime < 0.5f)
+        {
+            float t = elapsedTime / 0.5f;
+            cam.transform.position = Vector3.Lerp(cam.transform.position, camPos, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        cam.transform.position = camPos;
+        elapsedTime = 0;
+        boss.GetComponent<Boss>().StartCoroutine(boss.GetComponent<Boss>().Entrance());
+
+        while (elapsedTime < 0.5f)
+        {
+            float t = elapsedTime / 0.5f;
+            Color originalColor = boss.GetComponent<SpriteRenderer>().color;
+            boss.GetComponent<SpriteRenderer>().color = Color.Lerp(originalColor, new Color(originalColor.r, originalColor.g, originalColor.b, 1f), t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        elapsedTime = 0;
+        yield return new WaitForSeconds(1.2f);
+
+        while (elapsedTime < 0.5f)
+        {
+            float t = elapsedTime / 0.5f;
+            cam.transform.position = Vector3.Lerp(cam.transform.position, originalPos, t);
+            elapsedTime += Time.deltaTime;
+            yield return null;
+        }
+
+        cam.transform.position = originalPos;
+
+        camController.inCutscene = false;
+        player.isTeleporting = false;
+
+        bossHealthbar.SetActive(true);
+        StartCoroutine(Fade(0f, 1f, bossHealthbar.GetComponent<CanvasGroup>(), 0.5f));
     }
 }

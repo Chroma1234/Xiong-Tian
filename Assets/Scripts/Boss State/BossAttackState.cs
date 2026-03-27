@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BossAttackState : BossState
 {
-    private float attackCooldown =1.0f;    // delay between attacks
+    private float attackCooldown = 1.0f;    // delay between attacks
 
     public BossAttackState(Boss boss, BossStateMachine sm) : base(boss, sm) { }
 

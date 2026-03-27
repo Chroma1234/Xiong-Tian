@@ -107,6 +107,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     #region States
     public BossStateMachine StateMachine { get; set; }
+    public BossEnterState EnterState { get; set; }
     public BossIdleState IdleState { get; set; }
     public BossChaseState ChaseState { get; set; }
     public BossAttackState AttackState { get; set; }
@@ -170,6 +171,7 @@ public class Boss : MonoBehaviour, IDamageable
         spriteRenderer = GetComponent<SpriteRenderer>();
 
         StateMachine = new BossStateMachine();
+        EnterState = new BossEnterState(this, StateMachine);
         IdleState = new BossIdleState(this, StateMachine);
         ChaseState = new BossChaseState(this, StateMachine);
         AttackState = new BossAttackState(this, StateMachine);
@@ -230,18 +232,13 @@ public class Boss : MonoBehaviour, IDamageable
 
     private void Start()
     {
-        StateMachine.Initialize(IdleState);
+        StateMachine.Initialize(EnterState);
 
         health = maxHealth;
     }
 
     private void Update()
     {
-        if (moveTest)
-        {
-            transform.Translate(Vector3.left * 5f * Time.deltaTime);
-        }
-
         StateMachine.CurrentBossState.FrameUpdate();
 
         Vector2 direction = transform.localScale.x == -1 ? Vector2.right : Vector2.left;
@@ -274,7 +271,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal && StateMachine.CurrentBossState != EnterState)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
@@ -285,13 +282,13 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && !triggerGlobal && StateMachine.CurrentBossState != EnterState)
         {
             player = obj;
             StateMachine.ChangeState(ChaseState);
         }
 
-        if (StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && triggerGlobal)
+        if (StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && StateMachine.CurrentBossState != GlobalAttackState && triggerGlobal && StateMachine.CurrentBossState != EnterState)
         {
             //Debug.Log("Trigger Global: " + boss.triggerGlobal);         
 
@@ -306,7 +303,7 @@ public class Boss : MonoBehaviour, IDamageable
     {
         GameObject obj = collision.gameObject;
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == GlobalAttackState && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == GlobalAttackState && StateMachine.CurrentBossState != ChaseState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal && StateMachine.CurrentBossState != EnterState)
         {
             player = obj;
             triggerGlobal = false;
@@ -314,7 +311,7 @@ public class Boss : MonoBehaviour, IDamageable
             //StateMachine.ChangeState(IdleState);
         }
 
-        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal)
+        if (obj.layer == LayerMask.NameToLayer("Player") && StateMachine.CurrentBossState == ChaseState && StateMachine.CurrentBossState != GlobalAttackState && StateMachine.CurrentBossState != DeadState && StateMachine.CurrentBossState != AttackState && StateMachine.CurrentBossState != StunnedState && !triggerGlobal && StateMachine.CurrentBossState != EnterState)
         {
             player = obj;
             //StateMachine.ChangeState(IdleState);
@@ -461,6 +458,8 @@ public class Boss : MonoBehaviour, IDamageable
     public void ResetEnemy()
     {
         StopAllCoroutines();
+        StateMachine.ChangeState(EnterState);
+        shieldRenderer.material.SetFloat(shieldDissolveAmt, 1f);
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
@@ -471,7 +470,6 @@ public class Boss : MonoBehaviour, IDamageable
         }
         Health = maxHealth;
         IsAlive = true;
-        StateMachine.ChangeState(IdleState); 
         animator.Rebind();
         animator.Update(0f);
         gameObject.SetActive(true);
@@ -485,6 +483,8 @@ public class Boss : MonoBehaviour, IDamageable
         {
             renderer.color = new Color(renderer.color.r, renderer.color.g, renderer.color.b, 0);
         }
+
+        spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
 
         bgm.Play();
         StartCoroutine(FadeAudio(0.1f, 1f));
@@ -666,6 +666,21 @@ public class Boss : MonoBehaviour, IDamageable
             shieldRenderer.material.SetFloat(shieldDissolveAmt, lerpedDissolve);
             yield return null;
         }
+    }
+
+    public IEnumerator Entrance()
+    {
+        animator.SetTrigger("enter");
+        yield return new WaitUntil(() =>
+            animator.GetCurrentAnimatorStateInfo(0).IsTag("Entrance")
+        );
+
+        yield return new WaitUntil(() =>
+            !animator.GetCurrentAnimatorStateInfo(0).IsTag("Entrance")
+        );
+
+        StateMachine.ChangeState(ChaseState);
+        StartCoroutine(ShieldVanish(1.1f, 0f));
     }
 
 }

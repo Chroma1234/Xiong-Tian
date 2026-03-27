@@ -7,6 +7,10 @@ public class PlayerAttackState : PlayerState
     private float rollAccelTime = 0.08f;
     private float rollDecelTime = 0.08f;
     Coroutine attackDelay;
+
+    private bool inputQueued;
+    private bool canQueueInput;
+
     public PlayerAttackState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
     }
@@ -20,26 +24,12 @@ public class PlayerAttackState : PlayerState
     {
         base.EnterState();
 
-        player.PlaySound(player.attackClip);
-
         player.animator.SetTrigger("attack");
 
         float moveX = Input.GetAxisRaw("Horizontal");
         moveDirection = new Vector2(moveX, 0).normalized;
 
-        //player.rb.linearVelocity += moveDirection; //Bryan - Don't think this does anything?
         player.rb.linearVelocity = Vector2.zero;
-
-
-        if (player.IsGrounded())
-        {
-            //player.rb.linearVelocity = new Vector2(player.lastFacingDirection.x * 1f, player.rb.linearVelocity.y); //When attacking, move forward slightly
-
-            //player.rb.linearVelocity = moveDirection * 0.5f; //When holding down direction key, move forward slightly when attacking
-            //player.rb.linearVelocity = Vector2.one * 0.5f; //No movement at all when attacking
-        }
-
-        //player.StartCoroutine(MoveForward());
         attackDelay = player.StartCoroutine(WaitForAttackToFinish());
     }
 
@@ -54,10 +44,18 @@ public class PlayerAttackState : PlayerState
 
         if (Input.GetMouseButtonDown(0) && player.IsGrounded())
         {
-            player.StopCoroutine(attackDelay);
-            player.animator.SetTrigger("attack");
-            player.PlaySound(player.attackClip);
-            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+            if (player.comboable && canQueueInput)
+            {
+                player.StopCoroutine(attackDelay);
+                player.animator.SetTrigger("attack");
+                player.PlaySound(player.attackClip);
+                attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+                inputQueued = false;
+            }
+            else
+            {
+                inputQueued = true;
+            }
         }
     }
 
@@ -72,9 +70,24 @@ public class PlayerAttackState : PlayerState
             player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
         );
 
+        canQueueInput = true;
+
         yield return new WaitUntil(() =>
             !player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
         );
+
+        if (inputQueued && player.comboable)
+        {
+            player.animator.SetTrigger("attack");
+            player.PlaySound(player.attackClip);
+            inputQueued = false;
+            canQueueInput = false;
+            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+            yield break;
+        }
+
+        canQueueInput = false;
+        inputQueued = false;
 
         if (player.IsGrounded())
         {
@@ -86,44 +99,44 @@ public class PlayerAttackState : PlayerState
         }
     }
 
-    private IEnumerator MoveForward()
-    {
-        Vector2 rollDirection = moveDirection != Vector2.zero
-            ? moveDirection
-            : player.lastFacingDirection;
+    //private IEnumerator MoveForward()
+    //{
+    //    Vector2 rollDirection = moveDirection != Vector2.zero
+    //        ? moveDirection
+    //        : player.lastFacingDirection;
 
-        Vector2 startVelocity = player.rb.linearVelocity;
-        Vector2 maxVelocity = rollDirection * player.attackMomentum;
+    //    Vector2 startVelocity = player.rb.linearVelocity;
+    //    Vector2 maxVelocity = rollDirection * player.attackMomentum;
 
-        float timer = 0f;
+    //    float timer = 0f;
 
-        while (timer < player.dodgeDuration)
-        {
-            Vector2 currentVelocity;
+    //    while (timer < player.dodgeDuration)
+    //    {
+    //        Vector2 currentVelocity;
 
-            if (timer < rollAccelTime)
-            {
-                float t = timer / rollAccelTime;
-                t = Mathf.SmoothStep(0f, 1f, t);
-                currentVelocity = Vector2.Lerp(startVelocity, maxVelocity, t);
-            }
-            else if (timer > player.dodgeDuration - rollDecelTime)
-            {
-                float t = (timer - (player.dodgeDuration - rollDecelTime)) / rollDecelTime;
-                t = Mathf.SmoothStep(0f, 1f, t);
-                currentVelocity = Vector2.Lerp(maxVelocity, Vector2.zero, t);
-            }
-            else
-            {
-                currentVelocity = maxVelocity;
-            }
+    //        if (timer < rollAccelTime)
+    //        {
+    //            float t = timer / rollAccelTime;
+    //            t = Mathf.SmoothStep(0f, 1f, t);
+    //            currentVelocity = Vector2.Lerp(startVelocity, maxVelocity, t);
+    //        }
+    //        else if (timer > player.dodgeDuration - rollDecelTime)
+    //        {
+    //            float t = (timer - (player.dodgeDuration - rollDecelTime)) / rollDecelTime;
+    //            t = Mathf.SmoothStep(0f, 1f, t);
+    //            currentVelocity = Vector2.Lerp(maxVelocity, Vector2.zero, t);
+    //        }
+    //        else
+    //        {
+    //            currentVelocity = maxVelocity;
+    //        }
 
-            player.rb.linearVelocity = currentVelocity;
+    //        player.rb.linearVelocity = currentVelocity;
 
-            timer += Time.deltaTime;
-            yield return null;
-        }
+    //        timer += Time.deltaTime;
+    //        yield return null;
+    //    }
 
-        player.rb.linearVelocity = Vector2.zero;
-    }
+    //    player.rb.linearVelocity = Vector2.zero;
+    //}
 }

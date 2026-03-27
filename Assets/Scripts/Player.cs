@@ -150,6 +150,10 @@ public class Player : MonoBehaviour, IDamageable
     private int collisionDisableCount = 0;
     public bool isTeleporting = false;
 
+    [SerializeField] private CanvasGroup bossHealthBar;
+    public bool comboable = false;
+    public bool inputQueued = false;
+
     private void Awake()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
@@ -461,7 +465,7 @@ public class Player : MonoBehaviour, IDamageable
     private void Die()
     {
         IsAlive = false;
-        StopAllCoroutines();
+        //StopAllCoroutines();
 
         rb.linearVelocity = Vector2.zero;
 
@@ -473,6 +477,8 @@ public class Player : MonoBehaviour, IDamageable
 
         StateMachine.ChangeState(DeadState);
         gameManager.RespawnPlayer();
+
+        bossHealthBar.alpha = 0f;
     }
 
     public void Respawn(Vector3 spawnPoint)
@@ -558,5 +564,15 @@ public class Player : MonoBehaviour, IDamageable
     public void PlaySound(AudioClip clip)
     {
         audioSource.PlayOneShot(clip);
+    }
+
+    public void EnableNextHit()
+    {
+        comboable = true;
+    }
+
+    public void DisableNextHit()
+    {
+        comboable = false;
     }
 }

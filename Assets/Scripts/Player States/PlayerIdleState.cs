@@ -50,6 +50,7 @@ public class PlayerIdleState : PlayerState
                 {
                     player.StateMachine.ChangeState(player.DashState);
                     player.parryCounterAttackHitbox.SetActive(true);
+                    player.DisablePlayerCollider();
                 }
                 else
                 {
