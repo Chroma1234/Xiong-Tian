@@ -92,8 +92,6 @@ public class GameManager : MonoBehaviour
         paused = true;
         currentTimeScale = Time.timeScale;
         Time.timeScale = 0f;
-
-        Cursor.lockState = CursorLockMode.None;
     }
 
     public void Resume()

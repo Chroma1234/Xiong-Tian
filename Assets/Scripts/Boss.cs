@@ -205,7 +205,7 @@ public class Boss : MonoBehaviour, IDamageable
         //Instantiate warning blocking
         for (int i = 0; i < 40; i++)
         {
-            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, 43.5f + warningArrowOffset), Quaternion.identity);
+            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 

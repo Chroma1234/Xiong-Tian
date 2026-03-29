@@ -143,7 +143,7 @@ public class Trap_Detection : MonoBehaviour
         camController.inCutscene = true;
 
         Vector3 originalPos = cam.transform.position;
-        Vector3 camPos = new Vector3(421.07f, 51.2f, cam.transform.position.z);
+        Vector3 camPos = new Vector3(475.04f, 42.53f, cam.transform.position.z);
         float elapsedTime = 0;
 
         while (elapsedTime < 0.5f)

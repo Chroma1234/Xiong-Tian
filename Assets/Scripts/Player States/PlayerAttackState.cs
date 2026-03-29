@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerAttackState : PlayerState
 {
-    private Vector2 moveDirection;
-    private float rollAccelTime = 0.08f;
-    private float rollDecelTime = 0.08f;
+    //private Vector2 moveDirection;
+    //private float rollAccelTime = 0.08f;
+    //private float rollDecelTime = 0.08f;
     Coroutine attackDelay;
 
     private bool inputQueued;
@@ -27,7 +27,7 @@ public class PlayerAttackState : PlayerState
         player.animator.SetTrigger("attack");
 
         float moveX = Input.GetAxisRaw("Horizontal");
-        moveDirection = new Vector2(moveX, 0).normalized;
+        //moveDirection = new Vector2(moveX, 0).normalized;
 
         player.rb.linearVelocity = Vector2.zero;
         attackDelay = player.StartCoroutine(WaitForAttackToFinish());
