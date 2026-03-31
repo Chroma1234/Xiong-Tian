@@ -11,6 +11,11 @@ public class CutsceneController : MonoBehaviour
     public Image fadeImage;
     public string nextScene;
 
+    private void Awake()
+    {
+        Cursor.lockState = CursorLockMode.Locked;
+    }
+
     private void Update()
     {
         // Wait for video to finish playing or skip

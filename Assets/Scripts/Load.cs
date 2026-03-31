@@ -8,6 +8,7 @@ Copyright 2024 John M. Quick.
 
 using System.Collections;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Load : MonoBehaviour {
 
@@ -21,6 +22,11 @@ public class Load : MonoBehaviour {
 
     //fade transition script, assigned in Inspector
     public FadeUI fade;
+
+    public UIDocument uiDocument;
+    public VisualElement logo;
+
+    public Texture2D secondLogo;
 
     //awake
     private void Awake() {
@@ -47,7 +53,8 @@ public class Load : MonoBehaviour {
 
     //start
     private void Start() {
-
+        VisualElement root = uiDocument.rootVisualElement;
+        logo = root.Q<VisualElement>("Logo");
         //start loading process
         StartCoroutine(LoadApp());
     }
@@ -66,6 +73,22 @@ public class Load : MonoBehaviour {
         */
 
         //reveal scene
+        fade.Reveal();
+
+        //delay for transition
+        yield return new WaitForSeconds(fade.duration);
+
+        //delay for logo appearance
+        yield return new WaitForSeconds(delay);
+
+        //conceal scene
+        fade.Conceal();
+
+        //delay for logo appearance
+        yield return new WaitForSeconds(delay);
+
+        logo.style.backgroundImage = secondLogo;
+
         fade.Reveal();
 
         //delay for transition

@@ -376,6 +376,8 @@ MonoBehaviour:
   screenH: 1080
   isFullscreen: 0
   fade: {fileID: 1007326434}
+  uiDocument: {fileID: 1007326435}
+  secondLogo: {fileID: 2800000, guid: 5ed4a29740a28f8419742522957b0732, type: 3}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
