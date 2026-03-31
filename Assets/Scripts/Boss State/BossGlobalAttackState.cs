@@ -7,7 +7,7 @@ using UnityEngine;
 
 public class BossGlobalAttackState : BossState
 {
-
+    float decreaseGap = 0.1f;
     public BossGlobalAttackState(Boss boss, BossStateMachine bossStateMachine) : base(boss, bossStateMachine)
     {
 
@@ -130,10 +130,23 @@ public class BossGlobalAttackState : BossState
     {
         for (int i = 0; i < boss.warningList.Count; i++)
         {
+            //boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i].gameObject.transform.position.x - boss.warningGap, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
+
+            if (i == 0)
+            {
+                boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i].gameObject.transform.position.x, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
+            }
+
+            else
+            {
+                boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i-1].gameObject.transform.position.x + boss.warningGap, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
+            }
+
             if (i % 2 == 0 && !boss.triggerLeft)
             {
                 SpriteRenderer r = boss.warningList[i].GetComponent<SpriteRenderer>();
                 boss.warningList[i].SetActive(true);
+
                 boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
             }
             if (i % 2 != 0 && boss.triggerLeft)
@@ -143,6 +156,8 @@ public class BossGlobalAttackState : BossState
                 boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
             }
         }
+
+        boss.warningGap -= boss.decreaseValue;
 
         boss.triggerLeft = !boss.triggerLeft;
         boss.StartCoroutine(boss.triggerArrows());

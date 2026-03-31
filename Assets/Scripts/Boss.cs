@@ -79,6 +79,9 @@ public class Boss : MonoBehaviour, IDamageable
 
     public float arrowGravity = 40;
 
+    [HideInInspector]public float warningGap = 1.5f;
+    public float decreaseValue = 0.1f;
+
     [SerializeField] private float vanishDuration = 0.5f;
     [SerializeField] private float reappearDelay = 0.2f;
     [SerializeField] private BoxCollider2D teleportArea;
@@ -595,7 +598,7 @@ public class Boss : MonoBehaviour, IDamageable
             if (warningList[i].gameObject.activeSelf)
             {
                 arrowList[i].transform.position = new Vector2(
-            arrowList[i].transform.position.x,   // keep X the same
+            warningList[i].transform.position.x,   // keep X the same
             transform.position.y + 4f           // reset Y to boss spawn height
             );
                 Rigidbody2D rb = arrowList[i].GetComponent<Rigidbody2D>();
