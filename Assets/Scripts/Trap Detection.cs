@@ -141,6 +141,7 @@ public class Trap_Detection : MonoBehaviour
     private IEnumerator CutsceneRoutine()
     {
         camController.inCutscene = true;
+        player.isTeleporting = true;
 
         Vector3 originalPos = cam.transform.position;
         Vector3 camPos = new Vector3(475.04f, 42.53f, cam.transform.position.z);

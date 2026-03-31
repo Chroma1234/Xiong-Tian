@@ -431,10 +431,12 @@ public class Boss : MonoBehaviour, IDamageable
 
     public void Die()
     {
-        StopAllCoroutines();
+        //StopAllCoroutines();
+        StateMachine.ChangeState(EnterState);
         manager.DoSlowDown(0.025f, 0.5f);
         cam.ZoomIn();
         StartCoroutine(FadeAudio(0f, 1f));
+        StartCoroutine(ShieldVanish(shieldDissolveAmt, 1.1f));
 
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
@@ -452,7 +454,7 @@ public class Boss : MonoBehaviour, IDamageable
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        StartCoroutine(DisableAfterTime(1f));
+        StartCoroutine(DisableAfterTime(1.5f));
     }
 
     public void ResetEnemy()
@@ -661,15 +663,18 @@ public class Boss : MonoBehaviour, IDamageable
 
     public IEnumerator ShieldVanish(float from, float to)
     {
-        float elapsedTime = 0f;
-        while (elapsedTime < dissolveTime)
+        if (StateMachine.CurrentBossState != EnterState)
         {
-            elapsedTime += Time.deltaTime;
+            float elapsedTime = 0f;
+            while (elapsedTime < dissolveTime)
+            {
+                elapsedTime += Time.deltaTime;
 
-            float lerpedDissolve = Mathf.Lerp(from, to, (elapsedTime / dissolveTime));
+                float lerpedDissolve = Mathf.Lerp(from, to, (elapsedTime / dissolveTime));
 
-            shieldRenderer.material.SetFloat(shieldDissolveAmt, lerpedDissolve);
-            yield return null;
+                shieldRenderer.material.SetFloat(shieldDissolveAmt, lerpedDissolve);
+                yield return null;
+            }
         }
     }
 

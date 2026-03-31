@@ -9,7 +9,7 @@ public class Parallax : MonoBehaviour
     public float parallaxEffect;
 
     void Start()
-    {
+    { 
         startPos = transform.position.x;
         if (GetComponent<SpriteRenderer>() != null)
         {

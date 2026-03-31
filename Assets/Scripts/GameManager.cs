@@ -59,20 +59,20 @@ public class GameManager : MonoBehaviour
 
     private void Update()
     {
-        if (blockPauseInput) return;
-        if (inTutorial) return;
+        //if (blockPauseInput) return;
+        //if (inTutorial) return;
 
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            if (!paused)
-            {
-                Pause();
-            }
-            else
-            {
-                Resume();
-            }
-        }
+        //if (Input.GetKeyDown(KeyCode.Escape))
+        //{
+        //    if (!paused)
+        //    {
+        //        Pause();
+        //    }
+        //    else
+        //    {
+        //        Resume();
+        //    }
+        //}
     }
 
     public void Pause()

@@ -8,6 +8,7 @@ public class CameraController : MonoBehaviour
     private Camera cam;
 
     [SerializeField] private Transform player;
+    private Player playerScript;
     [SerializeField] private float forwardOffset;
     [SerializeField] private float heightOffset;
     [SerializeField] private float xFollowSpeed;
@@ -37,6 +38,7 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         cam = Camera.main;
+        playerScript = player.GetComponent<Player>();
     }
 
     private void Start()
@@ -168,6 +170,8 @@ public class CameraController : MonoBehaviour
     private IEnumerator RoomTransition(BoxCollider2D newRoom)
     {
         isTransitioning = true;
+        playerScript.isTeleporting = true;
+        playerScript.rb.linearVelocity = Vector3.zero;
         BoxCollider2D oldRoom = bounds;
         Vector3 startPos = transform.position; // capture where camera actually is
         float elapsed = 0f;
@@ -201,5 +205,6 @@ public class CameraController : MonoBehaviour
         bounds = newRoom;
         transform.position = endPos;
         isTransitioning = false;
+        playerScript.isTeleporting = false;
     }
 }

@@ -8,6 +8,7 @@ public class Teleporter : MonoBehaviour
 
     [SerializeField] private GameObject oldBG;
     [SerializeField] private GameObject newBG;
+    [SerializeField] private GameObject clouds;
 
     [SerializeField] private SpriteRenderer[] fog;
 
@@ -41,6 +42,7 @@ public class Teleporter : MonoBehaviour
 
         oldBG.SetActive(false);
         newBG.SetActive(true);
+        clouds.SetActive(false);
 
         foreach (SpriteRenderer a in fog)
         {

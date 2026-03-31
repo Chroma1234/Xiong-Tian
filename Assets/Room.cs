@@ -60,11 +60,11 @@ public class Room : MonoBehaviour
     private IEnumerator Vanish()
     {
         float elapsedTime = 0f;
-        while (elapsedTime < 0.75f)
+        while (elapsedTime < 0.4f)
         {
             elapsedTime += Time.deltaTime;
 
-            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / 0.75f));
+            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / 0.4f));
 
             blocker.GetComponent<SpriteRenderer>().material.SetFloat(Shader.PropertyToID("_DissolveAmt"), lerpedDissolve);
             yield return null;
