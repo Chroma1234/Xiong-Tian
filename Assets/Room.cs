@@ -1,5 +1,7 @@
 using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Room : MonoBehaviour
 {
@@ -7,7 +9,12 @@ public class Room : MonoBehaviour
     [SerializeField] 
     BoxCollider2D room;
     public GameObject blocker;
+
+    public TextMeshPro textHolder;
+
     public GameObject[] enemiesInRoom;
+
+    private int activeEnemies = 0;
 
     private void Awake()
     {
@@ -27,6 +34,21 @@ public class Room : MonoBehaviour
     {
         if (enemiesInRoom.Length > 0)
         {
+            if (enemiesInRoom != null)
+            {
+                activeEnemies = 0;
+
+                foreach (GameObject e in enemiesInRoom)
+                {
+                    if (e != null && e.activeSelf)
+                    {
+                        activeEnemies++;
+                    }
+                }
+            }
+
+            textHolder.text = activeEnemies + "/" + enemiesInRoom.Length + " Enemies <br>Remaining";
+
             if (AllEnemiesInRoomDead())
             {
                 DestroyBlocker();
