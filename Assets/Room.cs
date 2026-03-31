@@ -47,7 +47,10 @@ public class Room : MonoBehaviour
                 }
             }
 
-            textHolder.text = activeEnemies + "/" + enemiesInRoom.Length + " Enemies <br>Remaining";
+            if (textHolder != null)
+            {
+                textHolder.text = activeEnemies + "/" + enemiesInRoom.Length + " Enemies <br>Remaining";
+            }
 
             if (AllEnemiesInRoomDead())
             {
