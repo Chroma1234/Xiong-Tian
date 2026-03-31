@@ -44,6 +44,9 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private AudioClip hit;
     [SerializeField] private AudioClip shieldHit;
 
+    private int shieldDissolveAmt = Shader.PropertyToID("_DissolveAmt");
+    [SerializeField] public ParticleSystemRenderer shieldRenderer;
+
     //raptor-x-z
     public GameObject player;
     public Vector2 leftLimit;
@@ -149,6 +152,8 @@ public class Enemy : MonoBehaviour, IDamageable
         StateMachine.Initialize(IdleState);
 
         health = maxHealth;
+
+        triggerShield();
     }
 
     private void Update()
@@ -227,7 +232,12 @@ public class Enemy : MonoBehaviour, IDamageable
 
     public void Stunned()
     {
-        if(transform.localScale.x == 1)
+        if (shieldRenderer != null)
+        {
+            StartCoroutine(ShieldVanish(0f, 1.1f));
+        }
+
+        if (transform.localScale.x == 1)
             stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
         else
             stars = Instantiate(stunnedStarsPrefab, transform.position + new Vector3(-0.2f, 0.4f, 0), Quaternion.Euler(90, 0, 0), transform);
@@ -294,6 +304,12 @@ public class Enemy : MonoBehaviour, IDamageable
         enemyMat.SetFloat(dissolveAmt, 0f);
         transform.position = spawnPosition;
         transform.rotation = spawnRotation;
+        
+        if (shieldRenderer != null)
+        {
+            shieldRenderer.material.SetFloat(shieldDissolveAmt, 1f);
+        }
+
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
         {
@@ -323,6 +339,31 @@ public class Enemy : MonoBehaviour, IDamageable
         }
 
         gameObject.SetActive(false);
+    }
+
+    public void triggerShield()
+    {
+        if (shieldType)
+        {
+            StartCoroutine(ShieldVanish(1.1f, 0f));
+        }
+    }
+
+    public IEnumerator ShieldVanish(float from, float to)
+    {
+        if (StateMachine.CurrentPawnState != null)
+        {
+            float elapsedTime = 0f;
+            while (elapsedTime < dissolveTime)
+            {
+                elapsedTime += Time.deltaTime;
+
+                float lerpedDissolve = Mathf.Lerp(from, to, (elapsedTime / dissolveTime));
+
+                shieldRenderer.material.SetFloat(shieldDissolveAmt, lerpedDissolve);
+                yield return null;
+            }
+        }
     }
 
     public void PlaySound(AudioClip clip)

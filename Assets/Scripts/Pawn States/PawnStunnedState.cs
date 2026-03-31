@@ -53,8 +53,15 @@ public class PawnStunnedState : PawnState
         yield return new WaitForSeconds(stunDuration);
 
         if (pawn.inAttackRange)
+        {
             pawn.StateMachine.ChangeState(pawn.AttackState);
+            pawn.triggerShield();
+        }
+
         else
+        {
             pawn.StateMachine.ChangeState(pawn.ChaseState);
+            pawn.triggerShield();
+        }
     }
 }
