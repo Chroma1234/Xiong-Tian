@@ -531,7 +531,7 @@ MonoBehaviour:
   videoPlayer: {fileID: 752304544}
   fadeDuration: 1
   fadeImage: {fileID: 363427854}
-  nextScene: Level Draft (Revised Cave)
+  nextScene: Level Draft
 --- !u!1 &897711819
 GameObject:
   m_ObjectHideFlags: 0

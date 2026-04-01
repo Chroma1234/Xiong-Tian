@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Old Scenes/Level Draft (Revised Cave).unity
     guid: a80dba6a6037cb64aa3cf52705a64596
+  - enabled: 1
+    path: Assets/Scenes/EndingCutScene.unity
+    guid: 3c050529ba4352a4d9b78ddcc18af305
   - enabled: 0
     path: Assets/Scenes/Level Draft.unity
     guid: f05171ea235a04c45bf7b710f02c23cd

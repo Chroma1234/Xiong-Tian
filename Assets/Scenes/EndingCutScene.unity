@@ -476,7 +476,7 @@ VideoPlayer:
   m_DirectAudioMutes: 00
   m_ControlledAudioTrackCount: 1
   m_PlayOnAwake: 1
-  m_SkipOnDrop: 1
+  m_SkipOnDrop: 0
   m_Looping: 0
   m_WaitForFirstFrame: 0
   m_FrameReadyEventEnabled: 0
@@ -525,13 +525,11 @@ MonoBehaviour:
   m_GameObject: {fileID: 752304542}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5cffd4d37e3584c4fb6dd50a71fdf69d, type: 3}
+  m_Script: {fileID: 11500000, guid: ae57f6a3f85cc1743a2c59c3a3ca3e69, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   videoPlayer: {fileID: 752304544}
-  fadeDuration: 1
-  fadeImage: {fileID: 363427854}
-  nextScene: Level Draft (Revised Cave)
+  nextSceneName: Menu
 --- !u!1 &897711819
 GameObject:
   m_ObjectHideFlags: 0
