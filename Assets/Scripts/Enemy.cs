@@ -295,10 +295,10 @@ public class Enemy : MonoBehaviour, IDamageable
             Destroy(stars);
         }
 
-        if (shieldRenderer != null && shieldRenderer.material.GetFloat("_DissolveAmt") < 1.1f)
+        /*if (shieldRenderer != null && shieldRenderer.material.GetFloat("_DissolveAmt") < 1.1f)
         {
             StartCoroutine(ShieldVanish(0f, 1.1f));
-        }
+        }*/
 
         //StopAllCoroutines();
 
