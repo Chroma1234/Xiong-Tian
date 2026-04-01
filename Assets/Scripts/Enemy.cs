@@ -295,6 +295,11 @@ public class Enemy : MonoBehaviour, IDamageable
             Destroy(stars);
         }
 
+        if (shieldRenderer != null && shieldRenderer.material.GetFloat("_DissolveAmt") < 1.1f)
+        {
+            StartCoroutine(ShieldVanish(0f, 1.1f));
+        }
+
         //StopAllCoroutines();
 
         IsAlive = false;
@@ -339,9 +344,16 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             elapsedTime += Time.deltaTime;
 
-            //float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
+            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
 
-            //enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
+            enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
+
+            //if (shieldRenderer != null && shieldRenderer.material.GetFloat("_DissolveAmt") == 0f)
+            //{
+            //    StartCoroutine(ShieldVanish(0f, lerpedDissolve));
+            //}
+
+
             yield return null;
         }
 
