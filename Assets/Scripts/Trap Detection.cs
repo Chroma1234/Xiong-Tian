@@ -89,6 +89,10 @@ public class Trap_Detection : MonoBehaviour
         yield return StartCoroutine(gameManager.Fade(0f, 1f));
         yield return StartCoroutine(FadeAudio(0f, 0.5f));
         player.gameObject.transform.position = new Vector2(bossTeleport.position.x, player.transform.position.y);
+
+        player.isTeleporting = true;
+        player.rb.linearVelocity = Vector2.zero;
+
         yield return new WaitForSeconds(0.5f);
         caveBG.SetActive(false);
 
@@ -142,6 +146,7 @@ public class Trap_Detection : MonoBehaviour
     {
         camController.inCutscene = true;
         player.isTeleporting = true;
+        player.rb.linearVelocity = Vector2.zero;
 
         Vector3 originalPos = cam.transform.position;
         Vector3 camPos = new Vector3(465.64f, 42.45f, cam.transform.position.z);

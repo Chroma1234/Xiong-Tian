@@ -295,7 +295,8 @@ public class Enemy : MonoBehaviour, IDamageable
             Destroy(stars);
         }
 
-        StopAllCoroutines();
+        //StopAllCoroutines();
+
         IsAlive = false;
         OnEnemyKilled?.Invoke(this);
         animator.SetTrigger("death");
