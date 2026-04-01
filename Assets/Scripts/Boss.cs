@@ -71,7 +71,6 @@ public class Boss : MonoBehaviour, IDamageable
 
     public bool triggerLeft = false;
 
-    public float warningArrowOffset = 40f;
     public float globalAttackCooldown = 10f;
     public float globalAttackTimer = 5f;
     public float warningFadeIn = 3f;
@@ -79,8 +78,13 @@ public class Boss : MonoBehaviour, IDamageable
 
     public float arrowGravity = 40;
 
-    [HideInInspector]public float warningGap = 1.5f;
-    public float decreaseValue = 0.1f;
+    [HideInInspector] public float warningGap = 1.5f;
+    [HideInInspector] public int warningSpawnCount = 40;
+    [HideInInspector] public float warningPosX = 0;
+    [HideInInspector] public float arrowPosX = 0;
+
+    public float decreaseValue = 0.3f;
+    public float minGapValue = 1f;
 
     [SerializeField] private float vanishDuration = 0.5f;
     [SerializeField] private float reappearDelay = 0.2f;
@@ -207,22 +211,22 @@ public class Boss : MonoBehaviour, IDamageable
 
         shieldRenderer.material.SetFloat(shieldDissolveAmt, 1.1f);
 
-        float warningPosX = -20f;
-        float arrowPosX = -20f;
+        warningPosX = -((warningSpawnCount / 2) * warningGap);
+        arrowPosX = -((warningSpawnCount / 2) * warningGap);
 
         //Instantiate warning blocking
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < warningSpawnCount; i++)
         {
             GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y), Quaternion.identity);
 
             newPrefab.gameObject.SetActive(false);
 
             warningList.Add(newPrefab);
-            warningPosX += 1.5f;
+            warningPosX += warningGap;
         }
 
         //Instantiate arrows positions
-        for (int i = 0; i < 40; i++)
+        for (int i = 0; i < warningSpawnCount; i++)
         {
             GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, this.transform.position.y + 4f), Quaternion.identity);
 
@@ -233,7 +237,7 @@ public class Boss : MonoBehaviour, IDamageable
             newPrefab.gameObject.GetComponent<Rigidbody2D>().gravityScale = arrowGravity;
 
             arrowList.Add(newPrefab);
-            arrowPosX += 1.5f;
+            arrowPosX += warningGap;
         }
 
     }
@@ -576,9 +580,9 @@ public class Boss : MonoBehaviour, IDamageable
             {
                 GameObject stanceObject = warningList[i];
 
-                SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
-
                 GameObject stanceWarningObj = stanceObject.transform.GetChild(0).gameObject;
+
+                SpriteRenderer stanceObjRender = stanceObject.GetComponent<SpriteRenderer>();
 
                 SpriteRenderer stanceWarningObjRend = stanceWarningObj.GetComponent<SpriteRenderer>();
 

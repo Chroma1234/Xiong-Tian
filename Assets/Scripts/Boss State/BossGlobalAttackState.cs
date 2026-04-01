@@ -78,10 +78,10 @@ public class BossGlobalAttackState : BossState
             boss.warningList[i].SetActive(false);
         }
 
-        //for (int i = 0; i < boss.arrowList.Count; i++)
-        //{
-        //    boss.arrowList[i].SetActive(false);
-        //}
+        for (int i = 0; i < boss.arrowList.Count; i++)
+        {
+            boss.arrowList[i].SetActive(false);
+        }
 
         boss.animator.ResetTrigger("global");
     }
@@ -128,36 +128,64 @@ public class BossGlobalAttackState : BossState
 
     public void OnVanishComplete()
     {
+        boss.warningPosX = -((boss.warningSpawnCount / 2) * boss.warningGap);
+
         for (int i = 0; i < boss.warningList.Count; i++)
         {
-            //boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i].gameObject.transform.position.x - boss.warningGap, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
 
-            if (i == 0)
-            {
-                boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i].gameObject.transform.position.x, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
-            }
+            //if (i == 0)
+            //{
+            //    boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i].gameObject.transform.position.x, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
+            //}
 
-            else
-            {
-                boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i-1].gameObject.transform.position.x + boss.warningGap, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
-            }
+            //else
+            //{
+            //    boss.warningList[i].gameObject.transform.position = new Vector3(boss.warningList[i-1].gameObject.transform.position.x + boss.warningGap, boss.warningList[i].gameObject.transform.position.y, boss.warningList[i].gameObject.transform.position.z);
+            //}
+
+            boss.warningList[i].gameObject.transform.position = new Vector2(boss.originalPos.x + boss.warningPosX, boss.originalPos.y);
+
+            boss.warningPosX += boss.warningGap;
 
             if (i % 2 == 0 && !boss.triggerLeft)
             {
                 SpriteRenderer r = boss.warningList[i].GetComponent<SpriteRenderer>();
+
+                GameObject stanceWarningObj = boss.warningList[i].gameObject.transform.GetChild(0).gameObject;
+
+                SpriteRenderer r2 = stanceWarningObj.GetComponent<SpriteRenderer>();
+
                 boss.warningList[i].SetActive(true);
 
+
                 boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
+                boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r2));
             }
             if (i % 2 != 0 && boss.triggerLeft)
             {
                 SpriteRenderer r = boss.warningList[i].GetComponent<SpriteRenderer>();
+
+                GameObject stanceWarningObj = boss.warningList[i].gameObject.transform.GetChild(0).gameObject;
+
+                SpriteRenderer r2 = stanceWarningObj.GetComponent<SpriteRenderer>();
+
                 boss.warningList[i].SetActive(true);
+
+
                 boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r));
+                boss.StartCoroutine(boss.FadeTo(1f, boss.warningFadeIn, r2));
             }
         }
 
-        boss.warningGap -= boss.decreaseValue;
+        if (boss.warningGap > boss.minGapValue)
+        {
+            boss.warningGap -= boss.decreaseValue;
+        }
+
+        if (boss.warningGap >= boss.minGapValue)
+        {
+            Debug.Log("Limit Reached");
+        }
 
         boss.triggerLeft = !boss.triggerLeft;
         boss.StartCoroutine(boss.triggerArrows());
