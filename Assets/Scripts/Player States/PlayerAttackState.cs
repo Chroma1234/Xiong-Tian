@@ -26,10 +26,12 @@ public class PlayerAttackState : PlayerState
 
         player.animator.SetTrigger("attack");
 
-        float moveX = Input.GetAxisRaw("Horizontal");
-        //moveDirection = new Vector2(moveX, 0).normalized;
+        moveAttack();
 
-        player.rb.linearVelocity = Vector2.zero;
+        //float moveX = Input.GetAxisRaw("Horizontal");
+        //moveDirection = new Vector2(moveX, 0).normalized;
+        //player.rb.linearVelocity = Vector2.zero;
+
         attackDelay = player.StartCoroutine(WaitForAttackToFinish());
     }
 
@@ -51,6 +53,9 @@ public class PlayerAttackState : PlayerState
                 player.PlaySound(player.attackClip);
                 attackDelay = player.StartCoroutine(WaitForAttackToFinish());
                 inputQueued = false;
+                
+                moveAttack();
+
             }
             else
             {
@@ -83,7 +88,10 @@ public class PlayerAttackState : PlayerState
             inputQueued = false;
             canQueueInput = false;
             attackDelay = player.StartCoroutine(WaitForAttackToFinish());
-            yield break;
+
+            moveAttack();
+
+                yield break;
         }
 
         canQueueInput = false;
@@ -96,6 +104,19 @@ public class PlayerAttackState : PlayerState
         else
         {
             player.StateMachine.ChangeState(player.FallState);
+        }
+    }
+
+    private void moveAttack()
+    {
+        if (player.transform.localScale == Vector3.one)
+        {
+            player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x + player.attackDisplacement, player.rb.linearVelocity.y);
+        }
+
+        else
+        {
+            player.rb.linearVelocity = new Vector2(player.rb.linearVelocity.x - player.attackDisplacement, player.rb.linearVelocity.y);
         }
     }
 

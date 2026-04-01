@@ -26,6 +26,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] public float jumpForce = 17f;
     [SerializeField] public float dodgeSpeed = 15f;
     [SerializeField] public float dodgeDuration = 0.2f;
+    [SerializeField] public float attackDisplacement = 0.5f;
 
     [HideInInspector] public Vector2 lastFacingDirection = Vector2.right;
     [HideInInspector] public Vector2 moveDirection;
