@@ -154,6 +154,7 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private CanvasGroup bossHealthBar;
     public bool comboable = false;
     public bool inputQueued = false;
+    public bool freezePlayer = false;
 
     private void Awake()
     {
@@ -199,6 +200,14 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Update()
     {
+        if (freezePlayer)
+        {
+            animator.SetBool("isMoving", false);
+            return; // skip inputs and attacks
+        }
+
+        StateMachine.CurrentPlayerState.FrameUpdate();
+
         if (!gameManager.paused)
         {
             StateMachine.CurrentPlayerState.FrameUpdate();
@@ -286,6 +295,12 @@ public class Player : MonoBehaviour, IDamageable
     {
         StateMachine.CurrentPlayerState.PhysicsUpdate();
 
+        if (freezePlayer)
+        {
+            rb.linearVelocity = new Vector2(0, rb.linearVelocity.y); // prevent movement
+            return; // skip movement handling
+        }
+
         if (StateMachine.CurrentPlayerState != AttackState && StateMachine.CurrentPlayerState != BlockState && StateMachine.CurrentPlayerState != DashState && StateMachine.CurrentPlayerState != HitState && StateMachine.CurrentPlayerState != HealState && StateMachine.CurrentPlayerState != DeadState && !isTeleporting)
         {
             HandleMovement();
@@ -303,6 +318,7 @@ public class Player : MonoBehaviour, IDamageable
 
     public void HandleMovement()
     {
+        if (freezePlayer) return;
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         rb.linearVelocity = new Vector2(horizontalInput * moveSpeed, rb.linearVelocity.y);
     }

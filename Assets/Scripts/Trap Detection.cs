@@ -88,6 +88,7 @@ public class Trap_Detection : MonoBehaviour
 
     private IEnumerator Setup(Player player)
     {
+        player.freezePlayer = true;
         yield return StartCoroutine(gameManager.Fade(0f, 1f));
         yield return StartCoroutine(FadeAudio(0f, 0.5f));
         player.gameObject.transform.position = new Vector2(bossTeleport.position.x, player.transform.position.y);
@@ -194,5 +195,9 @@ public class Trap_Detection : MonoBehaviour
 
         bossHealthbar.SetActive(true);
         StartCoroutine(Fade(0f, 1f, bossHealthbar.GetComponent<CanvasGroup>(), 0.5f));
+
+        camController.inCutscene = false;
+        player.freezePlayer = false; // unfreeze player now
+        player.isTeleporting = false;
     }
 }
