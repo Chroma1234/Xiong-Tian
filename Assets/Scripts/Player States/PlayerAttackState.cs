@@ -26,7 +26,7 @@ public class PlayerAttackState : PlayerState
 
         player.animator.SetTrigger("attack");
 
-        moveAttack();
+        //moveAttack();
 
         //float moveX = Input.GetAxisRaw("Horizontal");
         //moveDirection = new Vector2(moveX, 0).normalized;
@@ -54,7 +54,7 @@ public class PlayerAttackState : PlayerState
                 attackDelay = player.StartCoroutine(WaitForAttackToFinish());
                 inputQueued = false;
                 
-                moveAttack();
+                //moveAttack();
 
             }
             else
@@ -89,7 +89,7 @@ public class PlayerAttackState : PlayerState
             canQueueInput = false;
             attackDelay = player.StartCoroutine(WaitForAttackToFinish());
 
-            moveAttack();
+            //moveAttack();
 
                 yield break;
         }
