@@ -67,6 +67,8 @@ public class PlayerAttackState : PlayerState
     public override void PhysicsUpdate()
     {
         base.PhysicsUpdate();
+        // Stop horizontal sliding
+        player.rb.linearVelocity = new Vector2(0f, player.rb.linearVelocity.y);
     }
 
     private IEnumerator WaitForAttackToFinish()
