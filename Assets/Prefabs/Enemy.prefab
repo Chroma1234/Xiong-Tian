@@ -298,12 +298,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spriteRenderer: {fileID: 0}
+  dissolveTime: 0.5
   animator: {fileID: 0}
   maxHealth: 50
   knockbackForce: 5
   stunDuration: 2
   stunnedStarsPrefab: {fileID: 7347345292627970672, guid: 6f8c280269484c641a3f90aae2280ced, type: 3}
   hitFlashDuration: 0.05
+  sparksPrefab: {fileID: 0}
   inAttackRange: 0
   moveTest: 0
   playerLayer:
@@ -311,10 +313,13 @@ MonoBehaviour:
     m_Bits: 8
   eyeFlash: {fileID: 1465203926140062101}
   hit: {fileID: 8300000, guid: 5e56591c1bdcc3e45b01b33cd9918953, type: 3}
+  shieldHit: {fileID: 0}
+  shieldObject: {fileID: 0}
   player: {fileID: 0}
   leftLimit: {x: 0, y: 0}
   rightLimit: {x: 0, y: 0}
   canMove: 1
+  shieldType: 0
   groundCheck: {fileID: 5754150870632124873}
 --- !u!50 &3311164986886838101
 Rigidbody2D:
@@ -720,7 +725,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6011468206142888496}
   serializedVersion: 8
-  lengthInSec: 0.5
+  lengthInSec: 1
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0

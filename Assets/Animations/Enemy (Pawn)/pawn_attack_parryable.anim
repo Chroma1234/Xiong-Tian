@@ -74,7 +74,7 @@ AnimationClip:
     - time: 0.6
       value: {fileID: 21300000, guid: 563d874a64fa7304eb46250c508607b4, type: 3}
     - time: 0.7
-      value: {fileID: 21300000, guid: 9595c4b16ae23484cbba275dc7451e94, type: 3}
+      value: {fileID: 21300000, guid: 50e484bb60f54724e97ddee40a50a878, type: 3}
     - time: 0.8
       value: {fileID: 21300000, guid: 9244e056e870eff4e86d9613a586ecdf, type: 3}
     attribute: m_Sprite
@@ -115,7 +115,7 @@ AnimationClip:
     - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - {fileID: 21300000, guid: e8cd418ce4ef7a440839290bd514afcc, type: 3}
     - {fileID: 21300000, guid: 563d874a64fa7304eb46250c508607b4, type: 3}
-    - {fileID: 21300000, guid: 9595c4b16ae23484cbba275dc7451e94, type: 3}
+    - {fileID: 21300000, guid: 50e484bb60f54724e97ddee40a50a878, type: 3}
     - {fileID: 21300000, guid: 9244e056e870eff4e86d9613a586ecdf, type: 3}
   m_AnimationClipSettings:
     serializedVersion: 2
@@ -191,7 +191,7 @@ AnimationClip:
   - time: 0.1
     functionName: PlaySound
     data: 
-    objectReferenceParameter: {fileID: 8300000, guid: 19d43f496daa30a4a80802e8eb619274, type: 3}
+    objectReferenceParameter: {fileID: 8300000, guid: 757b00060c2692b4ea51d9b05bdb14f6, type: 3}
     floatParameter: 0
     intParameter: 0
     messageOptions: 0
