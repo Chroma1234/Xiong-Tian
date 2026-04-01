@@ -15,7 +15,7 @@ public class Enemy : MonoBehaviour, IDamageable
     [HideInInspector] public SpriteRenderer spriteRenderer;
     private Material enemyMat;
 
-    [SerializeField] private float dissolveTime = 0.75f;
+    [SerializeField] private float dissolveTime = 0.5f;
     private int dissolveAmt = Shader.PropertyToID("_DissolveAmt");
 
     public Animator animator;
@@ -45,7 +45,8 @@ public class Enemy : MonoBehaviour, IDamageable
     [SerializeField] private AudioClip shieldHit;
 
     private int shieldDissolveAmt = Shader.PropertyToID("_DissolveAmt");
-    [SerializeField] public ParticleSystemRenderer shieldRenderer;
+    [SerializeField] public GameObject shieldObject;
+    private SpriteRenderer shieldRenderer;
 
     //raptor-x-z
     public GameObject player;
@@ -145,6 +146,11 @@ public class Enemy : MonoBehaviour, IDamageable
 
         manager = FindFirstObjectByType<GameManager>();
         manager.RegisterEnemy(this);
+
+        if (shieldObject != null)
+        {
+            shieldRenderer = shieldObject.GetComponent<SpriteRenderer>();
+        }
     }
 
     private void Start()
@@ -332,9 +338,9 @@ public class Enemy : MonoBehaviour, IDamageable
         {
             elapsedTime += Time.deltaTime;
 
-            float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
+            //float lerpedDissolve = Mathf.Lerp(0, 1.1f, (elapsedTime / dissolveTime));
 
-            enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
+            //enemyMat.SetFloat(dissolveAmt, lerpedDissolve);
             yield return null;
         }
 

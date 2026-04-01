@@ -106,7 +106,8 @@ public class Boss : MonoBehaviour, IDamageable
 
     [SerializeField] private float dissolveTime = 0.75f;
     private int shieldDissolveAmt = Shader.PropertyToID("_DissolveAmt");
-    [SerializeField] public ParticleSystemRenderer shieldRenderer;
+    [SerializeField] public GameObject shieldObject;
+    private SpriteRenderer shieldRenderer;
 
     #region States
     public BossStateMachine StateMachine { get; set; }
@@ -201,6 +202,10 @@ public class Boss : MonoBehaviour, IDamageable
         triggerGlobal = false;
         exitGlobal = false;
         //Debug.Log(warningArray.Length);
+
+        shieldRenderer = shieldObject.gameObject.GetComponent<SpriteRenderer>();
+
+        shieldRenderer.material.SetFloat(shieldDissolveAmt, 1.1f);
 
         float warningPosX = -20f;
         float arrowPosX = -20f;
