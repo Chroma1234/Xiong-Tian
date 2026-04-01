@@ -14,6 +14,7 @@ public class Trap_Detection : MonoBehaviour
 
     [SerializeField] private GameObject boss;
     [SerializeField] private GameObject caveBG;
+    [SerializeField] private GameObject heavensgate;
     [SerializeField] private SpriteRenderer[] bossBGSprites;
 
     private GameManager gameManager;
@@ -35,6 +36,7 @@ public class Trap_Detection : MonoBehaviour
         gameManager = FindFirstObjectByType<GameManager>();
         cam = Camera.main;
         camController = cam.GetComponent<CameraController>();
+        heavensgate.gameObject.SetActive(false);
     }
 
     private void Update()
@@ -90,7 +92,8 @@ public class Trap_Detection : MonoBehaviour
         yield return StartCoroutine(FadeAudio(0f, 0.5f));
         player.gameObject.transform.position = new Vector2(bossTeleport.position.x, player.transform.position.y);
         yield return new WaitForSeconds(0.5f);
-        caveBG.SetActive(false);
+        caveBG.gameObject.SetActive(false);
+        heavensgate.gameObject.SetActive(true);
 
         foreach (SpriteRenderer renderer in bossBGSprites)
         {
