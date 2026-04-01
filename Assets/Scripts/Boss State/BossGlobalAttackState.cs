@@ -7,7 +7,6 @@ using UnityEngine;
 
 public class BossGlobalAttackState : BossState
 {
-    float decreaseGap = 0.1f;
     public BossGlobalAttackState(Boss boss, BossStateMachine bossStateMachine) : base(boss, bossStateMachine)
     {
 
@@ -73,15 +72,17 @@ public class BossGlobalAttackState : BossState
 
         Debug.Log("Exit Global Attack State");
 
-        for (int i = 0; i < boss.warningList.Count; i++)
-        {
-            boss.warningList[i].SetActive(false);
-        }
+        //for (int i = 0; i < boss.warningList.Count; i++)
+        //{
+        //    boss.warningList[i].SetActive(false);
+        //}
 
-        for (int i = 0; i < boss.arrowList.Count; i++)
-        {
-            boss.arrowList[i].SetActive(false);
-        }
+        //for (int i = 0; i < boss.arrowList.Count; i++)
+        //{
+        //    boss.arrowList[i].SetActive(false);
+        //}
+
+        boss.ResetWarnings();
 
         boss.animator.ResetTrigger("global");
     }

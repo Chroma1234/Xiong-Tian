@@ -69,6 +69,8 @@ public class Boss : MonoBehaviour, IDamageable
     public GameObject warningObject;
     public GameObject arrowObject;
 
+    private Color warningOriginalColor;
+
     public bool triggerLeft = false;
 
     public float globalAttackCooldown = 10f;
@@ -218,6 +220,10 @@ public class Boss : MonoBehaviour, IDamageable
         for (int i = 0; i < warningSpawnCount; i++)
         {
             GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y), Quaternion.identity);
+
+            SpriteRenderer warningRenderer = newPrefab.gameObject.GetComponent<SpriteRenderer>();
+
+            warningOriginalColor = warningRenderer.color;
 
             newPrefab.gameObject.SetActive(false);
 
@@ -664,12 +670,19 @@ public class Boss : MonoBehaviour, IDamageable
     {
         for (int i = 0; i < warningList.Count; i++)
         {
-            warningList[i].SetActive(true);
+            warningList[i].SetActive(false);
+            arrowList[i].SetActive(false);
 
             SpriteRenderer sr = warningList[i].GetComponent<SpriteRenderer>();
-            Color c = sr.color;
-            c.a = 1f;
-            sr.color = c;
+
+            GameObject stanceWarningObj = warningList[i].gameObject.transform.GetChild(0).gameObject;
+
+            SpriteRenderer sr2 = stanceWarningObj.GetComponent<SpriteRenderer>();
+
+            sr.color = warningOriginalColor;
+
+            Color c2 = sr2.color;
+            c2.a = 1f;
         }
     }
 
