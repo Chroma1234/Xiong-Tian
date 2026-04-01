@@ -10,6 +10,7 @@ public class PlayerAttackState : PlayerState
 
     private bool inputQueued;
     private bool canQueueInput;
+    private bool freezeHorizontal;
 
     public PlayerAttackState(Player player, PlayerStateMachine playerStateMachine) : base(player, playerStateMachine)
     {
@@ -26,6 +27,7 @@ public class PlayerAttackState : PlayerState
 
         player.animator.SetTrigger("attack");
 
+        freezeHorizontal = true; // freeze movement during attack
         //moveAttack();
 
         //float moveX = Input.GetAxisRaw("Horizontal");
@@ -46,21 +48,9 @@ public class PlayerAttackState : PlayerState
 
         if (Input.GetMouseButtonDown(0) && player.IsGrounded())
         {
-            if (player.comboable && canQueueInput)
-            {
-                player.StopCoroutine(attackDelay);
-                player.animator.SetTrigger("attack");
-                player.PlaySound(player.attackClip);
-                attackDelay = player.StartCoroutine(WaitForAttackToFinish());
-                inputQueued = false;
-                
-                //moveAttack();
 
-            }
-            else
-            {
+                // Always queue input (buffer it)
                 inputQueued = true;
-            }
         }
     }
 
@@ -68,36 +58,73 @@ public class PlayerAttackState : PlayerState
     {
         base.PhysicsUpdate();
         // Stop horizontal sliding
-        player.rb.linearVelocity = new Vector2(0f, player.rb.linearVelocity.y);
+        if (freezeHorizontal)
+        {
+            // Stop horizontal sliding during the attack
+            player.rb.linearVelocity = new Vector2(0f, player.rb.linearVelocity.y);
+        }
     }
 
     private IEnumerator WaitForAttackToFinish()
     {
+        // Wait until attack animation actually starts
         yield return new WaitUntil(() =>
             player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
         );
 
+        // Wait until early part of animation (open combo window earlier)
+        yield return new WaitUntil(() =>
+        {
+            var state = player.animator.GetCurrentAnimatorStateInfo(0);
+            return state.IsTag("Attack") && state.normalizedTime >= 0.2f;
+        });
+
+        // Open combo window
         canQueueInput = true;
 
-        yield return new WaitUntil(() =>
-            !player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Attack")
-        );
+        // Keep window open for a short, consistent duration
+        float timer = 0f;
+        float comboWindow = 1f;
 
-        if (inputQueued && player.comboable)
+        while (timer < comboWindow)
         {
-            player.animator.SetTrigger("attack");
-            player.PlaySound(player.attackClip);
-            inputQueued = false;
-            canQueueInput = false;
-            attackDelay = player.StartCoroutine(WaitForAttackToFinish());
+            timer += Time.deltaTime;
 
-            //moveAttack();
+            if (inputQueued && player.comboable)
+            {
+                yield return new WaitForSeconds(0.075f); // small delay
+                // Trigger next attack immediately
+                player.animator.SetTrigger("attack");
+                player.PlaySound(player.attackClip);
 
+                inputQueued = false;
+                canQueueInput = false;
+
+                attackDelay = player.StartCoroutine(WaitForAttackToFinish());
                 yield break;
+            }
+
+            // Check if animation finished
+            var stateInfo = player.animator.GetCurrentAnimatorStateInfo(0);
+            if (!stateInfo.IsTag("Attack") || stateInfo.normalizedTime >= 1f)
+            {
+                break; // exit attack loop
+            }
+
+            yield return null;
         }
 
+        // Close window
         canQueueInput = false;
         inputQueued = false;
+        freezeHorizontal = false;
+
+        /*yield return new WaitUntil(() =>
+        {
+            var state = player.animator.GetCurrentAnimatorStateInfo(0);
+            return !state.IsTag("Attack") || state.normalizedTime >= 1f;
+        });*/
+
 
         if (player.IsGrounded())
         {
@@ -107,7 +134,9 @@ public class PlayerAttackState : PlayerState
         {
             player.StateMachine.ChangeState(player.FallState);
         }
+        yield break;
     }
+
 
     private void moveAttack()
     {
