@@ -22,6 +22,8 @@ public class EndingCutsceneController : MonoBehaviour
 
     private void OnVideoEnd(VideoPlayer vp)
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         // Load the main menu scene when video finishes
         SceneManager.LoadScene(nextSceneName);
     }
