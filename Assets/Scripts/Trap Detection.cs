@@ -31,12 +31,15 @@ public class Trap_Detection : MonoBehaviour
 
     private void Awake()
     {
-        trap_detection = GetComponent<BoxCollider2D>();
         trapdoor.gameObject.SetActive(false);
         gameManager = FindFirstObjectByType<GameManager>();
         cam = Camera.main;
         camController = cam.GetComponent<CameraController>();
-        heavensgate.gameObject.SetActive(false);
+
+        if (heavensgate != null)
+        {
+            heavensgate.gameObject.SetActive(false);
+        }
     }
 
     private void Update()
@@ -98,7 +101,11 @@ public class Trap_Detection : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
         caveBG.gameObject.SetActive(false);
-        heavensgate.gameObject.SetActive(true);
+        
+        if (heavensgate != null)
+        {
+            heavensgate.gameObject.SetActive(true);
+        }
 
         foreach (SpriteRenderer renderer in bossBGSprites)
         {
