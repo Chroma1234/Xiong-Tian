@@ -108,7 +108,7 @@ public class Trap_Detection : MonoBehaviour
         bgm.clip = bossMusic;
         bgm.Play();
 
-        yield return StartCoroutine(FadeAudio(0.3f, 0.5f));
+        yield return StartCoroutine(FadeAudio(0.1f, 0.5f));
         yield return StartCoroutine(gameManager.Fade(1f, 0f));
         //player.isTeleporting = false;
         StartCoroutine(CutsceneRoutine());
