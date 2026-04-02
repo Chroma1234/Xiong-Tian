@@ -319,7 +319,7 @@ public class Enemy : MonoBehaviour, IDamageable
         
         if (shieldRenderer != null)
         {
-            shieldRenderer.material.SetFloat(shieldDissolveAmt, 1f);
+            shieldRenderer.material.SetFloat(shieldDissolveAmt, 0f);
         }
 
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
