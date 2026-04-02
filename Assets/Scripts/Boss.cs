@@ -447,6 +447,11 @@ public class Boss : MonoBehaviour, IDamageable
         lastPosition = currentPosition;
     }
 
+    public void OnDeathAnimationEnd()
+    {
+        gameObject.SetActive(false);
+    }
+
     public void Die()
     {
         //StopAllCoroutines();
@@ -454,7 +459,7 @@ public class Boss : MonoBehaviour, IDamageable
         manager.DoSlowDown(0.025f, 0.5f);
         cam.ZoomIn();
         StartCoroutine(FadeAudio(0f, 1f));
-        StartCoroutine(ShieldVanish(shieldDissolveAmt, 1.1f));
+        //StartCoroutine(ShieldVanish(shieldDissolveAmt, 1.1f));
 
         Collider2D[] cols = GetComponentsInChildren<Collider2D>();
         foreach (var col in cols)
@@ -472,7 +477,7 @@ public class Boss : MonoBehaviour, IDamageable
         animator.SetTrigger("death");
         StateMachine.ChangeState(DeadState);
 
-        StartCoroutine(DisableAfterTime(1.5f));
+        //StartCoroutine(DisableAfterTime(1.5f));
     }
 
     public void ResetEnemy()
@@ -688,6 +693,7 @@ public class Boss : MonoBehaviour, IDamageable
 
     public IEnumerator ShieldVanish(float from, float to)
     {
+        if (!IsAlive) yield break;
         if (StateMachine.CurrentBossState != EnterState)
         {
             float elapsedTime = 0f;
