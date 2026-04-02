@@ -46,7 +46,7 @@ public class PlayerAttackState : PlayerState
     {
         base.FrameUpdate();
 
-        if (Input.GetMouseButtonDown(0) && player.IsGrounded())
+        if (Input.GetMouseButtonDown(0) && player.IsGrounded() && canQueueInput)
         {
 
                 // Always queue input (buffer it)
