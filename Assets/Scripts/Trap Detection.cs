@@ -97,6 +97,11 @@ public class Trap_Detection : MonoBehaviour
 
     private IEnumerator Setup(Player player)
     {
+
+        player.StateMachine.ChangeState(player.IdleState);
+
+        yield return new WaitUntil(() => player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Idle"));
+
         player.freezePlayer = true;
 
         yield return StartCoroutine(gameManager.Fade(0f, 1f));

@@ -56,6 +56,11 @@ public class UIManager : MonoBehaviour
         dashFill.fillAmount = Mathf.Lerp(dashFill.fillAmount, (float)player.dashCount / player.maxDashCount, 10f * Time.deltaTime);
         dashBarCanvasGrp.alpha = Mathf.Lerp(dashBarCanvasGrp.alpha, dashFill.fillAmount < 0.99f ? 1f : 0f, 8f * Time.deltaTime);
 
+        if (player.freezePlayer)
+        {
+            dashBarCanvasGrp.alpha = 0;
+        }
+
         // Low health pulsing effect
         if (lowHealthActive)
         {
