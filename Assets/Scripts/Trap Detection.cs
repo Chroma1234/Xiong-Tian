@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 using static Unity.Collections.AllocatorManager;
 
@@ -39,6 +40,7 @@ public class Trap_Detection : MonoBehaviour
         if (heavensgate != null)
         {
             heavensgate.gameObject.SetActive(false);
+
         }
     }
 
@@ -50,8 +52,12 @@ public class Trap_Detection : MonoBehaviour
             {
                 trapdoor.SetActive(false);
             }
-                trap_detection.enabled = true;
-                //Debug.Log("Player died");
+
+            trap_detection.enabled = true;
+
+            heavensgate.gameObject.SetActive(false);
+
+            //Debug.Log("Player died");
         }
     }
     private void OnTriggerEnter2D(Collider2D collision)
@@ -92,6 +98,7 @@ public class Trap_Detection : MonoBehaviour
     private IEnumerator Setup(Player player)
     {
         player.freezePlayer = true;
+
         yield return StartCoroutine(gameManager.Fade(0f, 1f));
         yield return StartCoroutine(FadeAudio(0f, 0.5f));
         player.gameObject.transform.position = new Vector2(bossTeleport.position.x, player.transform.position.y);
@@ -105,6 +112,7 @@ public class Trap_Detection : MonoBehaviour
         if (heavensgate != null)
         {
             heavensgate.gameObject.SetActive(true);
+
         }
 
         foreach (SpriteRenderer renderer in bossBGSprites)
@@ -207,4 +215,5 @@ public class Trap_Detection : MonoBehaviour
         player.freezePlayer = false; // unfreeze player now
         player.isTeleporting = false;
     }
+
 }
