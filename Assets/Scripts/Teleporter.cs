@@ -29,6 +29,7 @@ public class Teleporter : MonoBehaviour
                 Player player = gameObj.GetComponent<Player>();
                 player.isTeleporting = true;
                 player.rb.linearVelocity = Vector2.zero;
+                player.animator.ResetTrigger("isRolling");
                 StartCoroutine(TeleportToCave(gameObj));
             }
         }

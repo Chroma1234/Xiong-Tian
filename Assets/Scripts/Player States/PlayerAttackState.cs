@@ -95,7 +95,6 @@ public class PlayerAttackState : PlayerState
                 yield return new WaitForSeconds(0.075f); // small delay
                 // Trigger next attack immediately
                 player.animator.SetTrigger("attack");
-                player.PlaySound(player.attackClip);
 
                 inputQueued = false;
                 canQueueInput = false;

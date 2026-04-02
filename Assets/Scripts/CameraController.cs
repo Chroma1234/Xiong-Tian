@@ -33,12 +33,22 @@ public class CameraController : MonoBehaviour
     private LensDistortion lensDistortion;
     private ChromaticAberration chromaticAberration;
 
+    private float originalSize;
+    private float targetSize;
+
+    private float originalDistortion;
+    private float originalVignette;
+    private float originalAberration;
+
     public bool inCutscene = false;
 
     private void Awake()
     {
         cam = Camera.main;
         playerScript = player.GetComponent<Player>();
+
+        originalSize = cam.fieldOfView;
+        targetSize = originalSize / zoomAmount;
     }
 
     private void Start()
@@ -60,6 +70,10 @@ public class CameraController : MonoBehaviour
             chromaticAberration.active = true;
             chromaticAberration.intensity.overrideState = true;
         }
+
+        originalDistortion = lensDistortion.intensity.value;
+        originalVignette = vignette.intensity.value;
+        originalAberration = chromaticAberration.intensity.value;
     }
 
     private void Update()
@@ -116,13 +130,6 @@ public class CameraController : MonoBehaviour
 
     private IEnumerator ZoomCoroutine()
     {
-        float originalSize = cam.fieldOfView;
-        float targetSize = originalSize / zoomAmount;
-
-        float originalDistortion = lensDistortion.intensity.value;
-        float originalVignette = vignette.intensity.value;
-        float originalAberration = chromaticAberration.intensity.value;
-
         float elapsed = 0f;
         float elapsedPP = 0f;
 

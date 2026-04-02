@@ -21,7 +21,15 @@ public class PlayerDashState : PlayerState
     {
         base.EnterState();
 
-        player.PlaySound(player.dashClip);
+        if (player.hasParryCharge)
+        {
+            player.PlaySound(player.dashClip);
+            //parry charge sfx
+        }
+        else
+        {
+            player.PlaySound(player.dashClip);
+        }
 
         float moveX = Input.GetAxisRaw("Horizontal");
         float moveY = Input.GetAxisRaw("Vertical");

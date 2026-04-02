@@ -80,13 +80,14 @@ public class Boss : MonoBehaviour, IDamageable
 
     public float arrowGravity = 40;
 
-    [HideInInspector] public float warningGap = 1.5f;
+    [SerializeField] private float initialGap;
+    [SerializeField] public float warningGap = 6f;
     [HideInInspector] public int warningSpawnCount = 40;
     [HideInInspector] public float warningPosX = 0;
     [HideInInspector] public float arrowPosX = 0;
 
     public float decreaseValue = 0.3f;
-    public float minGapValue = 1f;
+    public float minGapValue = 1.5f;
 
     [SerializeField] private float vanishDuration = 0.5f;
     [SerializeField] private float reappearDelay = 0.2f;
@@ -213,39 +214,12 @@ public class Boss : MonoBehaviour, IDamageable
 
         shieldRenderer.material.SetFloat(shieldDissolveAmt, 1.1f);
 
+        initialGap = warningGap;
+
         warningPosX = -((warningSpawnCount / 2) * warningGap);
         arrowPosX = -((warningSpawnCount / 2) * warningGap);
 
-        //Instantiate warning blocking
-        for (int i = 0; i < warningSpawnCount; i++)
-        {
-            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y), Quaternion.identity);
-
-            SpriteRenderer warningRenderer = newPrefab.gameObject.GetComponent<SpriteRenderer>();
-
-            warningOriginalColor = warningRenderer.color;
-
-            newPrefab.gameObject.SetActive(false);
-
-            warningList.Add(newPrefab);
-            warningPosX += warningGap;
-        }
-
-        //Instantiate arrows positions
-        for (int i = 0; i < warningSpawnCount; i++)
-        {
-            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, this.transform.position.y + 4f), Quaternion.identity);
-
-            newPrefab.gameObject.SetActive(false);
-
-            newPrefab.gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
-
-            newPrefab.gameObject.GetComponent<Rigidbody2D>().gravityScale = arrowGravity;
-
-            arrowList.Add(newPrefab);
-            arrowPosX += warningGap;
-        }
-
+        SetupGlobalAtk();
     }
 
     private void Start()
@@ -262,7 +236,7 @@ public class Boss : MonoBehaviour, IDamageable
         Vector2 direction = transform.localScale.x == -1 ? Vector2.right : Vector2.left;
 
         RaycastHit2D hit = Physics2D.Raycast(new Vector2(transform.position.x, transform.position.y - 0.2f), direction, 1.5f, playerLayer);
-        
+
         Debug.DrawRay(new Vector2(transform.position.x, transform.position.y - 0.2f), direction * 1.5f, Color.green);
 
         if (hit.collider != null)
@@ -271,7 +245,7 @@ public class Boss : MonoBehaviour, IDamageable
             {
                 inAttackRange = true;
             }
-        } 
+        }
         else
         {
             inAttackRange = false;
@@ -483,6 +457,11 @@ public class Boss : MonoBehaviour, IDamageable
     public void ResetEnemy()
     {
         StopAllCoroutines();
+
+        //StartCoroutine(FadeAudio(0f, 1f));
+        bgm.Stop();
+        bgm.clip = normalBGM;
+
         StateMachine.ChangeState(EnterState);
         shieldRenderer.material.SetFloat(shieldDissolveAmt, 1f);
         transform.position = spawnPosition;
@@ -493,15 +472,30 @@ public class Boss : MonoBehaviour, IDamageable
             if (col != boxCollider && col.name != "Hitbox" && !triggerGlobal)
                 col.enabled = true;
         }
+
+        for (int i = warningList.Count - 1; i >= 0; i--)
+        {
+            Destroy(warningList[i]);
+        }
+        warningList.Clear();
+
+        for (int i = arrowList.Count - 1; i >= 0; i--)
+        {
+            Destroy(arrowList[i]);
+        }
+        arrowList.Clear();
+
         Health = maxHealth;
         IsAlive = true;
         animator.Rebind();
         animator.Update(0f);
+
+        transform.localScale = new Vector3(1, 1, 1);
+
         gameObject.SetActive(true);
 
-        StartCoroutine(FadeAudio(0f, 1f));
-        bgm.Stop();
-        bgm.clip = normalBGM;
+        SetupGlobalAtk();
+
         caveBG.SetActive(true);
 
         foreach (SpriteRenderer renderer in bossBGSprites)
@@ -512,7 +506,7 @@ public class Boss : MonoBehaviour, IDamageable
         spriteRenderer.color = new Color(spriteRenderer.color.r, spriteRenderer.color.g, spriteRenderer.color.b, 0);
 
         bgm.Play();
-        StartCoroutine(FadeAudio(0.1f, 1f));
+        StartCoroutine(FadeAudio(0.25f, 1f));
     }
 
 
@@ -572,7 +566,7 @@ public class Boss : MonoBehaviour, IDamageable
         Debug.Log("Cooldown ended");
 
         globalCooldown = false;
-    
+
     }
 
     //Trigger Arrows Coroutine
@@ -603,9 +597,9 @@ public class Boss : MonoBehaviour, IDamageable
                 //Coroutine to fade out object
                 StartCoroutine(FadeTo(0f, warningFadeOut, stanceObjRender));
                 StartCoroutine(FadeTo(0f, warningFadeOut, stanceWarningObjRend));
-                
+
             }
-            
+
         }
 
         yield return new WaitForSeconds(warningFadeOut + 0.2f);
@@ -722,6 +716,42 @@ public class Boss : MonoBehaviour, IDamageable
 
         StateMachine.ChangeState(ChaseState);
         StartCoroutine(ShieldVanish(1.1f, 0f));
+    }
+
+    private void SetupGlobalAtk()
+    {
+        warningGap = initialGap;
+        warningPosX = -((warningSpawnCount / 2) * warningGap);
+        arrowPosX = -((warningSpawnCount / 2) * warningGap);
+
+        for (int i = 0; i < warningSpawnCount; i++)
+        {
+            GameObject newPrefab = Instantiate(warningObject, new Vector2(this.transform.position.x + warningPosX, this.transform.position.y), Quaternion.identity);
+
+            SpriteRenderer warningRenderer = newPrefab.gameObject.GetComponent<SpriteRenderer>();
+
+            warningOriginalColor = warningRenderer.color;
+
+            newPrefab.gameObject.SetActive(false);
+
+            warningList.Add(newPrefab);
+            warningPosX += warningGap;
+        }
+
+        //Instantiate arrows positions
+        for (int i = 0; i < warningSpawnCount; i++)
+        {
+            GameObject newPrefab = Instantiate(arrowObject, new Vector2(this.transform.position.x + arrowPosX, this.transform.position.y + 4f), Quaternion.identity);
+
+            newPrefab.gameObject.SetActive(false);
+
+            newPrefab.gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Static;
+
+            newPrefab.gameObject.GetComponent<Rigidbody2D>().gravityScale = arrowGravity;
+
+            arrowList.Add(newPrefab);
+            arrowPosX += warningGap;
+        }
     }
 
 }

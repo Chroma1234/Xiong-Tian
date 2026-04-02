@@ -54,8 +54,10 @@ public class Trap_Detection : MonoBehaviour
             }
 
             trap_detection.enabled = true;
-
-            heavensgate.gameObject.SetActive(false);
+            if (heavensgate != null)
+            {
+                heavensgate.gameObject.SetActive(false);
+            }
 
             //Debug.Log("Player died");
         }
@@ -110,6 +112,7 @@ public class Trap_Detection : MonoBehaviour
 
         player.isTeleporting = true;
         player.rb.linearVelocity = Vector2.zero;
+        player.animator.ResetTrigger("isRolling");
 
         yield return new WaitForSeconds(0.5f);
         caveBG.gameObject.SetActive(false);

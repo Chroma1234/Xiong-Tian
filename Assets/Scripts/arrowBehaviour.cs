@@ -61,7 +61,7 @@ public class arrowBehaviour : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         
-        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("Ground"))
+        if (collision.gameObject.CompareTag("Player") || collision.gameObject.CompareTag("BossFloor"))
         {
             PlaySound(impactClip);
 
@@ -76,7 +76,7 @@ public class arrowBehaviour : MonoBehaviour
 
     public void PlaySound(AudioClip clip)
     {
-        audioSource.PlayOneShot(clip);
+        AudioSource.PlayClipAtPoint(impactClip, transform.position);
     }
 
 }

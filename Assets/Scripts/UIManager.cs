@@ -105,7 +105,7 @@ public class UIManager : MonoBehaviour
 
     private void OnBossHealthChanged(int health)
     {
-        bossHealthBar.fillAmount = (float)health / 800f;
+        bossHealthBar.fillAmount = (float)health / 350f;
     }
 
     private void OnBossKilled(Boss boss)
