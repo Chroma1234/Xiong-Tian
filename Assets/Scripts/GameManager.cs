@@ -7,11 +7,6 @@ using UnityEngine.UI;
 
 public class GameManager : MonoBehaviour
 {
-    #region FPS
-    [Header("FPS Control")]
-    public int fps;
-    #endregion
-
     #region Hitstop
     [Header("Hitstop Settings")]
     public static GameManager instance;
@@ -60,8 +55,38 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
 
-        Application.targetFrameRate = fps;
         Cursor.lockState = CursorLockMode.Locked;
+    }
+
+    private void Start()
+    {
+        float refreshRate = (float)Screen.currentResolution.refreshRateRatio.value;
+        int vSyncFactor = Mathf.RoundToInt(refreshRate / 60.0f);
+
+        QualitySettings.vSyncCount = Mathf.Clamp(vSyncFactor, 1, 4);
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if(Cursor.lockState == CursorLockMode.Locked)
+            {
+                Cursor.lockState = CursorLockMode.None;
+            }
+            else
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            if(Cursor.lockState == CursorLockMode.None)
+            {
+                Cursor.lockState = CursorLockMode.Locked;
+            }
+        }
     }
 
     public void PauseTimeOnly()

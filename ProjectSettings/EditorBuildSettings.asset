@@ -20,9 +20,6 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Ending.unity
     guid: 3c050529ba4352a4d9b78ddcc18af305
-  - enabled: 0
-    path: Assets/Scenes/Old Scenes/Level Draft (Revised Cave).unity
-    guid: a80dba6a6037cb64aa3cf52705a64596
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
