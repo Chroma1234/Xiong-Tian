@@ -19,28 +19,35 @@ public class GameManager : MonoBehaviour
     private float hitStopTimeScale = 0f;
     #endregion
 
+    #region Fade Settings
+    [Header("Fade Settings")]
     [SerializeField] private Image fadeImage;
     [SerializeField] private CanvasGroup flashImage;
     [SerializeField] private float fadeDuration = 0.5f;
     [SerializeField] private float respawnDelay = 0.5f;
     [SerializeField] private float flashDuration;
+    #endregion
 
+    #region Respawn Settings
+    [Header("Respawn Settings")]
     public SavePoint currentSavePoint;
     public Vector3 currentSpawnPoint;
 
-    [SerializeField] private AudioSource bgm;
-    [SerializeField] private AudioLowPassFilter filter;
-
     private readonly List<Enemy> enemies = new List<Enemy>();
     [SerializeField] private Boss boss;
+    #endregion
 
+    #region Audio Settings
+    [Header("Audio Settings")]
+    [SerializeField] private AudioSource bgm;
+    [SerializeField] private AudioLowPassFilter filter;
+    #endregion
+
+    #region Time / Pause Settings
     private float currentTimeScale = 1f;
-    public bool paused = false;
-
-    [SerializeField] private CanvasGroup pauseScreen;
-
-    public bool blockPauseInput = false;
-    public bool inTutorial = false;
+    [HideInInspector] public bool paused = false;
+    [HideInInspector] public bool inTutorial = false;
+    #endregion
 
     private void Awake()
     {
@@ -57,52 +64,11 @@ public class GameManager : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
     }
 
-    private void Update()
-    {
-        //if (blockPauseInput) return;
-        //if (inTutorial) return;
-
-        //if (Input.GetKeyDown(KeyCode.Escape))
-        //{
-        //    if (!paused)
-        //    {
-        //        Pause();
-        //    }
-        //    else
-        //    {
-        //        Resume();
-        //    }
-        //}
-    }
-
-    public void Pause()
-    {
-        paused = true;
-        currentTimeScale = Time.timeScale;
-        Time.timeScale = 0f;
-
-        pauseScreen.alpha = 1f;
-        pauseScreen.interactable = true;
-
-        Cursor.lockState = CursorLockMode.None;
-    }
-
     public void PauseTimeOnly()
     {
         paused = true;
         currentTimeScale = Time.timeScale;
         Time.timeScale = 0f;
-    }
-
-    public void Resume()
-    {
-        paused = false;
-        Time.timeScale = currentTimeScale;
-
-        pauseScreen.alpha = 0f;
-        pauseScreen.interactable = false;
-
-        Cursor.lockState = CursorLockMode.Locked;
     }
 
     public void ResumeTimeOnly()
@@ -111,11 +77,6 @@ public class GameManager : MonoBehaviour
         Time.timeScale = currentTimeScale;
 
         Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    public void Exit()
-    {
-        Application.Quit();
     }
 
     public void RegisterEnemy(Enemy enemy)
@@ -246,5 +207,4 @@ public class GameManager : MonoBehaviour
 
         Time.fixedDeltaTime = 0.02f;
     }
-
 }

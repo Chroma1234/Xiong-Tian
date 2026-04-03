@@ -7,32 +7,49 @@ public class CameraController : MonoBehaviour
 {
     private Camera cam;
 
+    #region Player Reference
+    [Header("Player Reference")]
     [SerializeField] private Transform player;
     private Player playerScript;
+    #endregion
+
+    #region Camera Follow Settings
+    [Header("Camera Follow Settings")]
     [SerializeField] private float forwardOffset;
     [SerializeField] private float heightOffset;
     [SerializeField] private float xFollowSpeed;
     [SerializeField] private float yFollowSpeed;
 
-    [SerializeField] private float zoomDuration = 0.3f;
-    [SerializeField] private float zoomAmount = 2f;
-
-    private Vector3 shakeOffset;
-
     private float targetX;
     private float targetY;
+    #endregion
 
-    [SerializeField] private BoxCollider2D bounds;
+    #region Zoom Settings
+    [Header("Zoom Settings")]
+    [SerializeField] private float zoomDuration = 0.3f;
+    [SerializeField] private float zoomAmount = 2f;
+    #endregion
 
+    #region Shake Settings
+    private Vector3 shakeOffset;
+    #endregion
 
+    #region Room Settings
+    [Header("Room Settings")]
     [SerializeField] private float roomTransitionDuration = 0.1f;
+    private BoxCollider2D bounds;
     private bool isTransitioning = false;
+    #endregion
 
+    #region Post Processing
+    [Header("Post Processing")]
     [SerializeField] private Volume volume;
     private Vignette vignette;
     private LensDistortion lensDistortion;
     private ChromaticAberration chromaticAberration;
+    #endregion
 
+    #region Misc
     private float originalSize;
     private float targetSize;
 
@@ -41,6 +58,7 @@ public class CameraController : MonoBehaviour
     private float originalAberration;
 
     public bool inCutscene = false;
+    #endregion
 
     private void Awake()
     {
@@ -173,17 +191,15 @@ public class CameraController : MonoBehaviour
         StartCoroutine(RoomTransition(room));
     }
 
-
     private IEnumerator RoomTransition(BoxCollider2D newRoom)
     {
         isTransitioning = true;
         playerScript.isTeleporting = true;
         playerScript.rb.linearVelocity = Vector3.zero;
         BoxCollider2D oldRoom = bounds;
-        Vector3 startPos = transform.position; // capture where camera actually is
+        Vector3 startPos = transform.position;
         float elapsed = 0f;
 
-        // Calculate where the camera should end up (player pos clamped to new room)
         float distance = Mathf.Abs(transform.position.z - player.position.z);
         float camHalfHeight = Mathf.Tan(cam.fieldOfView * 0.5f * Mathf.Deg2Rad) * distance;
         float camHalfWidth = camHalfHeight * cam.aspect;
@@ -205,7 +221,6 @@ public class CameraController : MonoBehaviour
             yield return null;
         }
 
-        // Sync targetX/targetY so Update resumes from exactly where we landed
         targetX = forwardOffset * player.localScale.x;
         targetY = endY;
 
