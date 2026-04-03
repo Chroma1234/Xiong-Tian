@@ -193,9 +193,6 @@ public class Boss : MonoBehaviour, IDamageable
             }
         }
 
-        //Vector2 launchDir = new Vector2(-hitDirection.x, 0f).normalized;
-        //StartCoroutine(Knockback(launchDir));
-
         OnBossHit?.Invoke(this);
     }
 

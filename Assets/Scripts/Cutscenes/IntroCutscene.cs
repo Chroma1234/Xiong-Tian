@@ -26,6 +26,7 @@ public class IntroCutscene : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             videoPlayer.Stop();
+            videoPlayer.targetTexture.Release();
             StartCoroutine(FadeOutAndLoad(nextScene));
         }
 

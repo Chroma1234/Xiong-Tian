@@ -111,7 +111,6 @@ public class BossTeleporter : MonoBehaviour
     private IEnumerator Setup(Player player)
     {
         player.StateMachine.ChangeState(player.IdleState);
-        playerLight.SetActive(false);
 
         yield return new WaitUntil(() => player.animator.GetCurrentAnimatorStateInfo(0).IsTag("Idle"));
 
@@ -141,6 +140,8 @@ public class BossTeleporter : MonoBehaviour
 
         bgm.clip = bossMusic;
         bgm.Play();
+
+        playerLight.SetActive(false);
 
         yield return StartCoroutine(FadeAudio(0.3f, 0.5f));
         yield return StartCoroutine(gameManager.Fade(1f, 0f));

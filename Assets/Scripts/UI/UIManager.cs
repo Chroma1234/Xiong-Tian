@@ -82,6 +82,13 @@ public class UIManager : MonoBehaviour
         dashBarUI.position = screenPos;
     }
 
+    private void OnDestroy()
+    {
+        player.OnHealthChanged -= OnHealthChanged;
+        boss.OnHealthChanged -= OnBossHealthChanged;
+        Boss.OnBossKilled -= OnBossKilled;
+    }
+
     private void OnHealthChanged(int health)
     {
         // Update health bar fill
