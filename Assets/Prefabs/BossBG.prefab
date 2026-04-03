@@ -147,7 +147,7 @@ SpriteRenderer:
   m_Size: {x: 120, y: 67.5}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!114 &7557118624722760745
@@ -162,8 +162,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.9
+  cam: {fileID: 0}
 --- !u!1 &2755576223991642688
 GameObject:
   m_ObjectHideFlags: 0
@@ -265,8 +265,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &3406261839590401164
 GameObject:
   m_ObjectHideFlags: 0
@@ -368,8 +368,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &4513387202362049690
 GameObject:
   m_ObjectHideFlags: 0
@@ -541,8 +541,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &6701900659995231772
 GameObject:
   m_ObjectHideFlags: 0
@@ -675,8 +675,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &7375595191647053602
 GameObject:
   m_ObjectHideFlags: 0
@@ -778,8 +778,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &7846290445155039326
 GameObject:
   m_ObjectHideFlags: 0
@@ -912,8 +912,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &8236310938553498173
 GameObject:
   m_ObjectHideFlags: 0
@@ -1046,8 +1046,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3eca42e23b1596c48b4b338cab31edc0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  cam: {fileID: 0}
   parallaxEffect: 0.8
+  cam: {fileID: 0}
 --- !u!1 &9139760170075352164
 GameObject:
   m_ObjectHideFlags: 0
